@@ -1132,23 +1132,265 @@ const CULTURE_FACTS=[
    text:'Los parques del río Han en Seúl son el corazón social de la ciudad. Los coreanos van a hacer deporte, picnics, beber cerveza instant y ver fuegos artificiales. ¡Un símbolo de Seúl moderno!'},
 ];
 
-// ── Verb Conjugation Table ──
+// ── Verb Conjugation Table (A2 Deep Master Dataset) ──
 const VERBS=[
-  {base:'가다',trans:'ir',present:'가요',past:'갔어요',future:'갈 거예요',neg:'안 가요',command:'가세요'},
-  {base:'오다',trans:'venir',present:'와요',past:'왔어요',future:'올 거예요',neg:'안 와요',command:'오세요'},
-  {base:'먹다',trans:'comer',present:'먹어요',past:'먹었어요',future:'먹을 거예요',neg:'안 먹어요',command:'먹으세요'},
-  {base:'마시다',trans:'beber',present:'마셔요',past:'마셨어요',future:'마실 거예요',neg:'안 마셔요',command:'마시세요'},
-  {base:'보다',trans:'ver',present:'봐요',past:'봤어요',future:'볼 거예요',neg:'안 봐요',command:'보세요'},
-  {base:'듣다',trans:'escuchar',present:'들어요',past:'들었어요',future:'들을 거예요',neg:'안 들어요',command:'들으세요'},
-  {base:'읽다',trans:'leer',present:'읽어요',past:'읽었어요',future:'읽을 거예요',neg:'안 읽어요',command:'읽으세요'},
-  {base:'쓰다',trans:'escribir',present:'써요',past:'썼어요',future:'쓸 거예요',neg:'안 써요',command:'쓰세요'},
-  {base:'자다',trans:'dormir',present:'자요',past:'잤어요',future:'잘 거예요',neg:'안 자요',command:'자세요'},
-  {base:'공부하다',trans:'estudiar',present:'공부해요',past:'공부했어요',future:'공부할 거예요',neg:'안 공부해요',command:'공부하세요'},
-  {base:'일하다',trans:'trabajar',present:'일해요',past:'일했어요',future:'일할 거예요',neg:'안 일해요',command:'일하세요'},
-  {base:'말하다',trans:'hablar',present:'말해요',past:'말했어요',future:'말할 거예요',neg:'안 말해요',command:'말하세요'},
-  {base:'사다',trans:'comprar',present:'사요',past:'샀어요',future:'살 거예요',neg:'안 사요',command:'사세요'},
-  {base:'주다',trans:'dar',present:'줘요',past:'줬어요',future:'줄 거예요',neg:'안 줘요',command:'주세요'},
-  {base:'받다',trans:'recibir',present:'받아요',past:'받았어요',future:'받을 거예요',neg:'안 받아요',command:'받으세요'},
+  // ── Verbos Regulares de Acción Cotidiana ──
+  {
+    base:'가다',trans:'ir',cat:'action',type:'Regular (Vocal brillante ㅏ)',
+    root:'가-',lastVowel:'ㅏ (Brillante / Yang ☀️)',
+    rule:'La raíz termina en vocal brillante ㅏ. Se añade -아요 y se contrae de forma natural: 가 + 아요 ➔ 가요.',
+    present:'가요',past:'갔어요',future:'갈 거예요',formal:'갑니다',prog:'가고 있어요',neg:'안 가요',negLong:'가지 않아요',command:'가세요',
+    ex:'지금 집에 가요',exTrans:'Ahora voy a casa'
+  },
+  {
+    base:'오다',trans:'venir',cat:'action',type:'Regular (Vocal brillante ㅗ)',
+    root:'오-',lastVowel:'ㅗ (Brillante / Yang ☀️)',
+    rule:'La raíz termina en vocal brillante ㅗ. Se añade -아요 y se fusiona: 오 + 아요 ➔ 와요.',
+    present:'와요',past:'왔어요',future:'올 거예요',formal:'옵니다',prog:'오고 있어요',neg:'안 와요',negLong:'오지 않아요',command:'오세요',
+    ex:'친구가 우리 집에 와요',exTrans:'Mi amigo viene a mi casa'
+  },
+  {
+    base:'먹다',trans:'comer',cat:'action',type:'Regular (Consonante ㄱ + Vocal ㅓ)',
+    root:'먹-',lastVowel:'ㅓ (Oscura / Yin ☁️)',
+    rule:'La raíz termina en consonante final (batchim ㄱ) y vocal oscura ㅓ. Se añade -어요: 먹 + 어요 ➔ 먹어요.',
+    present:'먹어요',past:'먹었어요',future:'먹을 거예요',formal:'먹습니다',prog:'먹고 있어요',neg:'안 먹어요',negLong:'먹지 않아요',command:'먹으세요',
+    ex:'점심에 비빔밥을 맛있게 먹어요',exTrans:'Almuerzo bibimbap delicioso'
+  },
+  {
+    base:'마시다',trans:'beber / tomar',cat:'action',type:'Regular (Vocal ㅣ)',
+    root:'마시-',lastVowel:'ㅣ (Oscura / Yin ☁️)',
+    rule:'La raíz termina en vocal ㅣ. Al unirse con -어요 se fusiona en ㅕ: 마시 + 어요 ➔ 마셔요.',
+    present:'마셔요',past:'마셨어요',future:'마실 거예요',formal:'마십니다',prog:'마시고 있어요',neg:'안 마셔요',negLong:'마시지 않아요',command:'마시세요',
+    ex:'아침마다 따뜻한 녹차를 마셔요',exTrans:'Bebo té verde tibio todas las mañanas'
+  },
+  {
+    base:'보다',trans:'ver / mirar',cat:'action',type:'Regular (Vocal brillante ㅗ)',
+    root:'보-',lastVowel:'ㅗ (Brillante / Yang ☀️)',
+    rule:'La raíz termina en ㅗ. Al unirse con -아요 se fusiona en ㅘ: 보 + 아요 ➔ 봐요.',
+    present:'봐요',past:'봤어요',future:'볼 거예요',formal:'봅니다',prog:'보고 있어요',neg:'안 봐요',negLong:'보지 않아요',command:'보세요',
+    ex:'주말에 친구와 영화를 봐요',exTrans:'El fin de semana veo una película con un amigo'
+  },
+  {
+    base:'읽다',trans:'leer',cat:'action',type:'Regular (Doble consonante ㄺ)',
+    root:'읽-',lastVowel:'ㅣ (Oscura / Yin ☁️)',
+    rule:'Termina en consonante doble ㄺ y vocal ㅣ. Añade -어요: 읽 + 어요 ➔ 읽어요 (fonética: ilg-eo-yo).',
+    present:'읽어요',past:'읽었어요',future:'읽을 거예요',formal:'읽습니다',prog:'읽고 있어요',neg:'안 읽어요',negLong:'읽지 않아요',command:'읽으세요',
+    ex:'도서관에서 한국어 소설을 읽어요',exTrans:'Leo una novela coreana en la biblioteca'
+  },
+  {
+    base:'쓰다',trans:'escribir / usar',cat:'action',type:'Regular (Vocal elidida ㅡ)',
+    root:'쓰-',lastVowel:'ㅡ (Neutra)',
+    rule:'La vocal ㅡ se elide (desaparece) al encontrarse con una vocal: 쓰 + 어요 ➔ 써요.',
+    present:'써요',past:'썼어요',future:'쓸 거예요',formal:'씁니다',prog:'쓰고 있어요',neg:'안 써요',negLong:'쓰지 않아요',command:'쓰세요',
+    ex:'한국어로 일기를 매일 써요',exTrans:'Escribo un diario en coreano todos los días'
+  },
+  {
+    base:'자다',trans:'dormir',cat:'action',type:'Regular (Vocal brillante ㅏ)',
+    root:'자-',lastVowel:'ㅏ (Brillante / Yang ☀️)',
+    rule:'Termina en ㅏ. Se contrae con -아요: 자 + 아요 ➔ 자요.',
+    present:'자요',past:'잤어요',future:'잘 거예요',formal:'잡니다',prog:'자고 있어요',neg:'안 자요',negLong:'자지 않아요',command:'주무세요 (Honorífico especial)',
+    ex:'밤 11시에 일찍 자요',exTrans:'Me duermo temprano a las 11 PM'
+  },
+  {
+    base:'사다',trans:'comprar',cat:'action',type:'Regular (Vocal brillante ㅏ)',
+    root:'사-',lastVowel:'ㅏ (Brillante / Yang ☀️)',
+    rule:'Termina en ㅏ. Contracción natural: 사 + 아요 ➔ 사요.',
+    present:'사요',past:'샀어요',future:'살 거예요',formal:'삽니다',prog:'사고 있어요',neg:'안 사요',negLong:'사지 않아요',command:'사세요',
+    ex:'시장에서 신선한 사과를 사요',exTrans:'Compro manzanas frescas en el mercado'
+  },
+  {
+    base:'주다',trans:'dar / regalar',cat:'action',type:'Regular (Vocal ㅜ)',
+    root:'주-',lastVowel:'ㅜ (Oscura / Yin ☁️)',
+    rule:'Termina en ㅜ. Al unirse con -어요 se fusiona en ㅝ: 주 + 어요 ➔ 줘요.',
+    present:'줘요',past:'줬어요',future:'줄 거예요',formal:'줍니다',prog:'주고 있어요',neg:'안 줘요',negLong:'주지 않아요',command:'주세요',
+    ex:'친구에게 생일 선물을 줘요',exTrans:'Le doy un regalo de cumpleaños a mi amigo'
+  },
+  {
+    base:'받다',trans:'recibir',cat:'action',type:'Regular (Consonante ㄷ + Vocal ㅏ)',
+    root:'받-',lastVowel:'ㅏ (Brillante / Yang ☀️)',
+    rule:'¡Ojo! A pesar de terminar en ㄷ, este verbo es 100% REGULAR. Añade -아요: 받 + 아요 ➔ 받아요.',
+    present:'받아요',past:'받았어요',future:'받을 거예요',formal:'받습니다',prog:'받고 있어요',neg:'안 받아요',negLong:'받지 않아요',command:'받으세요',
+    ex:'선생님께 칭찬을 받았어요',exTrans:'Recibí un cumplido del profesor'
+  },
+  {
+    base:'만나다',trans:'encontrarse / conocer',cat:'action',type:'Regular (Vocal brillante ㅏ)',
+    root:'만나-',lastVowel:'ㅏ (Brillante / Yang ☀️)',
+    rule:'Termina en vocal brillante ㅏ. Contracción: 만나 + 아요 ➔ 만나요.',
+    present:'만나요',past:'만났어요',future:'만날 거예요',formal:'만납니다',prog:'만나고 있어요',neg:'안 만나요',negLong:'만나지 않아요',command:'만나세요',
+    ex:'내일 홍대에서 친구를 만나요',exTrans:'Mañana me encuentro con un amigo en Hongdae'
+  },
+  {
+    base:'배우다',trans:'aprender',cat:'action',type:'Regular (Vocal ㅜ)',
+    root:'배우-',lastVowel:'ㅜ (Oscura / Yin ☁️)',
+    rule:'Termina en ㅜ. Fusión de vocales: 배우 + 어요 ➔ 배워요.',
+    present:'배워요',past:'배웠어요',future:'배울 거예요',formal:'배웁니다',prog:'배우고 있어요',neg:'안 배워요',negLong:'배우지 않아요',command:'배우세요',
+    ex:'인터넷으로 한국어 문법을 배워요',exTrans:'Aprendo gramática coreana por internet'
+  },
+  {
+    base:'가르치다',trans:'enseñar',cat:'action',type:'Regular (Vocal ㅣ)',
+    root:'가르치-',lastVowel:'ㅣ (Oscura / Yin ☁️)',
+    rule:'Termina en ㅣ. Fusión vocálica: 가르치 + 어요 ➔ 가르쳐요.',
+    present:'가르쳐요',past:'가르쳤어요',future:'가르칠 거예요',formal:'가르칩니다',prog:'가르치고 있어요',neg:'안 가르쳐요',negLong:'가르치지 않아요',command:'가르치세요',
+    ex:'선생님이 학생들에게 한글을 가르쳐요',exTrans:'El profesor enseña Hangul a los estudiantes'
+  },
+  {
+    base:'기다리다',trans:'esperar',cat:'action',type:'Regular (Vocal ㅣ)',
+    root:'기다리-',lastVowel:'ㅣ (Oscura / Yin ☁️)',
+    rule:'Termina en vocal ㅣ. Fusión: 기다리 + 어요 ➔ 기다려요.',
+    present:'기다려요',past:'기다렸어요',future:'기다릴 거예요',formal:'기다립니다',prog:'기다리고 있어요',neg:'안 기다려요',negLong:'기다리지 않아요',command:'기다리세요',
+    ex:'지하철역 3번 출구에서 기다려요',exTrans:'Espero en la salida 3 de la estación de metro'
+  },
+  {
+    base:'만들다',trans:'hacer / fabricar / preparar',cat:'action',type:'Regular (Consonante ㄹ)',
+    root:'만들-',lastVowel:'ㅡ (Neutra)',
+    rule:'Termina en consonante ㄹ. Añade -어요: 만들 + 어요 ➔ 만들어요. En formal la ㄹ cae ante ㅂ: 만듭니다.',
+    present:'만들어요',past:'만들었어요',future:'만들 거예요',formal:'만듭니다',prog:'만들고 있어요',neg:'안 만들어요',negLong:'만들지 않아요',command:'만드세요',
+    ex:'오늘 저녁에 맛있는 떡볶이를 만들어요',exTrans:'Esta noche preparo tteokbokki delicioso'
+  },
+  {
+    base:'쉬다',trans:'descansar',cat:'action',type:'Regular (Diptongo ㅟ)',
+    root:'쉬-',lastVowel:'ㅟ (Neutra)',
+    rule:'Termina en diptongo ㅟ. Añade -어요: 쉬 + 어요 ➔ 쉬어요.',
+    present:'쉬어요',past:'쉬었어요',future:'쉴 거예요',formal:'쉬십니다',prog:'쉬고 있어요',neg:'안 쉬어요',negLong:'쉬지 않아요',command:'쉬세요',
+    ex:'일요일에는 집에서 편하게 쉬어요',exTrans:'Los domingos descanso cómodamente en casa'
+  },
+  {
+    base:'입다',trans:'vestirse / ponerse ropa',cat:'action',type:'Regular con ㅂ (¡No es irregular!)',
+    root:'입-',lastVowel:'ㅣ (Oscura / Yin ☁️)',
+    rule:'¡Alerta común! Aunque termine en ㅂ, es 100% REGULAR. Añade -어요: 입 + 어요 ➔ 입어요.',
+    present:'입어요',past:'입었어요',future:'입을 거예요',formal:'입습니다',prog:'입고 있어요',neg:'안 입어요',negLong:'입지 않아요',command:'입으세요',
+    ex:'날씨가 추워서 두꺼운 옷을 입어요',exTrans:'Como hace frío, me pongo ropa gruesa'
+  },
+
+  // ── Verbos 하다 ──
+  {
+    base:'하다',trans:'hacer',cat:'hada',type:'Verbo Raíz 하다',
+    root:'하-',lastVowel:'하 (Especial ✨)',
+    rule:'Regla especial histórica: 하 + 여요 se contrae invariablemente en 해요.',
+    present:'해요',past:'했어요',future:'할 거예요',formal:'합니다',prog:'하고 있어요',neg:'안 해요',negLong:'하지 않아요',command:'하세요',
+    ex:'지금 한국어 공부를 해요',exTrans:'Ahora hago estudio de coreano'
+  },
+  {
+    base:'공부하다',trans:'estudiar',cat:'hada',type:'Compuesto 하다',
+    root:'공부하-',lastVowel:'하 (Especial ✨)',
+    rule:'Todo sustantivo + 하다 se conjuga cambiando 하다 a 해요: 공부해요.',
+    present:'공부해요',past:'공부했어요',future:'공부할 거예요',formal:'공부합니다',prog:'공부하고 있어요',neg:'공부 안 해요',negLong:'공부하지 않아요',command:'공부하세요',
+    ex:'매일 퇴근 후에 한국어를 공부해요',exTrans:'Todos los días estudio coreano después del trabajo'
+  },
+  {
+    base:'일하다',trans:'trabajar',cat:'hada',type:'Compuesto 하다',
+    root:'일하-',lastVowel:'하 (Especial ✨)',
+    rule:'Sustantivo 일 (trabajo) + 하다 ➔ 일해요.',
+    present:'일해요',past:'일했어요',future:'일할 거예요',formal:'일합니다',prog:'일하고 있어요',neg:'일 안 해요',negLong:'일하지 않아요',command:'일하세요',
+    ex:'월요일부터 금요일까지 열심히 일해요',exTrans:'Trabajo con dedicación de lunes a viernes'
+  },
+  {
+    base:'말하다',trans:'hablar / decir',cat:'hada',type:'Compuesto 하다',
+    root:'말하-',lastVowel:'하 (Especial ✨)',
+    rule:'Sustantivo 말 (palabra/habla) + 하다 ➔ 말해요.',
+    present:'말해요',past:'말했어요',future:'말할 거예요',formal:'말합니다',prog:'말하고 있어요',neg:'말 안 해요',negLong:'말하지 않아요',command:'말씀하세요 (Honorífico)',
+    ex:'선생님과 한국어로 천천히 말해요',exTrans:'Hablo despacio en coreano con el profesor'
+  },
+  {
+    base:'운동하다',trans:'hacer ejercicio / entrenar',cat:'hada',type:'Compuesto 하다',
+    root:'운동하-',lastVowel:'하 (Especial ✨)',
+    rule:'Sustantivo 운동 (ejercicio) + 하다 ➔ 운동해요.',
+    present:'운동해요',past:'운동했어요',future:'운동할 거예요',formal:'운동합니다',prog:'운동하고 있어요',neg:'운동 안 해요',negLong:'운동하지 않아요',command:'운동하세요',
+    ex:'건강을 위해 매일 저녁에 운동해요',exTrans:'Hago ejercicio todas las noches por mi salud'
+  },
+  {
+    base:'요리하다',trans:'cocinar',cat:'hada',type:'Compuesto 하다',
+    root:'요리하-',lastVowel:'하 (Especial ✨)',
+    rule:'Sustantivo 요리 (cocina) + 하다 ➔ 요리해요.',
+    present:'요리해요',past:'요리했어요',future:'요리할 거예요',formal:'요리합니다',prog:'요리하고 있어요',neg:'요리 안 해요',negLong:'요리하지 않아요',command:'요리하세요',
+    ex:'주말에는 가족을 위해 맛있는 음식을 요리해요',exTrans:'Los fines de semana cocino comida deliciosa para mi familia'
+  },
+  {
+    base:'여행하다',trans:'viajar',cat:'hada',type:'Compuesto 하다',
+    root:'여행하-',lastVowel:'하 (Especial ✨)',
+    rule:'Sustantivo 여행 (viaje) + 하다 ➔ 여행해요.',
+    present:'여행해요',past:'여행했어요',future:'여행할 거예요',formal:'여행합니다',prog:'여행하고 있어요',neg:'여행 안 해요',negLong:'여행하지 않아요',command:'여행하세요',
+    ex:'여름 방학에 한국 곳곳을 여행해요',exTrans:'En vacaciones de verano viajo por toda Corea'
+  },
+
+  // ── Verbos y Adjetivos Irregulares de A2 ──
+  {
+    base:'듣다',trans:'escuchar',cat:'irregular',type:'Irregular ㄷ',
+    root:'듣-',lastVowel:'ㅡ (Neutra)',
+    rule:'La ㄷ final cambia a ㄹ cuando se encuentra con una vocal: 듣 + 어요 ➔ 들어요. Ante consonante se mantiene regular: 듣습니다.',
+    present:'들어요',past:'들었어요',future:'들을 거예요',formal:'듣습니다',prog:'듣고 있어요',neg:'안 들어요',negLong:'듣지 않아요',command:'들으세요',
+    ex:'좋아하는 K-POP 노래를 매일 들어요',exTrans:'Escucho mis canciones favoritas de K-POP todos los días'
+  },
+  {
+    base:'걷다',trans:'caminar',cat:'irregular',type:'Irregular ㄷ',
+    root:'걷-',lastVowel:'ㅓ (Oscura / Yin ☁️)',
+    rule:'La ㄷ final cambia a ㄹ ante vocal: 걷 + 어요 ➔ 걸어요. Ante consonante: 걷습니다.',
+    present:'걸어요',past:'걸었어요',future:'걸을 거예요',formal:'걷습니다',prog:'걷고 있어요',neg:'안 걸어요',negLong:'걷지 않아요',command:'걸으세요',
+    ex:'날씨가 좋아서 한강 공원을 걸어요',exTrans:'Como hace buen tiempo, camino por el parque del río Han'
+  },
+  {
+    base:'춥다',trans:'hacer frío',cat:'irregular',type:'Irregular ㅂ (Adjetivo)',
+    root:'춥-',lastVowel:'ㅜ (Oscura / Yin ☁️)',
+    rule:'La consonante ㅂ desaparece y se convierte en 워: 추 + 워요 ➔ 추워요. En pasado: 추웠어요.',
+    present:'추워요',past:'추웠어요',future:'추울 거예요',formal:'춥습니다',prog:'추워지고 있어요',neg:'안 추워요',negLong:'춥지 않아요',command:'—',
+    ex:'오늘 바람이 많이 불어서 너무 추워요',exTrans:'Hoy hace mucho viento, por lo que hace mucho frío'
+  },
+  {
+    base:'덥다',trans:'hacer calor',cat:'irregular',type:'Irregular ㅂ (Adjetivo)',
+    root:'덥-',lastVowel:'ㅓ (Oscura / Yin ☁️)',
+    rule:'La consonante ㅂ desaparece y se convierte en 워: 더 + 워요 ➔ 더워요.',
+    present:'더워요',past:'더웠어요',future:'더울 거예요',formal:'덥습니다',prog:'더워지고 있어요',neg:'안 더워요',negLong:'덥지 않아요',command:'—',
+    ex:'여름에는 서울도 아주 더워요',exTrans:'En verano, Seúl también es muy caluroso'
+  },
+  {
+    base:'어렵다',trans:'ser difícil',cat:'irregular',type:'Irregular ㅂ (Adjetivo)',
+    root:'어렵-',lastVowel:'ㅕ (Oscura / Yin ☁️)',
+    rule:'La consonante ㅂ se convierte en 워: 어려 + 워요 ➔ 어려워요.',
+    present:'어려워요',past:'어려웠어요',future:'어려울 거예요',formal:'어렵습니다',prog:'어려워지고 있어요',neg:'안 어려워요',negLong:'어렵지 않아요',command:'—',
+    ex:'한국어 한자는 조금 어려워요',exTrans:'Los caracteres chinos (Hanja) en coreano son un poco difíciles'
+  },
+  {
+    base:'쉽다',trans:'ser fácil',cat:'irregular',type:'Irregular ㅂ (Adjetivo)',
+    root:'쉽-',lastVowel:'ㅟ (Neutra)',
+    rule:'La consonante ㅂ se convierte en 워: 쉬 + 워요 ➔ 쉬워요.',
+    present:'쉬워요',past:'쉬웠어요',future:'쉬울 거예요',formal:'쉽습니다',prog:'쉬워지고 있어요',neg:'안 쉬워요',negLong:'쉽지 않아요',command:'—',
+    ex:'규칙을 알고 나면 문법이 아주 쉬워요',exTrans:'Una vez que conoces las reglas, la gramática es muy fácil'
+  },
+  {
+    base:'모르다',trans:'no saber / ignorar',cat:'irregular',type:'Irregular 르',
+    root:'모르-',lastVowel:'ㅗ (Brillante / Yang ☀️)',
+    rule:'La ㅡ se elimina y se duplica una ㄹ en la sílaba anterior: 모 + 르 + 아요 ➔ 몰라요.',
+    present:'몰라요',past:'몰랐어요',future:'모를 거예요',formal:'모릅니다',prog:'모르고 있어요',neg:'—',negLong:'—',command:'모르세요',
+    ex:'그 단어의 뜻을 아직 잘 몰라요',exTrans:'Aún no sé bien el significado de esa palabra'
+  },
+  {
+    base:'빠르다',trans:'ser rápido',cat:'irregular',type:'Irregular 르 (Adjetivo)',
+    root:'빠르-',lastVowel:'ㅏ (Brillante / Yang ☀️)',
+    rule:'La ㅡ se elimina y se duplica una ㄹ en la sílaba previa: 빠 + 르 + 아요 ➔ 빨라요.',
+    present:'빨라요',past:'빨랐어요',future:'빠를 거예요',formal:'빠릅니다',prog:'—',neg:'안 빨라요',negLong:'빠르지 않아요',command:'—',
+    ex:'한국의 인터넷 속도는 세계에서 가장 빨라요',exTrans:'La velocidad de internet de Corea es la más rápida del mundo'
+  },
+  {
+    base:'바쁘다',trans:'estar ocupado',cat:'irregular',type:'Irregular ㅡ (Adjetivo)',
+    root:'바쁘-',lastVowel:'ㅡ (Neutra)',
+    rule:'La ㅡ se elide y se mira la vocal anterior (ㅏ brillante): 바ㅃ + 아요 ➔ 바빠요.',
+    present:'바빠요',past:'바빴어요',future:'바쁠 거예요',formal:'바쁩니다',prog:'—',neg:'안 바빠요',negLong:'바쁘지 않아요',command:'—',
+    ex:'요즘 새 프로젝트 때문에 많이 바빠요',exTrans:'Estos días estoy muy ocupado por el nuevo proyecto'
+  },
+  {
+    base:'예쁘다',trans:'ser bonito / lindo',cat:'irregular',type:'Irregular ㅡ (Adjetivo)',
+    root:'예쁘-',lastVowel:'ㅡ (Neutra)',
+    rule:'La ㅡ se elide y se mira la vocal anterior (ㅖ oscura): 예ㅃ + 어요 ➔ 예뻐요.',
+    present:'예뻐요',past:'예뻤어요',future:'예쁠 거예요',formal:'예쁩니다',prog:'—',neg:'안 예뻐요',negLong:'예쁘지 않아요',command:'—',
+    ex:'한복 색깔이 정말 예뻐요',exTrans:'Los colores del hanbok tradicional son verdaderamente hermosos'
+  },
+  {
+    base:'낫다',trans:'mejorar / curarse / ser mejor',cat:'irregular',type:'Irregular ㅅ',
+    root:'낫-',lastVowel:'ㅏ (Brillante / Yang ☀️)',
+    rule:'La consonante ㅅ desaparece ante vocal pero NO se contrae: 나 + 아요 ➔ 나아요.',
+    present:'나아요',past:'나았어요',future:'나을 거예요',formal:'낫습니다',prog:'낫고 있어요',neg:'안 나아요',negLong:'낫지 않아요',command:'나으세요',
+    ex:'약 먹고 푹 자면 내일 감기가 나아요',exTrans:'Si tomas la medicina y duermes bien, mañana se cura el resfriado'
+  }
 ];
 
 // ═══ QUIZ DATA per level ═══
@@ -1495,6 +1737,7 @@ function renderSection(lvl,sec){
   else sc.innerHTML=`<p class="text-[var(--muted-foreground)]">Sección: ${sec}</p>`;
   // Post-render inits
   if(sec==='Flashcards') initFlashcards(lvl);
+  if(sec==='Conjugación') setTimeout(initConjugator,50);
   if(sec==='Hangul') setTimeout(renderHangulBuilder,50);
   if(sec==='Ejercicios'){
     setTimeout(()=>{
@@ -1784,33 +2027,611 @@ function renderCulture(){
 }
 
 // ════════════════════════════════════════════════════════════
-//  CONJUGATION TABLE
+//  CONJUGATION MASTER MODULE (A2 EXTENDED)
 // ════════════════════════════════════════════════════════════
+
+let currentConjugationCategory = 'all';
+let currentConjugationVerb = '가다';
+
 function renderConjugation(){
   return `
-  <div class="card overflow-x-auto">
-    <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">Tabla de Conjugación — 15 verbos</h3>
-    <table class="verb-table w-full border-collapse text-xs md:text-sm">
-      <thead><tr>
-        <th>기본형</th><th>Traducción</th>
-        <th>현재 (해요체)</th><th>과거</th><th>미래</th><th>부정</th><th>명령</th>
-      </tr></thead>
-      <tbody>
-        ${VERBS.map(v=>`<tr>
-          <td class="font-bold" style="color:var(--primary)">
-            <button class="tts-btn" onclick="speak('${v.base}')">${v.base}</button>
-          </td>
-          <td style="color:var(--muted-foreground)">${v.trans}</td>
-          <td><button class="tts-btn" onclick="speak('${v.present}')">${v.present}</button></td>
-          <td><button class="tts-btn" onclick="speak('${v.past}')">${v.past}</button></td>
-          <td><button class="tts-btn" onclick="speak('${v.future}')">${v.future}</button></td>
-          <td><button class="tts-btn" onclick="speak('${v.neg}')">${v.neg}</button></td>
-          <td><button class="tts-btn" onclick="speak('${v.command}')">${v.command}</button></td>
-        </tr>`).join('')}
-      </tbody>
-    </table>
+  <div class="space-y-12">
+    <!-- HERO HEADER -->
+    <div class="card bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 border-2 border-[var(--primary)] p-6 md:p-8 rounded-2xl">
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider rounded-full bg-[var(--primary)] text-white">Módulo Maestro A2</span>
+        <span class="px-3 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">한국어 동사 활용</span>
+        <span class="px-3 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">36 Verbos Esenciales</span>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-black mb-3" style="color:var(--foreground)">Guía Integral de Conjugación Coreana</h2>
+      <p class="text-base md:text-lg leading-relaxed text-[var(--muted-foreground)]">
+        ¿Qué es conjugar en coreano y por qué es <strong>mucho más sencillo que en español</strong>? Descubre la anatomía de la raíz verbal, la magia de la armonía de vocales y los secretos para dominar los verbos regulares e irregulares con ilustraciones, simulador interactivo y pronunciación nativa.
+      </p>
+    </div>
+
+    <!-- SECCIÓN 1: COMPARACIÓN PROFUNDA ESPAÑOL VS COREANO -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">⚖️</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">1. El Gran Alivio: Coreano vs Español</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">La diferencia conceptual más importante que debes entender desde el día 1</p>
+        </div>
+      </div>
+
+      <!-- Book Illustration 1 -->
+      <div class="mb-8 rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-sm bg-white dark:bg-slate-900">
+        <div class="max-h-[420px] w-full overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+          <img src="assets/spanish_vs_korean_conjugation.jpg" alt="Comparación de conjugación en español vs coreano" class="w-full h-auto max-h-[420px] object-contain transition-transform duration-500 hover:scale-102" loading="lazy"/>
+        </div>
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 border-t border-[var(--border)] flex items-center gap-3">
+          <span class="text-xl">📖</span>
+          <p class="text-xs md:text-sm text-[var(--muted-foreground)]">
+            <strong>Ilustración del Libro:</strong> En español malabareamos 6 terminaciones diferentes por persona gramatical. En coreano, ¡un solo verbo como <code class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 font-bold">가요</code> sirve para todos los sujetos!
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Tarjeta Español -->
+        <div class="p-6 rounded-xl border border-red-200 bg-red-50/50 dark:bg-red-950/20 dark:border-red-900/40">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="px-2.5 py-1 text-xs font-black rounded-md bg-red-500 text-white">ESPAÑOL</span>
+            <span class="text-xs text-red-600 dark:text-red-400 font-bold">Conjugación por Persona Gramatical</span>
+          </div>
+          <p class="text-sm text-[var(--muted-foreground)] mb-4">
+            En español, el verbo muta según <strong>quién</strong> realiza la acción (persona y número). Solo para el presente de "ir", tienes que memorizar 6 palabras distintas:
+          </p>
+          <div class="space-y-1.5 text-xs md:text-sm font-medium">
+            <div class="flex justify-between p-2 rounded bg-white dark:bg-slate-800 border border-red-100 dark:border-red-900/30"><span>Yo</span><span class="font-bold text-red-600">voy</span></div>
+            <div class="flex justify-between p-2 rounded bg-white dark:bg-slate-800 border border-red-100 dark:border-red-900/30"><span>Tú</span><span class="font-bold text-red-600">vas</span></div>
+            <div class="flex justify-between p-2 rounded bg-white dark:bg-slate-800 border border-red-100 dark:border-red-900/30"><span>Él / Ella / Usted</span><span class="font-bold text-red-600">va</span></div>
+            <div class="flex justify-between p-2 rounded bg-white dark:bg-slate-800 border border-red-100 dark:border-red-900/30"><span>Nosotros</span><span class="font-bold text-red-600">vamos</span></div>
+            <div class="flex justify-between p-2 rounded bg-white dark:bg-slate-800 border border-red-100 dark:border-red-900/30"><span>Vosotros</span><span class="font-bold text-red-600">vais</span></div>
+            <div class="flex justify-between p-2 rounded bg-white dark:bg-slate-800 border border-red-100 dark:border-red-900/30"><span>Ellos / Ellas / Ustedes</span><span class="font-bold text-red-600">van</span></div>
+          </div>
+          <p class="text-xs text-red-700 dark:text-red-400 mt-3 font-semibold">⚠️ Multiplicado por pasado, futuro, subjuntivo e imperativo = ¡más de 50 formas por verbo!</p>
+        </div>
+
+        <!-- Tarjeta Coreano -->
+        <div class="p-6 rounded-xl border border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-900/40">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="px-2.5 py-1 text-xs font-black rounded-md bg-emerald-600 text-white">COREANO</span>
+            <span class="text-xs text-emerald-600 dark:text-emerald-400 font-bold">¡NO Cambia por la Persona! 🎉</span>
+          </div>
+          <p class="text-sm text-[var(--muted-foreground)] mb-4">
+            En coreano, el verbo <strong>NUNCA</strong> cambia según quién hable. La palabra <strong class="text-emerald-700 dark:text-emerald-400 font-bold">가요 (gayo)</strong> es exactamente la misma para todas las personas:
+          </p>
+          <div class="space-y-1.5 text-xs md:text-sm font-medium">
+            <div class="flex justify-between items-center p-2 rounded bg-white dark:bg-slate-800 border border-emerald-100 dark:border-emerald-900/30"><span>저 (Yo)</span><button class="tts-btn font-bold text-emerald-600" onclick="speak('저는 가요')">가요 (gayo) 🔊</button></div>
+            <div class="flex justify-between items-center p-2 rounded bg-white dark:bg-slate-800 border border-emerald-100 dark:border-emerald-900/30"><span>너 / 당신 (Tú / Usted)</span><button class="tts-btn font-bold text-emerald-600" onclick="speak('당신은 가요')">가요 (gayo) 🔊</button></div>
+            <div class="flex justify-between items-center p-2 rounded bg-white dark:bg-slate-800 border border-emerald-100 dark:border-emerald-900/30"><span>그 / 그녀 (Él / Ella)</span><button class="tts-btn font-bold text-emerald-600" onclick="speak('그는 가요')">가요 (gayo) 🔊</button></div>
+            <div class="flex justify-between items-center p-2 rounded bg-white dark:bg-slate-800 border border-emerald-100 dark:border-emerald-900/30"><span>우리 (Nosotros)</span><button class="tts-btn font-bold text-emerald-600" onclick="speak('우리는 가요')">가요 (gayo) 🔊</button></div>
+            <div class="flex justify-between items-center p-2 rounded bg-white dark:bg-slate-800 border border-emerald-100 dark:border-emerald-900/30"><span>그들 (Ellos / Ellas)</span><button class="tts-btn font-bold text-emerald-600" onclick="speak('그들은 가요')">가요 (gayo) 🔊</button></div>
+          </div>
+          <p class="text-xs text-emerald-700 dark:text-emerald-400 mt-3 font-semibold">✨ ¡Una sola forma aprendida sirve para hablar de ti, de tu amigo y de un grupo entero!</p>
+        </div>
+      </div>
+
+      <!-- Qué determina entonces la conjugación en coreano -->
+      <div class="p-6 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-[var(--border)]">
+        <h4 class="text-base md:text-lg font-bold mb-3" style="color:var(--foreground)">¿Por qué y cómo se conjuga entonces en coreano?</h4>
+        <p class="text-sm text-[var(--muted-foreground)] mb-4">
+          Si el verbo no cambia por la persona, ¿qué hace que un verbo cambie de terminación? En coreano, la conjugación depende de <strong>3 factores clave</strong>:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-lg bg-white dark:bg-slate-800 border border-[var(--border)]">
+            <div class="text-xl mb-1">🤝</div>
+            <h5 class="font-bold text-sm mb-1" style="color:var(--foreground)">1. Cortesía y Respeto</h5>
+            <p class="text-xs text-[var(--muted-foreground)]">A quién le hablas: 반말 (informal con amigos), 해요체 (cortés del día a día), 하십시오체 (formal en negocios/noticias).</p>
+          </div>
+          <div class="p-4 rounded-lg bg-white dark:bg-slate-800 border border-[var(--border)]">
+            <div class="text-xl mb-1">⏳</div>
+            <h5 class="font-bold text-sm mb-1" style="color:var(--foreground)">2. Tiempo Gramatical</h5>
+            <p class="text-xs text-[var(--muted-foreground)]">Cuándo ocurre la acción: Presente (-아/어요), Pasado (-았/었어요), Futuro (-(으)ㄹ 거예요) o Continuo (-고 있어요).</p>
+          </div>
+          <div class="p-4 rounded-lg bg-white dark:bg-slate-800 border border-[var(--border)]">
+            <div class="text-xl mb-1">🎯</div>
+            <h5 class="font-bold text-sm mb-1" style="color:var(--foreground)">3. Intención Oracional</h5>
+            <p class="text-xs text-[var(--muted-foreground)]">Qué quieres expresar: Afirmar, Preguntar, Pedir un favor con respeto (-(으)세요) o Proponer una acción conjunta.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: LA ANATOMÍA DEL VERBO Y EL PROFESOR CONEJO -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">📐</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">2. La Anatomía del Verbo: Raíz + Desinencia</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">La fórmula matemática más sencilla del idioma coreano</p>
+        </div>
+      </div>
+
+      <!-- Book Illustration 2 -->
+      <div class="mb-8 rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-sm bg-white dark:bg-slate-900">
+        <div class="max-h-[420px] w-full overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+          <img src="assets/korean_verb_conjugation_formula.jpg" alt="Profesor Conejo explicando la fórmula de la raíz verbal" class="w-full h-auto max-h-[420px] object-contain transition-transform duration-500 hover:scale-102" loading="lazy"/>
+        </div>
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 border-t border-[var(--border)] flex items-center gap-3">
+          <span class="text-xl">🐰</span>
+          <p class="text-xs md:text-sm text-[var(--muted-foreground)]">
+            <strong>Fórmula del Profesor Conejo:</strong> Todos los verbos en el diccionario terminan en <code class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 font-bold">-다</code>. ¡Táchalo para obtener la <em>raíz</em> y acoplar la terminación!
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div class="p-6 rounded-xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/40">
+          <div class="text-sm font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider mb-2">Paso 1: Infinitivo</div>
+          <div class="text-3xl font-black mb-2 text-slate-800 dark:text-white">가<span class="text-red-500 line-through">다</span></div>
+          <p class="text-xs text-[var(--muted-foreground)]">Forma base del diccionario (ir). Tacha la terminación <strong>-다</strong>.</p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-800/40">
+          <div class="text-sm font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider mb-2">Paso 2: Aislar Raíz</div>
+          <div class="text-3xl font-black mb-2 text-indigo-600 dark:text-indigo-400">가-</div>
+          <p class="text-xs text-[var(--muted-foreground)]">La <strong>raíz (어간)</strong> contiene el significado puro del verbo y nunca se pierde.</p>
+        </div>
+
+        <div class="p-6 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40">
+          <div class="text-sm font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider mb-2">Paso 3: Conjugación</div>
+          <div class="text-3xl font-black mb-2 text-emerald-600 dark:text-emerald-400">가 + 아요 = <span class="underline">가요</span></div>
+          <p class="text-xs text-[var(--muted-foreground)]">Añades la desinencia cortés y se contrae naturalmente en <strong>가요</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: LA ALQUIMIA DE LAS VOCALES -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">🧪</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">3. La Alquimia de las Vocales: Armonía Vocálica</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">¿Cuándo se añade -아요, cuándo -어요 y por qué 하다 se vuelve 해요?</p>
+        </div>
+      </div>
+
+      <!-- Book Illustration 3 -->
+      <div class="mb-8 rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-sm bg-white dark:bg-slate-900">
+        <div class="max-h-[420px] w-full overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+          <img src="assets/korean_vocal_harmony_alchemy.jpg" alt="Alquimia de vocales en calderas máginas" class="w-full h-auto max-h-[420px] object-contain transition-transform duration-500 hover:scale-102" loading="lazy"/>
+        </div>
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 border-t border-[var(--border)] flex items-center gap-3">
+          <span class="text-xl">✨</span>
+          <p class="text-xs md:text-sm text-[var(--muted-foreground)]">
+            <strong>Calderas de la Alquimia:</strong> La caldera cálida del Sol <code class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">ㅏ, ㅗ</code> activa <code class="font-bold text-amber-600">-아요</code>. La caldera fresca de la Nube <code class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-bold">ㅓ, ㅜ, ㅡ, ㅣ</code> activa <code class="font-bold text-blue-600">-어요</code>. ¡Y la varita de <code class="font-bold text-purple-600">하다</code> crea <code class="font-bold text-purple-600">해요</code>!
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Regla 1: Caldera Yang -->
+        <div class="p-6 rounded-2xl border-2 border-amber-300 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-800/60">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-2xl">☀️</span>
+            <h4 class="text-lg font-black text-amber-800 dark:text-amber-300">1. Vocales Soleadas (Yang)</h4>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-3">
+            Si la última vocal de la raíz es <strong>ㅏ (a)</strong> o <strong>ㅗ (o)</strong>:
+          </p>
+          <div class="p-3 mb-4 rounded-xl bg-amber-200/50 dark:bg-amber-900/40 text-center font-black text-amber-900 dark:text-amber-200 text-base">
+            Se añade: -아요 / -았어요
+          </div>
+          <div class="space-y-2 text-xs font-medium">
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-900/30">
+              <strong>살다</strong> (vivir): 살 + 아요 ➔ <button class="tts-btn font-bold text-amber-700 dark:text-amber-400" onclick="speak('살아요')">살아요 🔊</button>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-900/30">
+              <strong>보다</strong> (ver): 보 + 아요 ➔ <button class="tts-btn font-bold text-amber-700 dark:text-amber-400" onclick="speak('봐요')">봐요 🔊</button> <span class="text-[10px] text-gray-500">(fusión)</span>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-900/30">
+              <strong>오다</strong> (venir): 오 + 아요 ➔ <button class="tts-btn font-bold text-amber-700 dark:text-amber-400" onclick="speak('와요')">와요 🔊</button> <span class="text-[10px] text-gray-500">(fusión)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Regla 2: Caldera Yin -->
+        <div class="p-6 rounded-2xl border-2 border-blue-300 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800/60">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-2xl">☁️</span>
+            <h4 class="text-lg font-black text-blue-800 dark:text-blue-300">2. Vocales Frescas (Yin)</h4>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-3">
+            Si la última vocal de la raíz es cualquier otra (<strong>ㅓ, ㅜ, ㅡ, ㅣ, ㅐ, ㅔ</strong>):
+          </p>
+          <div class="p-3 mb-4 rounded-xl bg-blue-200/50 dark:bg-blue-900/40 text-center font-black text-blue-900 dark:text-blue-200 text-base">
+            Se añade: -어요 / -었어요
+          </div>
+          <div class="space-y-2 text-xs font-medium">
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900/30">
+              <strong>먹다</strong> (comer): 먹 + 어요 ➔ <button class="tts-btn font-bold text-blue-700 dark:text-blue-400" onclick="speak('먹어요')">먹어요 🔊</button>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900/30">
+              <strong>마시다</strong> (beber): 마시 + 어요 ➔ <button class="tts-btn font-bold text-blue-700 dark:text-blue-400" onclick="speak('마셔요')">마셔요 🔊</button> <span class="text-[10px] text-gray-500">(fusión)</span>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900/30">
+              <strong>배우다</strong> (aprender): 배우 + 어요 ➔ <button class="tts-btn font-bold text-blue-700 dark:text-blue-400" onclick="speak('배워요')">배워요 🔊</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Regla 3: Magia 하다 -->
+        <div class="p-6 rounded-2xl border-2 border-purple-300 bg-purple-50/50 dark:bg-purple-950/20 dark:border-purple-800/60">
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-2xl">✨</span>
+            <h4 class="text-lg font-black text-purple-800 dark:text-purple-300">3. Verbos 하다 (Hacer)</h4>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-3">
+            ¡La regla más fácil del idioma! Todo verbo que termine en <strong>하다</strong>:
+          </p>
+          <div class="p-3 mb-4 rounded-xl bg-purple-200/50 dark:bg-purple-900/40 text-center font-black text-purple-900 dark:text-purple-200 text-base">
+            Cambia a: 해요 / 했어요
+          </div>
+          <div class="space-y-2 text-xs font-medium">
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-900/30">
+              <strong>공부하다</strong> ➔ <button class="tts-btn font-bold text-purple-700 dark:text-purple-400" onclick="speak('공부해요')">공부해요 🔊</button>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-900/30">
+              <strong>일하다</strong> ➔ <button class="tts-btn font-bold text-purple-700 dark:text-purple-400" onclick="speak('일해요')">일해요 🔊</button>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-900/30">
+              <strong>운동하다</strong> ➔ <button class="tts-btn font-bold text-purple-700 dark:text-purple-400" onclick="speak('운동해요')">운동해요 🔊</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 4: LOS 7 MONSTRUOS IRREGULARES -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">👾</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">4. Los 7 Verbos Irregulares Clave de A2</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">Trucos nemotécnicos para dominarlos sin frustración</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <!-- Irregular ㄷ -->
+        <div class="p-4 rounded-xl border border-[var(--border)] bg-slate-50 dark:bg-slate-800/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2 py-0.5 text-xs font-black rounded bg-amber-500 text-white">1. Irregular ㄷ</span>
+            <span class="text-xs text-[var(--muted-foreground)]">ㄷ ➔ ㄹ ante vocal</span>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-2">La consonante ㄷ cambia a ㄹ cuando se encuentra con una vocal.</p>
+          <div class="text-xs font-bold space-y-1">
+            <div>듣다 (escuchar) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('들어요')">들어요 🔊</button></div>
+            <div>걷다 (caminar) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('걸어요')">걸어요 🔊</button></div>
+          </div>
+        </div>
+
+        <!-- Irregular ㅂ -->
+        <div class="p-4 rounded-xl border border-[var(--border)] bg-slate-50 dark:bg-slate-800/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2 py-0.5 text-xs font-black rounded bg-blue-500 text-white">2. Irregular ㅂ</span>
+            <span class="text-xs text-[var(--muted-foreground)]">ㅂ ➔ 워 / 와</span>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-2">La ㅂ desaparece y se convierte en '워' en la inmensa mayoría de adjetivos.</p>
+          <div class="text-xs font-bold space-y-1">
+            <div>춥다 (frío) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('추워요')">추워요 🔊</button></div>
+            <div>어렵다 (difícil) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('어려워요')">어려워요 🔊</button></div>
+          </div>
+        </div>
+
+        <!-- Irregular ㅡ -->
+        <div class="p-4 rounded-xl border border-[var(--border)] bg-slate-50 dark:bg-slate-800/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2 py-0.5 text-xs font-black rounded bg-emerald-500 text-white">3. Irregular ㅡ</span>
+            <span class="text-xs text-[var(--muted-foreground)]">ㅡ se evapora</span>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-2">La vocal ㅡ desaparece y toma la armonía de la vocal anterior.</p>
+          <div class="text-xs font-bold space-y-1">
+            <div>바쁘다 (ocupado) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('바빠요')">바빠요 🔊</button></div>
+            <div>예쁘다 (lindo) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('예뻐요')">예뻐요 🔊</button></div>
+          </div>
+        </div>
+
+        <!-- Irregular 르 -->
+        <div class="p-4 rounded-xl border border-[var(--border)] bg-slate-50 dark:bg-slate-800/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2 py-0.5 text-xs font-black rounded bg-purple-500 text-white">4. Irregular 르</span>
+            <span class="text-xs text-[var(--muted-foreground)]">Duplica una ㄹ</span>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-2">La ㅡ cae y se duplica una ㄹ abajo en la sílaba previa.</p>
+          <div class="text-xs font-bold space-y-1">
+            <div>모르다 (no saber) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('몰라요')">몰라요 🔊</button></div>
+            <div>빠르다 (rápido) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('빨라요')">빨라요 🔊</button></div>
+          </div>
+        </div>
+
+        <!-- Irregular ㅅ -->
+        <div class="p-4 rounded-xl border border-[var(--border)] bg-slate-50 dark:bg-slate-800/50">
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2 py-0.5 text-xs font-black rounded bg-rose-500 text-white">5. Irregular ㅅ</span>
+            <span class="text-xs text-[var(--muted-foreground)]">ㅅ cae sin fusionar</span>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-2">La consonante ㅅ desaparece pero las vocales no se fusionan en diptongo.</p>
+          <div class="text-xs font-bold space-y-1">
+            <div>낫다 (mejorar) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('나아요')">나아요 🔊</button></div>
+            <div>짓다 (construir) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('지어요')">지어요 🔊</button></div>
+          </div>
+        </div>
+
+        <!-- Falsos Irregulares -->
+        <div class="p-4 rounded-xl border-2 border-dashed border-red-300 bg-red-50/40 dark:bg-red-950/20">
+          <div class="flex items-center justify-between mb-2">
+            <span class="px-2 py-0.5 text-xs font-black rounded bg-red-600 text-white">¡No caigas en la trampa!</span>
+            <span class="text-xs font-bold text-red-600">Regulares</span>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] mb-2">Parecen irregulares pero se conjugan de forma totalmente normal:</p>
+          <div class="text-xs font-bold space-y-1">
+            <div>입다 (vestir) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('입어요')">입어요 🔊</button> <span class="text-red-500">(¡No es 이워요!)</span></div>
+            <div>받다 (recibir) ➔ <button class="tts-btn text-[var(--primary)]" onclick="speak('받아요')">받아요 🔊</button> <span class="text-red-500">(¡No es 발아요!)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 5: ENTRENADOR INTERACTIVO DE CONJUGACIÓN (PLAYGROUND) -->
+    <div class="card p-6 md:p-8 rounded-2xl border-2 border-[var(--primary)] shadow-lg bg-gradient-to-b from-white to-blue-50/30 dark:from-slate-900 dark:to-slate-900/60">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-2xl">🎮</span>
+            <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">5. Laboratorio Interactivo de Conjugación</h3>
+          </div>
+          <p class="text-sm text-[var(--muted-foreground)]">Selecciona cualquier verbo y observa la descomposición de la raíz, la regla y todas sus formas verbales con audio</p>
+        </div>
+        <div class="w-full md:w-auto">
+          <select id="conjugator-select" onchange="selectConjugationVerb(this.value)" class="w-full md:w-64 p-2.5 rounded-xl border border-[var(--border)] bg-white dark:bg-slate-800 text-sm font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+            ${VERBS.map(v => `<option value="${v.base}">${v.base} — ${v.trans}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Chips -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <span class="text-xs font-bold text-[var(--muted-foreground)] self-center mr-2">Verbos rápidos:</span>
+        ${['가다','먹다','마시다','보다','공부하다','듣다','춥다','모르다','바쁘다','만들다','입다'].map(vb => `
+          <button onclick="selectConjugationVerb('${vb}')" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-[var(--border)] hover:bg-[var(--primary)] hover:text-white transition-colors bg-white dark:bg-slate-800 shadow-sm">
+            ${vb}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Playground Dynamic Container -->
+      <div id="conjugator-playground-card">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- SECCIÓN 6: GRAN TABLA DE CONJUGACIÓN FILTRABLE -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <h3 class="text-2xl font-black mb-1" style="color:var(--foreground)">6. Gran Diccionario de Conjugación A2</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">36 verbos indispensables con todas sus formas gramaticales</p>
+        </div>
+        <!-- Search input -->
+        <div class="w-full md:w-72">
+          <input type="text" id="conjugation-search" placeholder="🔍 Buscar verbo en coreano o español..." oninput="filterConjugationTable()" class="w-full p-2.5 rounded-xl border border-[var(--border)] bg-white dark:bg-slate-800 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"/>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <button onclick="setConjugationCategory('all', this)" class="conj-filter-btn active px-4 py-1.5 text-xs font-bold rounded-full bg-[var(--primary)] text-white shadow-sm">Todos (36)</button>
+        <button onclick="setConjugationCategory('action', this)" class="conj-filter-btn px-4 py-1.5 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--foreground)] hover:bg-slate-200">Acción Cotidiana (18)</button>
+        <button onclick="setConjugationCategory('hada', this)" class="conj-filter-btn px-4 py-1.5 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--foreground)] hover:bg-slate-200">Verbos 하다 (7)</button>
+        <button onclick="setConjugationCategory('irregular', this)" class="conj-filter-btn px-4 py-1.5 text-xs font-bold rounded-full bg-slate-100 dark:bg-slate-800 text-[var(--foreground)] hover:bg-slate-200">Irregulares y Estados (11)</button>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+        <table class="verb-table w-full border-collapse text-xs md:text-sm">
+          <thead>
+            <tr class="bg-slate-100 dark:bg-slate-800 text-left border-b border-[var(--border)]">
+              <th class="p-3">기본형 (Base)</th>
+              <th class="p-3">Español</th>
+              <th class="p-3">Clasificación / Regla</th>
+              <th class="p-3">현재 (Presente)</th>
+              <th class="p-3">과거 (Pasado)</th>
+              <th class="p-3">미래 (Futuro)</th>
+              <th class="p-3">격식체 (Formal)</th>
+              <th class="p-3">부정 (Negación)</th>
+              <th class="p-3">명령 (Imperativo)</th>
+            </tr>
+          </thead>
+          <tbody id="conjugation-table-body">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>`;
 }
+
+// ════════════════════════════════════════════════════════════
+//  CONJUGATOR INTERACTIVE PLAYGROUND LOGIC
+// ════════════════════════════════════════════════════════════
+function initConjugator(){
+  selectConjugationVerb(currentConjugationVerb || '가다');
+  renderConjugationTableRows();
+}
+
+function selectConjugationVerb(verbBase){
+  currentConjugationVerb = verbBase;
+  const v = VERBS.find(item => item.base === verbBase) || VERBS[0];
+  const selectElem = document.getElementById('conjugator-select');
+  if(selectElem) selectElem.value = v.base;
+
+  const container = document.getElementById('conjugator-playground-card');
+  if(!container) return;
+
+  container.innerHTML = `
+    <div class="p-6 rounded-2xl bg-white dark:bg-slate-800/90 border border-[var(--border)] shadow-md">
+      <!-- Title row -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-[var(--border)] mb-6">
+        <div class="flex items-center gap-4">
+          <div class="text-4xl md:text-5xl font-black text-[var(--primary)] flex items-center gap-3">
+            <span>${v.base}</span>
+            <button class="tts-btn text-xl p-2 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/40" onclick="speak('${v.base}')" title="Escuchar pronunciación nativa">🔊</button>
+          </div>
+          <div>
+            <div class="text-xl md:text-2xl font-bold" style="color:var(--foreground)">${v.trans}</div>
+            <span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-md bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200 mt-1">${v.type}</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <span class="text-xs uppercase font-bold tracking-wider text-[var(--muted-foreground)] block">Última vocal</span>
+          <span class="text-base font-bold text-amber-600 dark:text-amber-400">${v.lastVowel}</span>
+        </div>
+      </div>
+
+      <!-- Step by Step Explanation Box -->
+      <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-[var(--border)] mb-6 flex flex-col md:flex-row items-start md:items-center gap-4">
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="px-2.5 py-1 text-xs font-black rounded bg-indigo-600 text-white">REGLA APLICADA</span>
+          <span class="font-bold text-sm text-indigo-700 dark:text-indigo-300">Raíz: ${v.root}</span>
+        </div>
+        <p class="text-xs md:text-sm text-[var(--muted-foreground)] leading-relaxed">
+          ${v.rule}
+        </p>
+      </div>
+
+      <!-- Forms Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <!-- Presente -->
+        <div class="p-4 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 text-center">
+          <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider block mb-1">현재 (Presente)</span>
+          <div class="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2">${v.present}</div>
+          <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm" onclick="speak('${v.present}')">🔊 Escuchar</button>
+        </div>
+
+        <!-- Pasado -->
+        <div class="p-4 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 text-center">
+          <span class="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider block mb-1">과거 (Pasado)</span>
+          <div class="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2">${v.past}</div>
+          <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-sm" onclick="speak('${v.past}')">🔊 Escuchar</button>
+        </div>
+
+        <!-- Futuro -->
+        <div class="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/40 text-center">
+          <span class="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider block mb-1">미래 (Futuro)</span>
+          <div class="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2">${v.future}</div>
+          <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm" onclick="speak('${v.future}')">🔊 Escuchar</button>
+        </div>
+
+        <!-- Formal -->
+        <div class="p-4 rounded-xl bg-purple-50/70 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/40 text-center">
+          <span class="text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider block mb-1">격식체 (Formal)</span>
+          <div class="text-xl md:text-2xl font-black text-slate-800 dark:text-white mb-2">${v.formal}</div>
+          <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-purple-600 text-white hover:bg-purple-700 transition-colors shadow-sm" onclick="speak('${v.formal}')">🔊 Escuchar</button>
+        </div>
+
+        <!-- Progresivo -->
+        <div class="p-4 rounded-xl bg-cyan-50/70 dark:bg-cyan-950/20 border border-cyan-200 dark:border-cyan-800/40 text-center">
+          <span class="text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase tracking-wider block mb-1">진행형 (Continuo)</span>
+          <div class="text-lg md:text-xl font-black text-slate-800 dark:text-white mb-2">${v.prog}</div>
+          <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-cyan-600 text-white hover:bg-cyan-700 transition-colors shadow-sm" onclick="speak('${v.prog}')">🔊 Escuchar</button>
+        </div>
+
+        <!-- Negación Corta -->
+        <div class="p-4 rounded-xl bg-rose-50/70 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/40 text-center">
+          <span class="text-xs font-bold text-rose-700 dark:text-rose-300 uppercase tracking-wider block mb-1">부정 (Neg. Corta)</span>
+          <div class="text-lg md:text-xl font-black text-slate-800 dark:text-white mb-2">${v.neg}</div>
+          <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-rose-600 text-white hover:bg-rose-700 transition-colors shadow-sm" onclick="speak('${v.neg}')">🔊 Escuchar</button>
+        </div>
+
+        <!-- Negación Larga -->
+        <div class="p-4 rounded-xl bg-pink-50/70 dark:bg-pink-950/20 border border-pink-200 dark:border-pink-800/40 text-center">
+          <span class="text-xs font-bold text-pink-700 dark:text-pink-300 uppercase tracking-wider block mb-1">부정 (Neg. Larga)</span>
+          <div class="text-lg md:text-xl font-black text-slate-800 dark:text-white mb-2">${v.negLong}</div>
+          <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-pink-600 text-white hover:bg-pink-700 transition-colors shadow-sm" onclick="speak('${v.negLong}')">🔊 Escuchar</button>
+        </div>
+
+        <!-- Imperativo -->
+        <div class="p-4 rounded-xl bg-violet-50/70 dark:bg-violet-950/20 border border-violet-200 dark:border-violet-800/40 text-center">
+          <span class="text-xs font-bold text-violet-700 dark:text-violet-300 uppercase tracking-wider block mb-1">명령/요청 (Imperativo)</span>
+          <div class="text-lg md:text-xl font-black text-slate-800 dark:text-white mb-2">${v.command}</div>
+          <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-violet-600 text-white hover:bg-violet-700 transition-colors shadow-sm" onclick="speak('${v.command}')">🔊 Escuchar</button>
+        </div>
+      </div>
+
+      <!-- Real Context Sentence Example -->
+      <div class="p-4 rounded-xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-transparent border border-blue-200 dark:border-blue-900/40 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">💬</span>
+          <div>
+            <div class="text-base md:text-lg font-bold text-slate-900 dark:text-white">${v.ex}</div>
+            <div class="text-xs md:text-sm text-[var(--muted-foreground)]">${v.exTrans}</div>
+          </div>
+        </div>
+        <button class="tts-btn px-4 py-2 rounded-xl bg-[var(--primary)] text-white font-bold text-xs hover:opacity-90 shadow-sm flex items-center gap-2" onclick="speak('${v.ex}')">
+          <span>🔊 Escuchar Frase Completa</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function setConjugationCategory(cat, btnElem){
+  currentConjugationCategory = cat;
+  document.querySelectorAll('.conj-filter-btn').forEach(btn => {
+    btn.classList.remove('active', 'bg-[var(--primary)]', 'text-white');
+    btn.classList.add('bg-slate-100', 'text-[var(--foreground)]');
+  });
+  if(btnElem){
+    btnElem.classList.remove('bg-slate-100');
+    btnElem.classList.add('active', 'bg-[var(--primary)]', 'text-white');
+  }
+  renderConjugationTableRows();
+}
+
+function filterConjugationTable(){
+  renderConjugationTableRows();
+}
+
+function renderConjugationTableRows(){
+  const tbody = document.getElementById('conjugation-table-body');
+  if(!tbody) return;
+
+  const searchInput = document.getElementById('conjugation-search');
+  const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+  const filtered = VERBS.filter(v => {
+    const matchesCat = (currentConjugationCategory === 'all') || (v.cat === currentConjugationCategory);
+    const matchesSearch = !query || v.base.toLowerCase().includes(query) || v.trans.toLowerCase().includes(query) || v.present.toLowerCase().includes(query);
+    return matchesCat && matchesSearch;
+  });
+
+  if(filtered.length === 0){
+    tbody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-[var(--muted-foreground)]">No se encontraron verbos que coincidan con la búsqueda.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(v => `
+    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 border-b border-[var(--border)] transition-colors">
+      <td class="p-3 font-bold text-[var(--primary)] whitespace-nowrap">
+        <button class="tts-btn flex items-center gap-1.5" onclick="speak('${v.base}'); selectConjugationVerb('${v.base}')">
+          <span>${v.base}</span> <span class="text-xs opacity-60">🔊</span>
+        </button>
+      </td>
+      <td class="p-3 text-[var(--muted-foreground)] whitespace-nowrap">${v.trans}</td>
+      <td class="p-3 text-xs text-slate-500 max-w-[200px] truncate" title="${v.rule}">${v.type}</td>
+      <td class="p-3 whitespace-nowrap"><button class="tts-btn font-semibold text-emerald-600 dark:text-emerald-400" onclick="speak('${v.present}')">${v.present}</button></td>
+      <td class="p-3 whitespace-nowrap"><button class="tts-btn font-semibold text-amber-600 dark:text-amber-400" onclick="speak('${v.past}')">${v.past}</button></td>
+      <td class="p-3 whitespace-nowrap"><button class="tts-btn font-semibold text-blue-600 dark:text-blue-400" onclick="speak('${v.future}')">${v.future}</button></td>
+      <td class="p-3 whitespace-nowrap"><button class="tts-btn font-semibold text-purple-600 dark:text-purple-400" onclick="speak('${v.formal}')">${v.formal}</button></td>
+      <td class="p-3 whitespace-nowrap"><button class="tts-btn font-semibold text-rose-600 dark:text-rose-400" onclick="speak('${v.neg}')">${v.neg}</button></td>
+      <td class="p-3 whitespace-nowrap"><button class="tts-btn font-semibold text-violet-600 dark:text-violet-400" onclick="speak('${v.command}')">${v.command}</button></td>
+    </tr>
+  `).join('');
+}
+
 
 // ════════════════════════════════════════════════════════════
 //  DIALOGUES SECTION
