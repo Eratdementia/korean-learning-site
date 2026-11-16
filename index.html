@@ -6,6 +6,17 @@
   <title>한국어 배우기 · Aprende Coreano</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
+    :root {
+      --background: #0f172a;
+      --foreground: #f8fafc;
+      --card: #1e293b;
+      --border: #334155;
+      --primary: #3b82f6;
+      --primary-foreground: #ffffff;
+      --muted-foreground: #94a3b8;
+      --accent: #26334d;
+      --sidebar: #0f172a;
+    }
     *{box-sizing:border-box;}
     body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--background);color:var(--foreground);margin:0;padding:0;}
 
@@ -631,6 +642,22 @@ const B1_READING=[
    ]},
 ];
 
+// ── B2 Reading ──
+const B2_READING=[
+  {title:'한국의 IT 기술과 일상생활 (Tecnología IT y vida cotidiana en Corea)',
+   text:'한국은 세계 최고 수준의 초고속 인터넷망과 스마트폰 보급률을 자랑합니다. 배달 앱, 모바일 결제, 무인 매장 등 일상생활의 거의 모든 영역이 디지털화되어 있습니다. 특히 대중교통 시스템은 실시간 위치 추적과 간편한 환승 체계로 외국인 관광객들에게도 높은 평가를 받습니다. 그러나 이러한 편리함 이면에는 고령층의 디지털 소외와 개인정보 보호라는 새로운 과제가 대두되고 있습니다.',
+   questions:[
+     {q:'한국의 일상생활에서 디지털화된 예시는 무엇인가요?',a:'배달 앱, 모바일 결제, 무인 매장, 대중교통 시스템 등입니다.'},
+     {q:'디지털화의 편리함 뒤에 나타난 과제는 무엇인가요?',a:'고령층의 디지털 소외와 개인정보 보호 문제입니다.'},
+   ]},
+  {title:'환경 보호와 제로 웨이스트 운동 (Protección ambiental y movimiento Zero Waste)',
+   text:'최근 한국에서는 플라스틱 사용을 줄이고 자원을 재활용하려는 친환경 소비 문화가 확산되고 있습니다. 카페에서는 일회용 컵 대신 개인 텀블러 사용을 장려하고 있으며, 마트에서는 비닐봉지 대신 종량제 봉투나 장바구니 사용이 의무화되었습니다. 젊은 층을 중심으로 포장재가 없는 물건을 파는 리필 스테이션이 인기를 끌고 있으며, 지속 가능한 미래를 위한 개인의 실천이 강조되고 있습니다.',
+   questions:[
+     {q:'카페에서 일회용 컵 대신 무엇의 사용을 장려하나요?',a:'개인 텀블러 사용을 장려합니다.'},
+     {q:'리필 스테이션은 어떤 곳인가요?',a:'포장재 없이 내용물만 채워 살 수 있는 친환경 매장입니다.'},
+   ]},
+];
+
 // ── C1 Reading ──
 const C1_READING=[
   {title:'한국 사회의 변화 (Cambios en la sociedad coreana)',
@@ -1156,6 +1183,14 @@ function renderSection(lvl,sec){
   // Post-render inits
   if(sec==='Flashcards') initFlashcards(lvl);
   if(sec==='Hangul') setTimeout(renderHangulBuilder,50);
+  if(sec==='Ejercicios'){
+    setTimeout(()=>{
+      renderQuiz(lvl);
+      startMatch(lvl);
+      renderFitb(lvl);
+      renderWordOrder(lvl);
+    },50);
+  }
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1267,11 +1302,9 @@ function renderPronunciation(){
     <div class="card">
       <h3 class="text-lg font-bold mb-4">Práctica de pronunciación</h3>
       <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-        ${['가나다라마바사아자차카타파하','아야어여오요우유으이','가나다라마바사아자차'].split('').filter((c,i,a)=>a.indexOf(c)===i&&c!=='').slice(0,18).map((_,i)=>{
-          const words=['안녕하세요','감사합니다','한국어','먹다','가다','오다','학교','친구','사랑','행복','비빔밥','김치','불고기','서울','부산','제주도','한복','태권도'];
-          const w=words[i%words.length];
-          return `<button class="tts-btn justify-center p-3 rounded-xl" onclick="speak('${w}')" style="border:1px solid var(--border)">🔊 ${w}</button>`;
-        }).join('')}
+        ${['안녕하세요','감사합니다','한국어','먹다','가다','오다','학교','친구','사랑','행복','비빔밥','김치','불고기','서울','부산','제주도','한복','태권도'].map(w=>`
+          <button class="tts-btn justify-center p-3 rounded-xl" onclick="speak('${w}')" style="border:1px solid var(--border)">🔊 ${w}</button>
+        `).join('')}
       </div>
     </div>
   </div>`;
@@ -1559,6 +1592,7 @@ function speakCard(lvl){
 // ════════════════════════════════════════════════════════════
 function getReadings(lvl){
   if(lvl==='B1')return B1_READING;
+  if(lvl==='B2')return B2_READING;
   if(lvl==='C1')return C1_READING;
   if(lvl==='C2')return C2_READING;
   return [];
@@ -1989,21 +2023,6 @@ function resetWordOrder(lvl,ei){
   renderWordOrder(lvl);// re-render all — simpler
 }
 
-// ════════════════════════════════════════════════════════════
-//  POST-RENDER INIT (exercises section)
-// ════════════════════════════════════════════════════════════
-const origRenderSection=renderSection;
-function renderSection(lvl,sec){
-  origRenderSection(lvl,sec);
-  if(sec==='Ejercicios'){
-    setTimeout(()=>{
-      renderQuiz(lvl);
-      startMatch(lvl);
-      renderFitb(lvl);
-      renderWordOrder(lvl);
-    },50);
-  }
-}
 
 // ════════════════════════════════════════════════════════════
 //  UTILITY
