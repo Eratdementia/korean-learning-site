@@ -1,1043 +1,2036 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>한국어 배우기 · Aprende Coreano</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--background); color: var(--foreground); margin: 0; padding: 0; }
+    *{box-sizing:border-box;}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--background);color:var(--foreground);margin:0;padding:0;}
 
-    /* ── Tab active states ── */
-    .level-tab.active  { background: var(--primary); color: var(--primary-foreground); }
-    .section-tab.active { border-bottom: 3px solid var(--primary); color: var(--primary); }
+    /* ── Hero Particle Banner ── */
+    #hero-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+    #hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--primary),var(--accent));}
 
-    /* ── Hangul grid cells ── */
-    .hangul-cell {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      border: 1px solid var(--border); border-radius: 10px; padding: 10px 6px; cursor: pointer;
-      transition: transform .15s, box-shadow .15s;
-      background: var(--card);
-    }
-    .hangul-cell:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(0,0,0,.18); }
-    .hangul-cell .kor  { font-size: 2rem; font-weight: 700; line-height: 1; }
-    .hangul-cell .rom  { font-size: .78rem; color: var(--muted-foreground); margin-top: 4px; }
-    .hangul-cell .play { font-size: .7rem; color: var(--primary); margin-top: 2px; }
+    /* ── Level Tabs ── */
+    .level-tab{padding:10px 20px;border-radius:9999px;cursor:pointer;font-weight:700;transition:background .2s,color .2s;border:2px solid transparent;white-space:nowrap;}
+    .level-tab.active{background:var(--primary);color:var(--primary-foreground);}
+    .level-tab:not(.active){background:var(--card);color:var(--muted-foreground);border-color:var(--border);}
 
-    /* ── Flash cards ── */
-    .flashcard-wrap { perspective: 800px; cursor: pointer; }
-    .flashcard {
-      width: 100%; min-height: 180px; position: relative;
-      transform-style: preserve-3d; transition: transform .5s;
-    }
-    .flashcard.flipped { transform: rotateY(180deg); }
-    .flashcard-face {
-      position: absolute; inset: 0; backface-visibility: hidden;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      border-radius: 16px; padding: 20px; border: 1px solid var(--border);
-      background: var(--card);
-    }
-    .flashcard-back { transform: rotateY(180deg); }
+    /* ── Section Tabs ── */
+    .section-tab{padding:8px 16px;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;white-space:nowrap;transition:color .2s,border-color .2s;color:var(--muted-foreground);}
+    .section-tab.active{border-bottom-color:var(--primary);color:var(--primary);}
+
+    /* ── Cards ── */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+
+    /* ── Hangul Cells ── */
+    .hangul-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;transition:transform .15s,box-shadow .15s;background:var(--card);}
+    .hangul-cell:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(0,0,0,.18);}
+    .hangul-cell .kor{font-size:2rem;font-weight:700;line-height:1;}
+    .hangul-cell .rom{font-size:.78rem;color:var(--muted-foreground);margin-top:4px;}
+    .hangul-cell .play{font-size:.7rem;color:var(--primary);margin-top:2px;}
+
+    /* ── Flashcards ── */
+    .flashcard-wrap{perspective:900px;cursor:pointer;}
+    .flashcard{width:100%;min-height:200px;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);}
+    .flashcard.flipped{transform:rotateY(180deg);}
+    .flashcard-face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:16px;padding:24px;border:1.5px solid var(--border);background:var(--card);}
+    .flashcard-back{transform:rotateY(180deg);background:var(--accent);}
 
     /* ── Quiz ── */
-    .quiz-opt {
-      display: block; width: 100%; text-align: left; padding: 12px 16px;
-      border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer;
-      background: var(--card); color: var(--foreground); margin-bottom: 8px;
-      transition: background .15s, border-color .15s;
-    }
-    .quiz-opt:hover { border-color: var(--primary); background: var(--accent); }
-    .quiz-opt.correct { background: #22c55e22; border-color: #22c55e; color: #16a34a; }
-    .quiz-opt.wrong   { background: #ef444422; border-color: #ef4444; color: #dc2626; }
-    .quiz-opt:disabled { cursor: default; }
+    .quiz-opt{display:block;width:100%;text-align:left;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--card);color:var(--foreground);margin-bottom:8px;transition:background .15s,border-color .15s;}
+    .quiz-opt:hover:not(:disabled){border-color:var(--primary);background:var(--accent);}
+    .quiz-opt.correct{border-color:#22c55e;background:#dcfce7;color:#15803d;}
+    .quiz-opt.wrong{border-color:#ef4444;background:#fee2e2;color:#991b1b;}
+
+    /* ── Matching Game ── */
+    .match-btn{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--card);color:var(--foreground);text-align:center;transition:all .15s;font-size:.85rem;}
+    .match-btn.selected{border-color:var(--primary);background:var(--accent);color:var(--primary);}
+    .match-btn.matched{border-color:#22c55e;background:#dcfce7;color:#15803d;pointer-events:none;opacity:.7;}
+    .match-btn.wrong-shake{animation:shake .3s;}
+    @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px)};}
+
+    /* ── Verb table ── */
+    .verb-table th{background:var(--accent);color:var(--foreground);padding:8px 10px;font-weight:700;font-size:.8rem;border:1px solid var(--border);}
+    .verb-table td{padding:7px 10px;font-size:.82rem;border:1px solid var(--border);background:var(--card);}
+    .verb-table tr:hover td{background:var(--accent);}
+
+    /* ── Hangul Builder ── */
+    .hb-key{padding:8px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--card);font-size:1.1rem;font-weight:700;text-align:center;transition:transform .1s,box-shadow .1s;}
+    .hb-key:hover{transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.2);}
+    .hb-key.selected{border-color:var(--primary);background:var(--accent);color:var(--primary);}
+
+    /* ── Fill-in-the-blank ── */
+    .fitb-input{border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;background:var(--card);color:var(--foreground);font-size:.9rem;width:120px;outline:none;transition:border-color .15s;}
+    .fitb-input:focus{border-color:var(--primary);}
+    .fitb-input.correct{border-color:#22c55e;background:#dcfce7;}
+    .fitb-input.wrong{border-color:#ef4444;background:#fee2e2;}
+
+    /* ── Word Order ── */
+    .wo-token{display:inline-block;padding:6px 12px;border:1.5px solid var(--border);border-radius:9999px;cursor:pointer;background:var(--card);color:var(--foreground);font-size:.85rem;margin:4px;transition:all .15s;user-select:none;}
+    .wo-token:hover{border-color:var(--primary);background:var(--accent);}
+    .wo-token.placed{opacity:.4;cursor:default;pointer-events:none;}
+    .wo-slot{display:inline-block;min-width:70px;padding:6px 12px;border-bottom:2px solid var(--primary);margin:4px;text-align:center;font-size:.85rem;cursor:pointer;color:var(--primary);min-height:34px;}
+
+    /* ── TTS button ── */
+    .tts-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:9999px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:.75rem;color:var(--primary);transition:background .15s;}
+    .tts-btn:hover{background:var(--accent);}
 
     /* ── Progress bar ── */
-    .progress-bar { height: 8px; border-radius: 999px; background: var(--border); overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 999px; background: var(--primary); transition: width .4s; }
+    .progress-bar{height:8px;border-radius:9999px;background:var(--border);overflow:hidden;}
+    .progress-fill{height:100%;background:var(--primary);border-radius:9999px;transition:width .4s;}
 
-    /* ── Audio viz button ── */
-    .audio-btn {
-      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
-      border-radius: 999px; border: 1.5px solid var(--primary); cursor: pointer;
-      color: var(--primary); background: transparent; font-size: .85rem; font-weight: 600;
-      transition: background .15s; vertical-align: middle;
-    }
-    .audio-btn:hover { background: var(--primary); color: var(--primary-foreground); }
+    /* ── Dialogs ── */
+    .dialog-line{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--border);}
+    .dialog-line:last-child{border-bottom:none;}
 
-    /* ── Stroke demo canvas ── */
-    .stroke-canvas { border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+    /* ── Responsive scrollable tabs ── */
+    .tabs-scroll{overflow-x:auto;scrollbar-width:none;}
+    .tabs-scroll::-webkit-scrollbar{display:none;}
 
-    /* ── Scroll ── */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+    /* ── Utility ── */
+    .hidden{display:none!important;}
+    .section-panel{display:none;}
+    .section-panel.active{display:block;}
+    
+    /* ── Reading cards ── */
+    .reading-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
+    .reading-card .korean-text{font-size:1.05rem;line-height:1.9;color:var(--foreground);border-left:3px solid var(--primary);padding-left:14px;}
 
-    /* ── Particle banner ── */
-    #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-
-    /* fade in sections */
-    .fade-in { animation: fadeIn .35s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-
-    /* ── Matching game ── */
-    .match-card {
-      padding: 10px; border: 2px solid var(--border); border-radius: 8px; cursor: pointer;
-      text-align: center; font-weight: 600; transition: all .2s; background: var(--card);
-      min-height: 52px; display: flex; align-items: center; justify-content: center;
-    }
-    .match-card.selected { border-color: var(--primary); background: var(--accent); }
-    .match-card.matched   { border-color: #22c55e; background: #22c55e22; color: #16a34a; opacity: .6; pointer-events: none; }
-    .match-card.wrong-shake { animation: shake .3s; }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+    /* ── Particle canvas ── */
+    canvas{display:block;}
   </style>
 </head>
-<body class="min-h-screen bg-[var(--background)]">
+<body class="min-h-screen">
 
-<!-- ════════════════════  HERO  ════════════════════ -->
-<div class="relative overflow-hidden" style="min-height:200px; background: linear-gradient(135deg, #e63946 0%, #2b2d42 100%);">
+<!-- ═══════════════════════════════════════════════════════════
+     HERO BANNER
+═══════════════════════════════════════════════════════════════ -->
+<div id="hero" class="relative py-16 px-6 text-center">
   <canvas id="hero-canvas"></canvas>
-  <div class="relative z-10 flex flex-col items-center justify-center py-12 px-4 text-center">
-    <div class="text-6xl mb-2">🇰🇷</div>
-    <h1 class="text-4xl font-black text-white drop-shadow-lg tracking-tight">한국어 배우기</h1>
-    <p class="text-white/80 mt-2 text-lg">Aprende Coreano · From Zero to Fluency</p>
-    <div class="flex gap-3 mt-4 flex-wrap justify-center">
-      <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm">📚 6 Niveles CEFR</span>
-      <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm">🔊 Audio nativo</span>
-      <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm">🎮 Ejercicios interactivos</span>
-      <span class="bg-white/20 text-white px-3 py-1 rounded-full text-sm">🃏 Flashcards</span>
+  <div class="relative z-10">
+    <h1 class="text-4xl md:text-6xl font-black mb-3" style="color:var(--primary-foreground);text-shadow:0 2px 16px rgba(0,0,0,.3);">한국어 배우기</h1>
+    <p class="text-xl md:text-2xl font-semibold mb-2" style="color:var(--primary-foreground);opacity:.9;">Aprende Coreano · Learn Korean</p>
+    <p class="text-sm" style="color:var(--primary-foreground);opacity:.7;">Desde principiante hasta avanzado · A1 → C2</p>
+    <div id="overall-progress-bar" class="max-w-xs mx-auto mt-6">
+      <div class="text-xs mb-1" style="color:var(--primary-foreground);opacity:.8;">Progreso general</div>
+      <div class="progress-bar"><div id="overall-fill" class="progress-fill" style="width:0%"></div></div>
     </div>
   </div>
 </div>
 
-<!-- ════════════════════  LEVEL TABS  ════════════════════ -->
-<div class="sticky top-0 z-30 shadow-md" style="background:var(--sidebar)">
-  <div class="flex overflow-x-auto px-4 py-2 gap-2 no-scrollbar" id="levelTabBar">
-    <!-- filled by JS -->
-  </div>
+<!-- ═══════════════════════════════════════════════════════════
+     LEVEL TABS
+═══════════════════════════════════════════════════════════════ -->
+<div class="sticky top-0 z-30 py-3 px-4" style="background:var(--background);border-bottom:1px solid var(--border);">
+  <div class="tabs-scroll flex gap-2 max-w-5xl mx-auto" id="level-tabs-container"></div>
 </div>
 
-<!-- ════════════════════  MAIN CONTENT  ════════════════════ -->
-<main class="max-w-5xl mx-auto px-4 py-6" id="mainContent">
-  <!-- filled by JS -->
-</main>
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════════════════════ -->
+<div class="max-w-5xl mx-auto px-4 py-6" id="main-content"></div>
 
-<!-- ════════════════════  FOOTER  ════════════════════ -->
-<footer class="text-center py-6 text-sm text-[var(--muted-foreground)] border-t border-[var(--border)]">
-  🇰🇷 한국어 배우기 · 열심히 공부하세요! (¡Estudia mucho!)
-</footer>
-
-<!-- ══════════════════  AUDIO ENGINE  ══════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════
+     DATA + LOGIC
+═══════════════════════════════════════════════════════════════ -->
 <script>
-/* ─ Web Speech API TTS ─ */
-function speak(text, lang = 'ko-KR') {
-  if (!window.speechSynthesis) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang; u.rate = 0.85; u.pitch = 1.05;
-  const voices = speechSynthesis.getVoices().filter(v => v.lang.startsWith('ko'));
-  if (voices.length) u.voice = voices[0];
-  speechSynthesis.speak(u);
-}
-// Pre-load voices
-speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
-
-/* ─ Particle hero canvas ─ */
+// ════════════════════════════════════════════════════════════
+//  PARTICLE HERO
+// ════════════════════════════════════════════════════════════
 (function(){
-  const cv = document.getElementById('hero-canvas');
-  const ctx = cv.getContext('2d');
-  const chars = '가나다라마바사아자차카타파하한국어';
-  let particles = [];
-  function resize(){ cv.width = cv.offsetWidth; cv.height = cv.offsetHeight; }
-  window.addEventListener('resize', resize); resize();
-  for (let i = 0; i < 40; i++) particles.push({
-    x: Math.random()*1000, y: Math.random()*200, s: Math.random()*20+12,
-    a: Math.random()*Math.PI*2, sp: (.2+Math.random()*.5)*(Math.random()<.5?1:-1),
-    op: .08+Math.random()*.18, c: chars[Math.floor(Math.random()*chars.length)]
-  });
-  function frame(){
-    ctx.clearRect(0,0,cv.width,cv.height);
+  const canvas=document.getElementById('hero-canvas');
+  const hero=document.getElementById('hero');
+  const ctx=canvas.getContext('2d');
+  const chars='가나다라마바사아자차카타파하한국어배우기';
+  let particles=[];
+  function resize(){canvas.width=hero.offsetWidth;canvas.height=hero.offsetHeight;}
+  function mkParticle(){
+    return{x:Math.random()*canvas.width,y:Math.random()*canvas.height,
+      vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
+      ch:chars[Math.floor(Math.random()*chars.length)],
+      size:12+Math.random()*20,alpha:0.08+Math.random()*.18,
+      rot:Math.random()*Math.PI*2,rotV:(Math.random()-.5)*.01};
+  }
+  function init(){resize();particles=Array.from({length:50},mkParticle);}
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     particles.forEach(p=>{
-      p.a += p.sp * .01; p.x += Math.cos(p.a)*.4; p.y += .3;
-      if(p.y > cv.height+30) p.y = -30;
-      if(p.x < -30) p.x = cv.width+30;
-      if(p.x > cv.width+30) p.x = -30;
-      ctx.font = `${p.s}px serif`; ctx.fillStyle = `rgba(255,255,255,${p.op})`;
-      ctx.fillText(p.c, p.x, p.y);
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.globalAlpha=p.alpha;ctx.fillStyle='#ffffff';
+      ctx.font=`bold ${p.size}px sans-serif`;ctx.textAlign='center';
+      ctx.fillText(p.ch,0,0);ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.rotV;
+      if(p.x<-30||p.x>canvas.width+30||p.y<-30||p.y>canvas.height+30){
+        Object.assign(p,mkParticle());
+        p.x=Math.random()<.5?-10:canvas.width+10;
+      }
     });
-    requestAnimationFrame(frame);
+    requestAnimationFrame(draw);
   }
-  frame();
+  window.addEventListener('resize',init);
+  init();draw();
 })();
-</script>
 
-<!-- ══════════════════  DATA & CURRICULUM  ══════════════════ -->
-<script>
-const LEVELS = [
-  { id:'A1', label:'A1 · Principiante', emoji:'🌱', color:'#22c55e',
-    desc:'Domina el alfabeto Hangul, saludos básicos y frases de supervivencia.',
-    sections:['Hangul','Vocabulario','Frases','Cultura','Ejercicios'] },
-  { id:'A2', label:'A2 · Básico',       emoji:'🌿', color:'#84cc16',
-    desc:'Presenta información personal, habla de tu vida cotidiana.',
-    sections:['Vocabulario','Gramática','Diálogos','Flashcards','Ejercicios'] },
-  { id:'B1', label:'B1 · Intermedio',   emoji:'🌳', color:'#eab308',
-    desc:'Narra eventos pasados y futuros, expresa opiniones simples.',
-    sections:['Vocabulario','Gramática','Lectura','Flashcards','Ejercicios'] },
-  { id:'B2', label:'B2 · Avanzado',     emoji:'🌲', color:'#f97316',
-    desc:'Participa en conversaciones fluidas sobre temas conocidos.',
-    sections:['Vocabulario','Gramática','Escucha','Flashcards','Ejercicios'] },
-  { id:'C1', label:'C1 · Competente',   emoji:'🏔️', color:'#8b5cf6',
-    desc:'Comprende textos complejos y expresiones idiomáticas.',
-    sections:['Vocabulario','Gramática','Lectura','Flashcards','Ejercicios'] },
-  { id:'C2', label:'C2 · Maestría',     emoji:'⭐', color:'#ec4899',
-    desc:'Dominio nativo del idioma coreano en todos los contextos.',
-    sections:['Vocabulario','Gramática','Literatura','Flashcards','Ejercicios'] },
-];
-
-/* ─────────── A1 Hangul data ─────────── */
-const VOWELS = [
-  {k:'아',r:'a'},{k:'야',r:'ya'},{k:'어',r:'eo'},{k:'여',r:'yeo'},
-  {k:'오',r:'o'},{k:'요',r:'yo'},{k:'우',r:'u'},{k:'유',r:'yu'},
-  {k:'으',r:'eu'},{k:'이',r:'i'},
-];
-const CONSONANTS = [
-  {k:'가',r:'ga/ka'},{k:'나',r:'na'},{k:'다',r:'da/ta'},{k:'라',r:'ra/la'},
-  {k:'마',r:'ma'},{k:'바',r:'ba/pa'},{k:'사',r:'sa'},{k:'아',r:'a (silent)'},
-  {k:'자',r:'ja/cha'},{k:'차',r:'cha'},{k:'카',r:'ka'},{k:'타',r:'ta'},
-  {k:'파',r:'pa'},{k:'하',r:'ha'},{k:'까',r:'kka'},{k:'따',r:'tta'},
-  {k:'빠',r:'ppa'},{k:'싸',r:'ssa'},{k:'짜',r:'jja'},
-];
-
-/* ─────────── Vocabulary by level ─────────── */
-const VOCAB = {
-  A1: [
-    {k:'안녕하세요',r:'annyeonghaseyo',es:'Hola (formal)',cat:'Saludos',emoji:'👋'},
-    {k:'감사합니다',r:'gamsahamnida',es:'Gracias (formal)',cat:'Saludos',emoji:'🙏'},
-    {k:'죄송합니다',r:'joesonghamnida',es:'Lo siento (formal)',cat:'Saludos',emoji:'😔'},
-    {k:'네',r:'ne',es:'Sí',cat:'Básico',emoji:'✅'},
-    {k:'아니요',r:'aniyo',es:'No',cat:'Básico',emoji:'❌'},
-    {k:'물',r:'mul',es:'Agua',cat:'Comida',emoji:'💧'},
-    {k:'밥',r:'bap',es:'Arroz / comida',cat:'Comida',emoji:'🍚'},
-    {k:'사람',r:'saram',es:'Persona',cat:'Sustantivos',emoji:'👤'},
-    {k:'학교',r:'hakgyo',es:'Escuela',cat:'Lugares',emoji:'🏫'},
-    {k:'집',r:'jip',es:'Casa',cat:'Lugares',emoji:'🏠'},
-    {k:'하나',r:'hana',es:'Uno',cat:'Números',emoji:'1️⃣'},
-    {k:'둘',r:'dul',es:'Dos',cat:'Números',emoji:'2️⃣'},
-    {k:'셋',r:'set',es:'Tres',cat:'Números',emoji:'3️⃣'},
-  ],
-  A2: [
-    {k:'이름',r:'ireum',es:'Nombre',cat:'Personal',emoji:'📛'},
-    {k:'가족',r:'gajok',es:'Familia',cat:'Personal',emoji:'👨‍👩‍👧'},
-    {k:'친구',r:'chingu',es:'Amigo/a',cat:'Personal',emoji:'🤝'},
-    {k:'일하다',r:'ilhada',es:'Trabajar',cat:'Verbos',emoji:'💼'},
-    {k:'먹다',r:'meokda',es:'Comer',cat:'Verbos',emoji:'🍽️'},
-    {k:'마시다',r:'masida',es:'Beber',cat:'Verbos',emoji:'🥤'},
-    {k:'자다',r:'jada',es:'Dormir',cat:'Verbos',emoji:'😴'},
-    {k:'오늘',r:'oneul',es:'Hoy',cat:'Tiempo',emoji:'📅'},
-    {k:'내일',r:'naeil',es:'Mañana',cat:'Tiempo',emoji:'🌅'},
-    {k:'어제',r:'eoje',es:'Ayer',cat:'Tiempo',emoji:'⏮️'},
-    {k:'좋아요',r:'joayo',es:'Me gusta / Está bien',cat:'Expresiones',emoji:'👍'},
-    {k:'싫어요',r:'sireoyo',es:'No me gusta',cat:'Expresiones',emoji:'👎'},
-    {k:'얼마예요',r:'eolmayeyo',es:'¿Cuánto cuesta?',cat:'Compras',emoji:'💰'},
-  ],
-  B1: [
-    {k:'여행하다',r:'yeohaenghada',es:'Viajar',cat:'Verbos',emoji:'✈️'},
-    {k:'배우다',r:'baeuda',es:'Aprender',cat:'Verbos',emoji:'📖'},
-    {k:'이해하다',r:'ihaehada',es:'Entender',cat:'Verbos',emoji:'💡'},
-    {k:'날씨',r:'nalssi',es:'Clima',cat:'Naturaleza',emoji:'🌤️'},
-    {k:'문화',r:'munhwa',es:'Cultura',cat:'Sociedad',emoji:'🎭'},
-    {k:'음악',r:'eumak',es:'Música',cat:'Arte',emoji:'🎵'},
-    {k:'영화',r:'yeonghwa',es:'Película',cat:'Arte',emoji:'🎬'},
-    {k:'건강',r:'geongang',es:'Salud',cat:'Salud',emoji:'💪'},
-    {k:'환경',r:'hwangyeong',es:'Medio ambiente',cat:'Naturaleza',emoji:'🌿'},
-    {k:'경제',r:'gyeongje',es:'Economía',cat:'Sociedad',emoji:'📊'},
-    {k:'주장하다',r:'jujanghada',es:'Argumentar',cat:'Verbos',emoji:'🗣️'},
-    {k:'비교하다',r:'bigyohada',es:'Comparar',cat:'Verbos',emoji:'⚖️'},
-  ],
-  B2: [
-    {k:'사회',r:'sahoe',es:'Sociedad',cat:'Abstracto',emoji:'🏛️'},
-    {k:'정치',r:'jeongchi',es:'Política',cat:'Abstracto',emoji:'⚖️'},
-    {k:'협상하다',r:'hyeopsanghada',es:'Negociar',cat:'Verbos',emoji:'🤝'},
-    {k:'분석하다',r:'bunseokada',es:'Analizar',cat:'Verbos',emoji:'🔬'},
-    {k:'모순',r:'mosun',es:'Contradicción',cat:'Abstracto',emoji:'🔀'},
-    {k:'개념',r:'gaenyeom',es:'Concepto',cat:'Abstracto',emoji:'💭'},
-    {k:'관점',r:'gwanjeom',es:'Punto de vista',cat:'Abstracto',emoji:'👁️'},
-    {k:'영향',r:'yeonghyang',es:'Influencia',cat:'Abstracto',emoji:'🌊'},
-    {k:'발전',r:'baljeon',es:'Desarrollo / progreso',cat:'Abstracto',emoji:'📈'},
-    {k:'논쟁',r:'nonjaeng',es:'Debate / controversia',cat:'Abstracto',emoji:'💬'},
-  ],
-  C1: [
-    {k:'함축적',r:'hamchukjeok',es:'Implícito',cat:'Académico',emoji:'🔎'},
-    {k:'역설',r:'yeokseol',es:'Paradoja',cat:'Retórica',emoji:'🌀'},
-    {k:'비유',r:'biyu',es:'Metáfora / analogía',cat:'Retórica',emoji:'🖼️'},
-    {k:'맥락',r:'maengnak',es:'Contexto',cat:'Académico',emoji:'📋'},
-    {k:'내포하다',r:'naepohada',es:'Implicar / connotar',cat:'Verbos',emoji:'💬'},
-    {k:'추론하다',r:'churonhada',es:'Deducir / inferir',cat:'Verbos',emoji:'🧠'},
-    {k:'비판하다',r:'bipanhada',es:'Criticar',cat:'Verbos',emoji:'📝'},
-    {k:'담론',r:'damron',es:'Discurso',cat:'Académico',emoji:'📜'},
-    {k:'패러다임',r:'paereodaim',es:'Paradigma',cat:'Académico',emoji:'🔭'},
-    {k:'이데올로기',r:'ideollogi',es:'Ideología',cat:'Académico',emoji:'🏛️'},
-  ],
-  C2: [
-    {k:'아이러니',r:'aireoni',es:'Ironía',cat:'Literario',emoji:'😏'},
-    {k:'풍자',r:'pungja',es:'Sátira',cat:'Literario',emoji:'🃏'},
-    {k:'은유',r:'eunyu',es:'Metáfora',cat:'Literario',emoji:'✍️'},
-    {k:'서사',r:'seosa',es:'Narrativa',cat:'Literario',emoji:'📚'},
-    {k:'뉘앙스',r:'nwianseu',es:'Matiz',cat:'Avanzado',emoji:'🎨'},
-    {k:'암시하다',r:'amsihada',es:'Insinuar',cat:'Verbos',emoji:'🤫'},
-    {k:'우회하다',r:'uhoehada',es:'Rodear / circunvalar',cat:'Verbos',emoji:'🔄'},
-    {k:'함의',r:'hameui',es:'Implicación',cat:'Avanzado',emoji:'🔗'},
-    {k:'어감',r:'eogam',es:'Connotación / tono',cat:'Avanzado',emoji:'🎵'},
-    {k:'어조',r:'eojo',es:'Tono / registro',cat:'Avanzado',emoji:'🎭'},
-  ],
-};
-
-/* ─────────── Grammar by level ─────────── */
-const GRAMMAR = {
-  A2: [
-    { title:'이에요 / 예요 (Ser)', kor:'저는 학생이에요.', rom:'Jeoneun haksaengieyeo.', esp:'Yo soy estudiante.', note:'Se usa 이에요 tras consonante, 예요 tras vocal.' },
-    { title:'을/를 (Objeto directo)', kor:'저는 밥을 먹어요.', rom:'Jeoneun babeul meogeoyo.', esp:'Yo como arroz.', note:'을 tras consonante, 를 tras vocal.' },
-    { title:'에 가다 (Ir a)', kor:'학교에 가요.', rom:'Hakgyoe gayo.', esp:'Voy a la escuela.', note:'에 indica destino con verbos de movimiento.' },
-  ],
-  B1: [
-    { title:'았/었어요 (Pasado)', kor:'어제 영화를 봤어요.', rom:'Eoje yeonghwareul bwasseoyo.', esp:'Ayer vi una película.', note:'았 tras vocal positiva (ㅏ/ㅗ), 었 en los demás casos.' },
-    { title:'-(으)ㄹ 거예요 (Futuro)', kor:'내일 여행할 거예요.', rom:'Naeil yeohaenghal geoyeyo.', esp:'Mañana viajaré.', note:'Expresa intención o predicción futura.' },
-    { title:'-고 싶다 (Querer)', kor:'한국에 가고 싶어요.', rom:'Hanguge gago sipeoyo.', esp:'Quiero ir a Corea.', note:'Se adjunta al verbo base + 고 싶어요.' },
-  ],
-  B2: [
-    { title:'-(으)면 (Si / Cuando)', kor:'비가 오면 집에 있을게요.', rom:'Biga omyeon jibe isseulgeyo.', esp:'Si llueve, me quedaré en casa.', note:'Condicional o temporal con contexto futuro.' },
-    { title:'-아/어서 (Causa, secuencia)', kor:'피곤해서 일찍 잤어요.', rom:'Pigonhaeseo iljjik jasseoyo.', esp:'Estaba cansado/a, así que dormí temprano.', note:'Conecta causa y efecto; los sujetos deben ser iguales.' },
-    { title:'-(으)ㄹ 수 있다 (Poder)', kor:'저는 한국어를 할 수 있어요.', rom:'Jeoneun hangugeoreul hal su isseoyo.', esp:'Puedo hablar coreano.', note:'Expresa capacidad o posibilidad.' },
-  ],
-  C1: [
-    { title:'-는 반면에 (Mientras que)', kor:'경제는 발전하는 반면에 환경은 악화되고 있다.', rom:'Gyeongjeneun baljeonhaneun banmyeone hwangyeongeun akwadoego itda.', esp:'Mientras la economía avanza, el medio ambiente empeora.', note:'Contraste entre dos cláusulas.' },
-    { title:'-(으)ㄹ뿐더러 (Además de)', kor:'그는 똑똑할뿐더러 친절하기도 하다.', rom:'Geuneun ttokttokalppundeoleo chinjeolhagido hada.', esp:'No solo es inteligente, sino también amable.', note:'Añade información que supera la expectativa.' },
-  ],
-  C2: [
-    { title:'-다시피 (Como sabe)', kor:'알다시피 한국 경제는 빠르게 성장했습니다.', rom:'Aldashpi hanguk gyeongjeneun ppareuge seongjanghaessseumnida.', esp:'Como saben, la economía de Corea ha crecido rápidamente.', note:'Referencia a conocimiento compartido.' },
-    { title:'-(으)ㄹ래야 -(으)ㄹ 수가 없다 (No poder aunque quiera)', kor:'잊으려야 잊을 수가 없어요.', rom:'Ijeulyeoya ijeul suga eopseoyo.', esp:'No puedo olvidarlo aunque lo intente.', note:'Expresa imposibilidad a pesar del esfuerzo.' },
-  ],
-};
-
-/* ─────────── Phrases A1 ─────────── */
-const PHRASES_A1 = [
-  { k:'안녕하세요!', r:'Annyeonghaseyo!', es:'¡Hola! (formal)' },
-  { k:'안녕!', r:'Annyeong!', es:'¡Hola! (informal)' },
-  { k:'이름이 뭐예요?', r:'Ireumi mwoyeyo?', es:'¿Cuál es tu nombre?' },
-  { k:'제 이름은 ___예요.', r:'Je ireumeun ___ yeyo.', es:'Mi nombre es ___.' },
-  { k:'어디서 왔어요?', r:'Eodiseo wasseoyo?', es:'¿De dónde eres?' },
-  { k:'화장실이 어디예요?', r:'Hwajangsili eodiyeyo?', es:'¿Dónde está el baño?' },
-  { k:'도와주세요!', r:'Dowajuseyo!', es:'¡Ayúdeme, por favor!' },
-  { k:'안녕히 가세요.', r:'Annyeonghi gaseyo.', es:'Adiós (lo dices tú, el otro se va).' },
-];
-
-/* ─────────── Quiz data by level ─────────── */
-const QUIZZES = {
-  A1: [
-    { q:'¿Cómo se escribe "gracias" en coreano?', opts:['감사합니다','안녕하세요','죄송합니다','이름'], a:0 },
-    { q:'¿Qué significa 물 (mul)?', opts:['Pan','Agua','Casa','Escuela'], a:1 },
-    { q:'¿Cuál es la vocal coreana que suena como "i"?', opts:['아','오','이','우'], a:2 },
-    { q:'¿Qué significa 집 (jip)?', opts:['Escuela','Persona','Casa','Comida'], a:2 },
-    { q:'¿Cómo se dice "No" en coreano?', opts:['네','아니요','응','아'], a:1 },
-  ],
-  A2: [
-    { q:'¿Qué significa 가족 (gajok)?', opts:['Amigo','Escuela','Familia','Trabajo'], a:2 },
-    { q:'¿Cómo se dice "mañana" en coreano?', opts:['오늘','어제','다음','내일'], a:3 },
-    { q:'¿Cuál es el marcador de objeto directo tras consonante?', opts:['이/가','은/는','을/를','에서'], a:2 },
-    { q:'¿Qué significa 먹다 (meokda)?', opts:['Dormir','Beber','Comer','Trabajar'], a:2 },
-    { q:'¿Cómo se pregunta el precio?', opts:['뭐예요?','어디예요?','얼마예요?','누구예요?'], a:2 },
-  ],
-  B1: [
-    { q:'¿Cuál es el tiempo pasado de 먹다 (comer)?', opts:['먹을 거예요','먹었어요','먹어요','먹고 싶어요'], a:1 },
-    { q:'¿Qué expresa -고 싶다?', opts:['Pasado','Capacidad','Deseo','Condición'], a:2 },
-    { q:'¿Qué significa 여행하다 (yeohaenghada)?', opts:['Estudiar','Viajar','Trabajar','Comer'], a:1 },
-    { q:'¿Cómo se dice "quiero ir a Corea"?', opts:['한국에 갔어요','한국에 가고 싶어요','한국에 가요','한국에 갈게요'], a:1 },
-    { q:'¿Qué significa 날씨 (nalssi)?', opts:['Música','Clima','Cultura','Película'], a:1 },
-  ],
-  B2: [
-    { q:'¿Qué expresa -(으)면?', opts:['Pasado','Deseo','Condicional','Capacidad'], a:2 },
-    { q:'¿Cómo se dice "puedo hablar coreano"?', opts:['한국어를 말할 거예요','한국어를 말했어요','한국어를 할 수 있어요','한국어를 말고 싶어요'], a:2 },
-    { q:'¿Qué significa 협상하다 (hyeopsanghada)?', opts:['Analizar','Negociar','Comparar','Debatir'], a:1 },
-    { q:'-아/어서 conecta...', opts:['Dos sujetos distintos','Causa y efecto con mismo sujeto','Dos verbos en futuro','Dos sustantivos'], a:1 },
-    { q:'¿Qué significa 발전 (baljeon)?', opts:['Contradicción','Influencia','Desarrollo/progreso','Concepto'], a:2 },
-  ],
-  C1: [
-    { q:'¿Qué expresa -는 반면에?', opts:['Adición','Contraste','Causa','Propósito'], a:1 },
-    { q:'¿Qué significa 맥락 (maengnak)?', opts:['Paradoja','Contexto','Metáfora','Discurso'], a:1 },
-    { q:'¿Qué significa 추론하다 (churonhada)?', opts:['Criticar','Implicar','Deducir/inferir','Comparar'], a:2 },
-    { q:'-(으)ㄹ뿐더러 indica...', opts:['Condición','Contraste','Adición que supera expectativa','Tiempo'], a:2 },
-    { q:'¿Qué significa 담론 (damron)?', opts:['Paradigma','Discurso','Ideología','Contexto'], a:1 },
-  ],
-  C2: [
-    { q:'¿Qué significa 풍자 (pungja)?', opts:['Ironía','Metáfora','Sátira','Narrativa'], a:2 },
-    { q:'-다시피 se usa para...', opts:['Expresar imposibilidad','Referirse a conocimiento compartido','Indicar condición','Expresar deseo'], a:1 },
-    { q:'¿Qué significa 뉘앙스 (nwianseu)?', opts:['Ironía','Matiz','Tono','Connotación'], a:1 },
-    { q:'¿Qué expresa -(으)ㄹ래야 -(으)ㄹ 수가 없다?', opts:['Deseo frustrado','Imposibilidad a pesar del esfuerzo','Negación simple','Condición hipotética'], a:1 },
-    { q:'¿Qué significa 어감 (eogam)?', opts:['Tono/registro','Connotación/tono','Narrativa','Sátira'], a:1 },
-  ],
-};
-
-/* ─────────── Matching game pairs by level ─────────── */
-const MATCH_PAIRS = {
-  A1:[{k:'안녕하세요',e:'Hola'},{k:'감사합니다',e:'Gracias'},{k:'물',e:'Agua'},{k:'집',e:'Casa'},{k:'네',e:'Sí'},{k:'아니요',e:'No'}],
-  A2:[{k:'가족',e:'Familia'},{k:'먹다',e:'Comer'},{k:'내일',e:'Mañana'},{k:'친구',e:'Amigo'},{k:'오늘',e:'Hoy'},{k:'자다',e:'Dormir'}],
-  B1:[{k:'여행하다',e:'Viajar'},{k:'날씨',e:'Clima'},{k:'영화',e:'Película'},{k:'배우다',e:'Aprender'},{k:'건강',e:'Salud'},{k:'음악',e:'Música'}],
-  B2:[{k:'발전',e:'Progreso'},{k:'논쟁',e:'Debate'},{k:'관점',e:'Punto de vista'},{k:'개념',e:'Concepto'},{k:'영향',e:'Influencia'},{k:'사회',e:'Sociedad'}],
-  C1:[{k:'맥락',e:'Contexto'},{k:'역설',e:'Paradoja'},{k:'비유',e:'Metáfora'},{k:'담론',e:'Discurso'},{k:'비판하다',e:'Criticar'},{k:'추론하다',e:'Deducir'}],
-  C2:[{k:'풍자',e:'Sátira'},{k:'뉘앙스',e:'Matiz'},{k:'서사',e:'Narrativa'},{k:'어감',e:'Connotación'},{k:'어조',e:'Tono'},{k:'암시하다',e:'Insinuar'}],
-};
-
-/* ─────────── Culture facts ─────────── */
-const CULTURE = [
-  { title:'존댓말 · Lenguaje formal', emoji:'🙇', text:'El coreano tiene distintos niveles de formalidad. 존댓말 (formal) se usa con desconocidos y mayores; 반말 (informal) con amigos y menores. Siempre comienza siendo formal hasta que te inviten a ser informal.', example:'안녕하세요 (formal) vs 안녕 (informal)' },
-  { title:'나이 · La edad importa', emoji:'🎂', text:'En Corea, la edad determina las relaciones sociales. Se pregunta la edad al conocer a alguien para saber cómo dirigirse. Los mayores usan 오빠/언니/형/누나 según el género de quien habla.', example:'오빠 = hermano mayor (dicho por chica) | 형 = hermano mayor (dicho por chico)' },
-  { title:'한식 · Comida coreana', emoji:'🍜', text:'La gastronomía coreana es central en la cultura. El kimchi (김치) se sirve en casi todas las comidas. Es importante probar la comida que te ofrecen como señal de respeto.', example:'김치찌개 (sopa de kimchi) | 불고기 (carne marinada)' },
-  { title:'한류 · Ola coreana', emoji:'🎤', text:'La Hallyu Wave (한류) ha popularizado la cultura coreana globalmente: K-Pop, K-Drama, K-Food y K-Beauty. BTS, BLACKPINK y el fenómeno de los doramas son puertas de entrada al idioma.', example:'방탄소년단 (BTS) | 오징어 게임 (Squid Game)' },
-];
-</script>
-
-<!-- ══════════════════  RENDER ENGINE  ══════════════════ -->
-<script>
-let currentLevel = 'A1';
-let currentSection = 0;
-
-/* ── Build level tab bar ── */
-function buildLevelTabs() {
-  const bar = document.getElementById('levelTabBar');
-  bar.innerHTML = LEVELS.map(lv => `
-    <button onclick="selectLevel('${lv.id}')" id="lt-${lv.id}"
-      class="level-tab whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-all"
-      style="border: 1.5px solid ${lv.color}; color: ${lv.color};">
-      ${lv.emoji} ${lv.id}
-    </button>`).join('');
+// ════════════════════════════════════════════════════════════
+//  TTS UTILITY
+// ════════════════════════════════════════════════════════════
+function speak(text){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ko-KR';u.rate=0.85;
+  window.speechSynthesis.speak(u);
+}
+function ttsBtn(text,label='🔊'){
+  return `<button class="tts-btn" onclick="speak('${text.replace(/'/g,"\\'")}')">
+    ${label} <span style="color:var(--muted-foreground);">${text.length>12?text.slice(0,10)+'…':text}</span>
+  </button>`;
 }
 
-function selectLevel(id) {
-  currentLevel = id;
-  currentSection = 0;
-  document.querySelectorAll('.level-tab').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById('lt-'+id);
-  if (btn) {
-    btn.classList.add('active');
-    btn.style.background = LEVELS.find(l=>l.id===id).color;
-    btn.style.color = '#fff';
-    btn.style.border = 'none';
+// ════════════════════════════════════════════════════════════
+//  LOCALSTORAGE PROGRESS
+// ════════════════════════════════════════════════════════════
+function saveScore(level,section,score){
+  const key='kor_scores';
+  const data=JSON.parse(localStorage.getItem(key)||'{}');
+  if(!data[level])data[level]={};
+  data[level][section]=score;
+  localStorage.setItem(key,JSON.stringify(data));
+  updateOverallProgress();
+}
+function getScore(level,section){
+  const data=JSON.parse(localStorage.getItem('kor_scores')||'{}');
+  return (data[level]&&data[level][section])||0;
+}
+function updateOverallProgress(){
+  const data=JSON.parse(localStorage.getItem('kor_scores')||'{}');
+  let total=0,count=0;
+  Object.values(data).forEach(lvl=>Object.values(lvl).forEach(s=>{total+=s;count++;}));
+  const pct=count?Math.min(100,Math.round(total/count)):0;
+  const fill=document.getElementById('overall-fill');
+  if(fill)fill.style.width=pct+'%';
+}
+
+// ════════════════════════════════════════════════════════════
+//  SHARED STATE
+// ════════════════════════════════════════════════════════════
+let currentLevel='A1';
+let currentSection={};
+let flashState={};
+let matchState={};
+let quizState={};
+let woState={};
+
+// ════════════════════════════════════════════════════════════
+//  LEVEL DATA
+// ════════════════════════════════════════════════════════════
+
+// ── A1 Vocabulary (65 words) ──
+const A1_VOCAB=[
+  ['안녕하세요','annyeonghaseyo','Hola (formal)'],['감사합니다','gamsahamnida','Gracias'],
+  ['죄송합니다','joesonghamnida','Lo siento'],['네','ne','Sí'],['아니요','aniyo','No'],
+  ['저','jeo','Yo (formal)'],['나','na','Yo (informal)'],['이름','ireum','Nombre'],
+  ['나이','nai','Edad'],['학생','haksaeng','Estudiante'],['선생님','seonsaengnim','Profesor/a'],
+  ['친구','chingu','Amigo/a'],['가족','gajok','Familia'],['엄마','eomma','Mamá'],
+  ['아빠','appa','Papá'],['물','mul','Agua'],['밥','bap','Arroz/Comida'],
+  ['집','jip','Casa'],['학교','hakgyo','Escuela'],['책','chaek','Libro'],
+  ['펜','pen','Bolígrafo'],['가방','gabang','Mochila/Bolso'],['시간','sigan','Tiempo/Hora'],
+  ['오늘','oneul','Hoy'],['내일','naeil','Mañana'],['어제','eoje','Ayer'],
+  ['하나','hana','Uno'],['둘','dul','Dos'],['셋','set','Tres'],
+  ['넷','net','Cuatro'],['다섯','daseot','Cinco'],['여섯','yeoseot','Seis'],
+  ['일곱','ilgop','Siete'],['여덟','yeodeol','Ocho'],['아홉','ahop','Nueve'],
+  ['열','yeol','Diez'],['월요일','woryoil','Lunes'],['화요일','hwaryoil','Martes'],
+  ['수요일','suyoil','Miércoles'],['목요일','mogyoil','Jueves'],['금요일','geumyoil','Viernes'],
+  ['토요일','toyoil','Sábado'],['일요일','iryoil','Domingo'],['봄','bom','Primavera'],
+  ['여름','yeoreum','Verano'],['가을','gaeul','Otoño'],['겨울','gyeoul','Invierno'],
+  ['빨간색','ppalgan-saek','Rojo'],['파란색','paran-saek','Azul'],['노란색','noran-saek','Amarillo'],
+  ['초록색','chorok-saek','Verde'],['하얀색','hayan-saek','Blanco'],['검은색','geomeun-saek','Negro'],
+  ['크다','keuda','Grande'],['작다','jakda','Pequeño'],['맛있다','masitda','Delicioso'],
+  ['맛없다','maseopsda','No es rico'],['좋다','jota','Bueno/Bonito'],['나쁘다','nappeuda','Malo'],
+  ['비싸다','bissada','Caro'],['싸다','ssada','Barato'],['많다','manta','Mucho'],
+  ['적다','jeokda','Poco'],['빠르다','ppareuda','Rápido'],['느리다','neurida','Lento'],
+];
+
+// ── A2 Vocabulary (65 words) ──
+const A2_VOCAB=[
+  ['여행','yeohaeng','Viaje'],['음식','eumsik','Comida'],['시장','sijang','Mercado'],
+  ['마트','mateu','Supermercado'],['병원','byeongwon','Hospital'],['약국','yakguk','Farmacia'],
+  ['은행','eunhaeng','Banco'],['우체국','ucheguk','Correos'],['경찰서','gyeongchalseo','Comisaría'],
+  ['공항','gonghang','Aeropuerto'],['버스','beoseu','Autobús'],['지하철','jihacheol','Metro'],
+  ['택시','taeksi','Taxi'],['기차','gicha','Tren'],['비행기','bihaenggi','Avión'],
+  ['호텔','hotel','Hotel'],['식당','sikdang','Restaurante'],['카페','kape','Cafetería'],
+  ['백화점','baekwhajeom','Gran almacén'],['서점','seojeom','Librería'],
+  ['취미','chwimi','Pasatiempo'],['운동','undong','Ejercicio'],['음악','eumak','Música'],
+  ['영화','yeonghwa','Película'],['독서','dokseo','Lectura'],['요리','yori','Cocina'],
+  ['날씨','nalssi','Tiempo/Clima'],['비','bi','Lluvia'],['눈','nun','Nieve'],
+  ['바람','baram','Viento'],['맑다','makda','Despejado'],['흐리다','heurida','Nublado'],
+  ['춥다','chupda','Frío'],['덥다','deopda','Caluroso'],['따뜻하다','ttatteutada','Cálido'],
+  ['계획','gyehoek','Plan'],['약속','yaksok','Cita/Promesa'],['모임','moim','Reunión'],
+  ['파티','pati','Fiesta'],['선물','seonmul','Regalo'],['생일','saengil','Cumpleaños'],
+  ['결혼','gyeolhon','Matrimonio'],['졸업','joreopda','Graduación'],['입학','ipak','Ingreso'],
+  ['직업','jigeop','Trabajo/Profesión'],['회사','hoesa','Empresa'],['직원','jigwon','Empleado'],
+  ['사장','sajang','Jefe/Director'],['월급','wolgeuop','Sueldo'],['출근','chulgeun','Ir al trabajo'],
+  ['퇴근','toegeun','Salir del trabajo'],['휴가','hyuga','Vacaciones'],['야근','yageun','Horas extra'],
+  ['회의','hoeui','Reunión de trabajo'],['발표','balpyo','Presentación'],['보고서','bogoseo','Informe'],
+  ['컴퓨터','keompyuteo','Computadora'],['스마트폰','seumateupon','Smartphone'],['인터넷','inteonet','Internet'],
+  ['앱','aep','App'],['검색','geomsaek','Búsqueda'],['저장','jeogjang','Guardar'],
+  ['사진','sajin','Foto'],['동영상','dongyeongsang','Video'],['채팅','chaeting','Chat'],
+];
+
+// ── B1 Vocabulary (58 words) ──
+const B1_VOCAB=[
+  ['경험','gyeongheom','Experiencia'],['도전','dojeon','Desafío'],['성공','seonggong','Éxito'],
+  ['실패','silpae','Fracaso'],['노력','noryeok','Esfuerzo'],['포기','pogi','Rendirse'],
+  ['꿈','kkum','Sueño'],['목표','mokpyo','Meta/Objetivo'],['계획','gyehoek','Plan'],
+  ['준비','junbi','Preparación'],['결과','gyeolgwa','Resultado'],['과정','gwajeong','Proceso'],
+  ['기회','gihoe','Oportunidad'],['선택','seontaek','Elección'],['결정','gyeoljeong','Decisión'],
+  ['문제','munje','Problema'],['해결','haegyeol','Solución'],['방법','bangbeop','Método'],
+  ['이유','iyu','Razón'],['원인','wonin','Causa'],['영향','yeonghyang','Influencia'],
+  ['변화','byeonhwa','Cambio'],['발전','baljeon','Desarrollo'],['성장','seongjang','Crecimiento'],
+  ['사회','sahoe','Sociedad'],['문화','munhwa','Cultura'],['전통','jeontong','Tradición'],
+  ['현대','hyeondae','Moderno'],['역사','yeoksa','Historia'],['미래','mirae','Futuro'],
+  ['환경','hwangyeong','Medio ambiente'],['자연','jayeon','Naturaleza'],['오염','oyeom','Contaminación'],
+  ['기후','gihu','Clima'],['지구온난화','jigu-onnanhwa','Calentamiento global'],
+  ['재활용','jaehwaryong','Reciclaje'],['에너지','eneoji','Energía'],['건강','geongang','Salud'],
+  ['질병','jilbyeong','Enfermedad'],['치료','chiryo','Tratamiento'],['예방','yebang','Prevención'],
+  ['운동','undong','Ejercicio'],['식단','sikdan','Dieta'],['스트레스','seeuteuleseu','Estrés'],
+  ['감정','gamjeong','Emoción'],['기분','gibun','Estado de ánimo'],['행복','haengbok','Felicidad'],
+  ['슬픔','seulpeum','Tristeza'],['화','hwa','Enojo'],['걱정','geokjeong','Preocupación'],
+  ['불안','buran','Ansiedad'],['자신감','jasingam','Confianza'],['용기','yonggi','Valor'],
+  ['인내','innae','Paciencia'],['책임','chaegim','Responsabilidad'],['성격','seonggyeok','Personalidad'],
+  ['습관','seupgwan','Hábito'],['관계','gwangye','Relación'],
+];
+
+// ── B2 Vocabulary (52 words) ──
+const B2_VOCAB=[
+  ['갈등','galdeung','Conflicto'],['협력','hyeomnyeok','Cooperación'],['경쟁','gyeongjaeng','Competencia'],
+  ['주장','jujang','Argumento/Afirmación'],['반론','ballon','Contraargumento'],['토론','toron','Debate'],
+  ['논문','nonmun','Tesis/Artículo académico'],['연구','yeongu','Investigación'],['분석','bunsuk','Análisis'],
+  ['통계','tonggyeye','Estadísticas'],['데이터','deiteeo','Datos'],['조사','josa','Encuesta/Investigación'],
+  ['정책','jeongchaek','Política (medida)'],['법률','beopryul','Ley'],['규정','gyujeong','Regulación'],
+  ['세금','segeum','Impuesto'],['예산','yesan','Presupuesto'],['경제','gyeongje','Economía'],
+  ['물가','mulga','Precios/Inflación'],['고용','goyong','Empleo'],['실업','sireop','Desempleo'],
+  ['복지','bokji','Bienestar'],['의료','uiryo','Sanidad/Atención médica'],['교육','gyoyuk','Educación'],
+  ['입시','ipsi','Examen de ingreso universitario'],['취업','chwieop','Conseguir trabajo'],
+  ['인구','inku','Población'],['저출생','jeochulsaeng','Baja natalidad'],['고령화','goryeonghwa','Envejecimiento'],
+  ['도시화','dosiwa','Urbanización'],['농촌','nongchon','Zona rural'],['격차','gyeokcha','Brecha/Diferencia'],
+  ['불평등','bulpyeongdeung','Desigualdad'],['권리','gwolri','Derechos'],['의무','ueumu','Deber/Obligación'],
+  ['민주주의','minjujuui','Democracia'],['자유','jayu','Libertad'],['평화','pyeonghwa','Paz'],
+  ['갈등','galdeung','Conflicto'],['협상','hyeopssang','Negociación'],['타협','taheop','Compromiso'],
+  ['비판','bipan','Crítica'],['평가','pyeonggwa','Evaluación'],['개선','gaeseon','Mejora'],
+  ['혁신','hyeoksin','Innovación'],['기술','gisul','Tecnología'],['인공지능','ingongjinung','Inteligencia artificial'],
+  ['디지털','dijiteol','Digital'],['플랫폼','peullaetpom','Plataforma'],['알고리즘','algoriteum','Algoritmo'],
+  ['사이버','saibeo','Ciber'],['개인정보','gaeinjeongbo','Datos personales'],
+];
+
+// ── C1 Vocabulary (48 words) ──
+const C1_VOCAB=[
+  ['함축','hamchuk','Implicación'],['뉘앙스','nuiangseu','Matiz'],['맥락','maengnak','Contexto'],
+  ['은유','eunyu','Metáfora'],['상징','sangjing','Símbolo'],['역설','yeokseol','Paradoja'],
+  ['아이러니','aireoni','Ironía'],['풍자','pungja','Sátira'],['우화','uhwa','Fábula'],
+  ['서사','seosa','Narrativa'],['묘사','myosa','Descripción'],['논거','nongeo','Argumento'],
+  ['전제','jeonje','Premisa'],['추론','churon','Razonamiento'],['귀납','guinap','Inducción'],
+  ['연역','yeonyeok','Deducción'],['가설','gasel','Hipótesis'],['검증','geomjeung','Verificación'],
+  ['패러다임','paereodaim','Paradigma'],['담론','damron','Discurso'],['이념','inyeom','Ideología'],
+  ['윤리','yulli','Ética'],['도덕','dodeok','Moral'],['규범','gyubum','Norma'],
+  ['가치','gachi','Valor'],['원칙','wonchik','Principio'],['기준','gijun','Criterio'],
+  ['본질','bonjil','Esencia'],['현상','hyeonssang','Fenómeno'],['실체','silche','Entidad real'],
+  ['인식','insik','Cognición/Percepción'],['의식','uisik','Conciencia'],['무의식','muuisik','Inconsciente'],
+  ['감수성','gamsuseong','Sensibilidad'],['직관','jikgwan','Intuición'],['상상력','sangssangnyeok','Imaginación'],
+  ['창의성','changguisung','Creatividad'],['비판적 사고','bipanjok sago','Pensamiento crítico'],
+  ['통찰','tongchal','Perspicacia/Insight'],['성찰','seongchal','Introspección'],['반성','banseong','Reflexión crítica'],
+  ['공감','gonggam','Empatía'],['연대','yeondae','Solidaridad'],['포용','poyong','Inclusión'],
+  ['다양성','dayangseong','Diversidad'],['정체성','jeongcheseong','Identidad'],
+  ['귀속','gwisok','Pertenencia'],['소외','soui','Alienación/Exclusión'],
+];
+
+// ── C2 Vocabulary (42 words) ──
+const C2_VOCAB=[
+  ['존재론','jonjaeron','Ontología'],['인식론','insingron','Epistemología'],['미학','mihak','Estética'],
+  ['형이상학','hyeongisanghak','Metafísica'],['변증법','byeonjeungbeop','Dialéctica'],['실존','silje','Existencia'],
+  ['허무','heomu','Nihilismo/Vacío'],['초월','chowol','Trascendencia'],['내재','naejae','Inmanencia'],
+  ['절대','jeoldae','Absoluto'],['상대','sangdae','Relativo'],['이원론','iwonron','Dualismo'],
+  ['유물론','yumulron','Materialismo'],['관념론','gwanyeomron','Idealismo'],['실용주의','silyongjuui','Pragmatismo'],
+  ['구조주의','gujojuui','Estructuralismo'],['해체','haeche','Deconstrucción'],['담론','damron','Discurso'],
+  ['헤게모니','hegemoni','Hegemonía'],['패권','paekkweon','Hegemonía/Poder dominante'],
+  ['정전','jeongjeon','Canon literario'],['서사학','seosakak','Narratología'],['시학','sihak','Poética'],
+  ['수사학','susahak','Retórica'],['문체','munche','Estilo literario'],['어조','eojo','Tono'],
+  ['시점','sijeom','Punto de vista'],['화자','hwaja','Narrador/Hablante'],['청자','cheongja','Oyente/Receptor'],
+  ['함의','hameui','Connotación'],['외연','oeyeon','Denotación'],['의미장','uimijang','Campo semántico'],
+  ['어원','eowon','Etimología'],['음운','eumun','Fonema'],['형태소','hyeongttaeso','Morfema'],
+  ['통사론','tongsaron','Sintaxis'],['화용론','hwayongron','Pragmática'],['담화','damhwa','Discurso lingüístico'],
+  ['문어체','muneoce','Estilo escrito formal'],['구어체','gueoche','Estilo hablado coloquial'],
+  ['경어법','gyeongeobbeop','Sistema de cortesía'],['존비어','jonbieo','Lenguaje honorífico vs. no honorífico'],
+];
+
+// ── A1 Grammar ──
+const A1_GRAMMAR=[
+  {point:'은/는 (marcador de tópico)',example:'저는 학생이에요.',rom:'Jeoneun haksaengieyo.',trans:'Yo soy estudiante.',
+   note:'Se usa para marcar el tópico de la oración. 은 después de consonante, 는 después de vocal.'},
+  {point:'이에요/예요 (ser/estar)',example:'이것은 책이에요.',rom:'Igeoseun chaegieyo.',trans:'Esto es un libro.',
+   note:'이에요 después de consonante, 예요 después de vocal. Equivalente al verbo "ser".'},
+  {point:'이/가 (marcador de sujeto)',example:'물이 차가워요.',rom:'Muri chagawoyo.',trans:'El agua está fría.',
+   note:'이 después de consonante, 가 después de vocal. Marca el sujeto gramatical.'},
+  {point:'을/를 (marcador de objeto)',example:'밥을 먹어요.',rom:'Babeul meogeoyo.',trans:'Como arroz.',
+   note:'을 después de consonante, 를 después de vocal. Marca el objeto directo.'},
+  {point:'에 (lugar/tiempo/dirección)',example:'학교에 가요.',rom:'Hakgyoe gayo.',trans:'Voy a la escuela.',
+   note:'Indica lugar de existencia, tiempo o dirección. Similar a "en/a".'},
+  {point:'에서 (lugar de acción)',example:'집에서 공부해요.',rom:'Jibeseo gongbuheyo.',trans:'Estudio en casa.',
+   note:'Indica el lugar donde se realiza una acción. Diferente de 에 que indica existencia.'},
+  {point:'하고/와/과 (y)',example:'엄마하고 아빠가 계세요.',rom:'Eommahago appaga gyeseyo.',trans:'Están mamá y papá.',
+   note:'하고 es informal. 와 va después de vocal, 과 después de consonante (más formal).'},
+  {point:'도 (también)',example:'저도 한국어를 공부해요.',rom:'Jeodo hangugeoreul gongbuheyo.',trans:'Yo también estudio coreano.',
+   note:'도 reemplaza a 은/는, 이/가, 을/를 cuando significa "también".'},
+];
+
+// ── A2 Grammar ──
+const A2_GRAMMAR=[
+  {point:'고 싶다 (querer hacer)',example:'한국에 가고 싶어요.',rom:'Hanguke gago sipeoyo.',trans:'Quiero ir a Corea.',note:'Se adjunta al verbo base. Expresa deseo.'},
+  {point:'-(으)ㄹ 거예요 (futuro)',example:'내일 공부할 거예요.',rom:'Naeil gongbuhal geoyeyo.',trans:'Mañana voy a estudiar.',note:'Expresa una intención o predicción futura.'},
+  {point:'았/었어요 (pasado)',example:'어제 뭐 했어요?',rom:'Eoje mwo haesseoyo?',trans:'¿Qué hiciste ayer?',note:'았 con vocales positivas (ㅏ,ㅗ), 었 con el resto.'},
+  {point:'-(으)면 돼요 (está bien hacer)',example:'여기서 먹으면 돼요.',rom:'Yeogiseo meogeumyeon dwaeyo.',trans:'Está bien comer aquí.',note:'Indica permiso o que algo es suficiente.'},
+  {point:'-(으)면 안 돼요 (no se puede)',example:'사진을 찍으면 안 돼요.',rom:'Sajineul jjigeumyeon an dwaeyo.',trans:'No se puede tomar fotos.',note:'Indica prohibición.'},
+  {point:'-(으)ㄹ 수 있다/없다 (poder/no poder)',example:'한국어를 할 수 있어요.',rom:'Hangugeoreul hal su isseoyo.',trans:'Puedo hablar coreano.',note:'Expresa capacidad o posibilidad.'},
+  {point:'-아야/어야 하다 (deber/tener que)',example:'공부해야 해요.',rom:'Gongbuheya haeyo.',trans:'Tengo que estudiar.',note:'Expresa obligación.'},
+  {point:'-는/(으)ㄴ (modificador adjetival)',example:'맛있는 음식.',rom:'Masinneun eumsik.',trans:'Comida deliciosa.',note:'Modifica sustantivos. 는 para verbos acción, (으)ㄴ para adjetivos.'},
+  {point:'-아/어 주세요 (por favor haz para mí)',example:'도와주세요.',rom:'Dowajuseyo.',trans:'Por favor, ayúdeme.',note:'Pide a alguien que haga algo en beneficio del hablante.'},
+  {point:'-지 않다 (negación formal)',example:'먹지 않아요.',rom:'Meokji anayo.',trans:'No como.',note:'Negación más formal que 안 + verbo.'},
+];
+
+// ── B1 Grammar ──
+const B1_GRAMMAR=[
+  {point:'-(으)면서 (mientras)',example:'음악을 들으면서 공부해요.',rom:'Eumageul deureumyeonseo gongbuheyo.',trans:'Estudio mientras escucho música.',note:'Dos acciones simultáneas con el mismo sujeto.'},
+  {point:'-기 전에 (antes de)',example:'자기 전에 양치해요.',rom:'Jagi jeone yangchiheyo.',trans:'Me lavo los dientes antes de dormir.',note:'Expresa anterioridad. El sujeto puede variar.'},
+  {point:'-(으)ㄴ 후에 (después de)',example:'먹은 후에 운동해요.',rom:'Meogeun hue undonghaeyo.',trans:'Hago ejercicio después de comer.',note:'Expresa posterioridad.'},
+  {point:'-지만 (pero)',example:'맛있지만 비싸요.',rom:'Masitjiman bissayo.',trans:'Es delicioso pero caro.',note:'Contrasta dos ideas. Similar al español "aunque/pero".'},
+  {point:'-(으)니까 (porque - subjetivo)',example:'비가 오니까 우산 가져가세요.',rom:'Biga onikka usan gajyeogaseyo.',trans:'Lleva paraguas porque está lloviendo.',note:'Causa subjetiva, usada en peticiones y mandatos.'},
+  {point:'-아/어서 (porque - objetivo)',example:'배가 고파서 밥을 먹었어요.',rom:'Baega gopaseo babeul meogeosseoyo.',trans:'Comí porque tenía hambre.',note:'Causa objetiva. No se usa con mandatos.'},
+  {point:'-게 되다 (llegar a)',example:'한국어를 배우게 됐어요.',rom:'Hangugeoreul baeugetdo dwaesseoyo.',trans:'Llegué a aprender coreano.',note:'Indica un cambio de situación no planeado.'},
+  {point:'-(으)려고 (con el fin de)',example:'살을 빼려고 운동해요.',rom:'Sareul pparyeo undonghaeyo.',trans:'Hago ejercicio para adelgazar.',note:'Propósito o intención.'},
+  {point:'-(으)ㄹ 것 같다 (parece que)',example:'비가 올 것 같아요.',rom:'Biga ol geot gatayo.',trans:'Parece que va a llover.',note:'Suposición o conjetura.'},
+  {point:'-(으)ㄹ까요? (¿Shall we?)',example:'같이 갈까요?',rom:'Gachi galkkayo?',trans:'¿Vamos juntos?',note:'Propuesta o pregunta sobre la opinión del interlocutor.'},
+];
+
+// ── B2 Grammar ──
+const B2_GRAMMAR=[
+  {point:'-(으)면 (condicional)',example:'비가 오면 집에 있을게요.',rom:'Biga omyeon jibe isseulgeyo.',trans:'Si llueve, me quedaré en casa.',note:'Condicional general.'},
+  {point:'-(으)ㄴ 채로 (en el estado de)',example:'옷을 입은 채로 잤어요.',rom:'Oseul ibeun chaero jasseoyo.',trans:'Dormí con la ropa puesta.',note:'Estado mantenido mientras ocurre otra acción.'},
+  {point:'-(으)로 인해 (debido a)',example:'경기 침체로 인해 실업률이 올랐다.',rom:'Gyeonggi chimchero inhae sireongnyuli ollatsda.',trans:'La tasa de desempleo subió debido a la recesión.',note:'Causalidad formal, usado en escritura académica.'},
+  {point:'-는 반면에 (mientras que)',example:'도시화가 진행되는 반면에 농촌은 쇠퇴한다.',rom:'Dosihwaga jinhaekkdoeneun banmyeone nongchoneun soetoehanda.',trans:'Mientras la urbanización avanza, las zonas rurales declinan.',note:'Contrasta dos situaciones opuestas.'},
+  {point:'-(으)ㄹ뿐더러 (no solo sino también)',example:'우수할뿐더러 성실하다.',rom:'Usuhalpundeoleo seongssilhada.',trans:'No solo es excelente sino también diligente.',note:'Adición enfática, registro formal.'},
+  {point:'-는 한 (mientras que / siempre que)',example:'살아있는 한 포기하지 않겠다.',rom:'Saraiinneun han pogihaji anketta.',trans:'Mientras esté vivo, no me rendiré.',note:'Condición continuada.'},
+  {point:'-(으)ㄹ 텐데 (espero que... pero)',example:'힘들 텐데 잘 해낼 거예요.',rom:'Himdel tendeo jal haenael geoyeyo.',trans:'Debe ser difícil, pero lo logrará.',note:'Suposición con trasfondo de preocupación o expectativa.'},
+  {point:'-는다고 하다 (discurso reportado)',example:'비가 온다고 했어요.',rom:'Biga ondago haesseoyo.',trans:'Dijo que iba a llover.',note:'Reporta lo que alguien dijo.'},
+];
+
+// ── C1 Grammar ──
+const C1_GRAMMAR=[
+  {point:'-건만 (aunque - literario)',example:'열심히 했건만 결과가 좋지 않았다.',rom:'Yeolsimhi haetgeonman gyeolgwaga jochi anatsda.',trans:'Aunque trabajé duro, el resultado no fue bueno.',note:'Concesión literaria/formal.'},
+  {point:'-(으)ㄹ진대 (dado que - formal)',example:'그것이 사실일진대 대책이 필요하다.',rom:'Geugeosi sasililljindae daechaegi piryohada.',trans:'Dado que eso es un hecho, se necesitan medidas.',note:'Premisa formal con conclusión.'},
+  {point:'-더라도 (aunque)',example:'비가 오더라도 갈 거예요.',rom:'Biga odeorado gal geoyeyo.',trans:'Aunque llueva, iré.',note:'Condición hipotética adversativa.'},
+  {point:'-는지라 (porque - literario)',example:'일이 많은지라 쉴 수가 없다.',rom:'Iri maneuniira swil suga eomda.',trans:'No puedo descansar porque hay mucho trabajo.',note:'Causa en registro literario formal.'},
+  {point:'-(으)ㄹ래야 -(으)ㄹ 수가 없다 (no puede aunque quiera)',example:'잊으려야 잊을 수가 없어요.',rom:'Ijeureoya ijeul suga eomsseoyo.',trans:'No puedo olvidarlo aunque quiera.',note:'Imposibilidad a pesar del deseo.'},
+  {point:'-(이)자 (y al mismo tiempo)',example:'그는 선생이자 작가이다.',rom:'Geuneun seonsaengija jakkaida.',trans:'Él es profesor y escritor a la vez.',note:'Dos identidades simultáneas.'},
+  {point:'-는 나머지 (como resultado de)',example:'너무 웃는 나머지 눈물이 났다.',rom:'Neomu unneun nameoji nunmuri natta.',trans:'Reí tanto que se me salieron las lágrimas.',note:'Resultado excesivo.'},
+];
+
+// ── C2 Grammar ──
+const C2_GRAMMAR=[
+  {point:'-다시피 (como saben)',example:'알다시피 한국 경제는 성장했다.',rom:'Aldashipi hanguk gyeongjeneun seongjanghaessda.',trans:'Como saben, la economía coreana ha crecido.',note:'Presupone conocimiento compartido.'},
+  {point:'-ㄴ/는다는 것이 (accidentalmente)',example:'가려 했다는 것이 왔다.',rom:'Garyeo haettaneun geosi watda.',trans:'Intentando ir, vine (por error).',note:'Acción involuntaria que resulta en otra.'},
+  {point:'-(으)련만 (ojalá - subjuntivo)',example:'그랬으련만 지금은 너무 늦었다.',rom:'Geuraeteuryeonman jigeumeun neomu neujeotda.',trans:'Ojalá hubiera sido así, pero ya es muy tarde.',note:'Deseo contrafactual literario.'},
+  {point:'-건대 (a mi parecer)',example:'생각건대 이 문제는 간단하지 않다.',rom:'Saenggakgeondae i munjeneun gandanhaji anda.',trans:'A mi parecer, este problema no es sencillo.',note:'Opinión personal en tono formal.'},
+  {point:'-(으)ㄹ진저 (exclamación literaria)',example:'아름다울진저!',rom:'Areundaeuljinjeo!',trans:'¡Qué hermoso!',note:'Exclamación arcaica literaria.'},
+  {point:'-는 모양이다 (parece que)',example:'그가 떠난 모양이다.',rom:'Geuga tteonan moyangida.',trans:'Parece que se fue.',note:'Suposición basada en evidencia indirecta.'},
+];
+
+// ── A1 Phrases ──
+const A1_PHRASES={
+  'Saludos':[
+    ['안녕하세요','annyeonghaseyo','Hola (formal)'],
+    ['안녕','annyeong','Hola (informal)'],
+    ['좋은 아침이에요','joeun achimieyo','Buenos días'],
+    ['반갑습니다','bangapseumnida','Encantado/a de conocerle'],
+    ['처음 뵙겠습니다','cheoeum boepgesseumnida','Es un placer conocerle (muy formal)'],
+    ['잘 지내세요?','jal jinaeeyo?','¿Cómo está usted?'],
+    ['잘 지내요','jal jinaeyo','Estoy bien'],
+    ['네, 괜찮아요','ne, gwaenchanayo','Sí, estoy bien'],
+  ],
+  'Despedidas':[
+    ['안녕히 가세요','annyeonghi gaseyo','Adiós (al que se va)'],
+    ['안녕히 계세요','annyeonghi gyeseyo','Adiós (al que se queda)'],
+    ['내일 봐요','naeil bwayo','Nos vemos mañana'],
+    ['또 만나요','tto mannayo','Hasta la próxima'],
+    ['조심히 가세요','josimhi gaseyo','Ten cuidado al ir'],
+    ['잘 자요','jal jayo','Buenas noches / Que duermas bien'],
+  ],
+  'Restaurante':[
+    ['메뉴 주세요','menyu juseyo','El menú, por favor'],
+    ['이거 주세요','igeo juseyo','Esto, por favor'],
+    ['얼마예요?','eolmayeyo?','¿Cuánto cuesta?'],
+    ['맛있어요','masisseoyo','Está delicioso'],
+    ['계산서 주세요','gyesanseo juseyo','La cuenta, por favor'],
+    ['포장해 주세요','pojanghe juseyo','Para llevar, por favor'],
+    ['물 주세요','mul juseyo','Agua, por favor'],
+    ['추천해 주세요','chucheonhe juseyo','Recomiéndeme algo'],
+  ],
+  'Compras':[
+    ['이거 얼마예요?','igeo eolmayeyo?','¿Cuánto cuesta esto?'],
+    ['깎아 주세요','kkakka juseyo','¿Puede bajar el precio?'],
+    ['이거 주세요','igeo juseyo','Me llevo esto'],
+    ['다른 거 없어요?','dareun geo eopseoyo?','¿No tiene otro?'],
+    ['사이즈가 어떻게 돼요?','saijeuга eotteoke dwaeyo?','¿Qué tallas tiene?'],
+    ['입어봐도 돼요?','ibeoбwado dwaeyo?','¿Puedo probármelo?'],
+  ],
+  'Transporte':[
+    ['어디에 있어요?','eodie isseoyo?','¿Dónde está?'],
+    ['어떻게 가요?','eotteoke gayo?','¿Cómo se va?'],
+    ['지하철역이 어디예요?','jihacheolyeogi eodiyeyo?','¿Dónde está la estación de metro?'],
+    ['택시 타고 싶어요','taeksi tago sipeoyo','Quiero tomar un taxi'],
+    ['여기 세워 주세요','yeogi seweo juseyo','Pare aquí, por favor'],
+    ['버스 몇 번이에요?','beoseu myeot beonieyo?','¿Qué número de autobús es?'],
+  ],
+  'Emergencias':[
+    ['도와주세요!','dowajuseyo!','¡Ayúdeme!'],
+    ['경찰을 불러주세요','gyeongcheoleul bulleojuseyo','Llame a la policía'],
+    ['병원에 가고 싶어요','byeongwone gago sipeoyo','Quiero ir al hospital'],
+    ['아파요','apayo','Me duele / Estoy enfermo'],
+    ['길을 잃었어요','gireul irheosseoyo','Estoy perdido'],
+    ['여권을 잃어버렸어요','yeokwoneul irheoboryeosseoyo','He perdido mi pasaporte'],
+  ],
+  'Expresiones útiles':[
+    ['모르겠어요','moreugesseoyo','No lo sé'],
+    ['이해 못 했어요','ihae mot haesseoyo','No he entendido'],
+    ['다시 말해 주세요','dasi malhae juseyo','Por favor, repita'],
+    ['천천히 말해 주세요','cheoncheonhi malhae juseyo','Por favor, habla despacio'],
+    ['한국어를 조금 해요','hangugeoreul jogeum haeyo','Hablo un poco de coreano'],
+    ['한국어를 잘 못 해요','hangugeoreul jal mot haeyo','No soy bueno en coreano'],
+    ['영어 하세요?','yeongeo haseyo?','¿Habla inglés?'],
+    ['감사합니다','gamsahamnida','Muchas gracias'],
+  ],
+};
+
+// ── A2 Dialogues ──
+const A2_DIALOGUES=[
+  {title:'En el restaurante',lines:[
+    {speaker:'손님',kor:'어서오세요! 몇 분이세요?',rom:'Eoseo oseyo! Myeot buniseyo?',trans:'¡Bienvenido! ¿Cuántos son?'},
+    {speaker:'직원',kor:'두 명이에요.',rom:'Du myeongieyo.',trans:'Somos dos.'},
+    {speaker:'손님',kor:'메뉴판 좀 주세요.',rom:'Menyupan jom juseyo.',trans:'Por favor, el menú.'},
+    {speaker:'직원',kor:'여기 있습니다. 뭐 드릴까요?',rom:'Yeogi itseumnida. Mwo deurilkkayo?',trans:'Aquí tiene. ¿Qué desea?'},
+    {speaker:'손님',kor:'비빔밥 하나하고 된장찌개 하나 주세요.',rom:'Bibimbap hanahago doenjangjjigae hana juseyo.',trans:'Un bibimbap y una sopa de pasta de soja.'},
+  ]},
+  {title:'Pidiendo direcciones',lines:[
+    {speaker:'여행객',kor:'실례합니다. 경복궁이 어디에 있어요?',rom:'Sillyehamnida. Gyeongbokggungi eodie isseoyo?',trans:'Disculpe. ¿Dónde está el Palacio Gyeongbok?'},
+    {speaker:'시민',kor:'이쪽으로 쭉 가세요.',rom:'Ijjogeuro jjuk gaseyo.',trans:'Siga recto por aquí.'},
+    {speaker:'여행객',kor:'걸어서 얼마나 걸려요?',rom:'Georeoeo eolmana geollyeoyo?',trans:'¿Cuánto se tarda a pie?'},
+    {speaker:'시민',kor:'한 십 분 정도 걸려요.',rom:'Han sip bun jeongdo geollyeoyo.',trans:'Unos diez minutos.'},
+    {speaker:'여행객',kor:'감사합니다!',rom:'Gamsahamnida!',trans:'¡Gracias!'},
+  ]},
+  {title:'En la tienda',lines:[
+    {speaker:'점원',kor:'어서 오세요! 뭐 찾으세요?',rom:'Eoseo oseyo! Mwo chajeuseoyo?',trans:'¡Bienvenido! ¿Qué busca?'},
+    {speaker:'손님',kor:'티셔츠 보려고요.',rom:'Tisyeocheu boryeogoyo.',trans:'Quiero ver camisetas.'},
+    {speaker:'점원',kor:'사이즈가 어떻게 되세요?',rom:'Saijeuга eotteoke doeseyo?',trans:'¿Cuál es su talla?'},
+    {speaker:'손님',kor:'M 사이즈요. 이거 얼마예요?',rom:'Em saijeuyo. Igeo eolmayeyo?',trans:'Talla M. ¿Cuánto cuesta esto?'},
+    {speaker:'점원',kor:'이만 원이에요.',rom:'Iman wonieyo.',trans:'Son veinte mil wones.'},
+  ]},
+  {title:'En el médico',lines:[
+    {speaker:'의사',kor:'어디가 불편하세요?',rom:'Eodiga bulpyeonhaseyo?',trans:'¿Qué le molesta?'},
+    {speaker:'환자',kor:'배가 아파요.',rom:'Baega apayo.',trans:'Me duele el estómago.'},
+    {speaker:'의사',kor:'언제부터요?',rom:'Eonjebuteoyo?',trans:'¿Desde cuándo?'},
+    {speaker:'환자',kor:'어제부터예요.',rom:'Eojebutoeyeyo.',trans:'Desde ayer.'},
+    {speaker:'의사',kor:'이 약을 드세요.',rom:'I yageul deuseyo.',trans:'Tome esta medicina.'},
+  ]},
+  {title:'Presentaciones',lines:[
+    {speaker:'민준',kor:'안녕하세요! 저는 민준이에요.',rom:'Annyeonghaseyo! Jeoneun Minjunieyo.',trans:'¡Hola! Soy Minjun.'},
+    {speaker:'소피아',kor:'안녕하세요! 저는 소피아예요. 만나서 반가워요.',rom:'Annyeonghaseyo! Jeoneun Sopiayeyo. Mannaseo bangawoyo.',trans:'¡Hola! Soy Sofía. Encantada de conocerte.'},
+    {speaker:'민준',kor:'어느 나라 사람이에요?',rom:'Eoneu nara saramieyo?',trans:'¿De qué país eres?'},
+    {speaker:'소피아',kor:'스페인 사람이에요. 한국어 공부해요.',rom:'Seupein saramieyo. Hangugeo gongbuhaeyo.',trans:'Soy española. Estudio coreano.'},
+    {speaker:'민준',kor:'대단해요! 한국어 잘 하네요.',rom:'Daedanhaeyo! Hangugeo jal haneyo.',trans:'¡Increíble! Hablas muy bien coreano.'},
+  ]},
+];
+
+// ── B1 Dialogues ──
+const B1_DIALOGUES=[
+  {title:'Hablando de planes futuros',lines:[
+    {speaker:'지수',kor:'방학에 뭐 할 거예요?',rom:'Banghage mwo hal geoyeyo?',trans:'¿Qué vas a hacer en las vacaciones?'},
+    {speaker:'마크',kor:'배낭여행을 가려고 해요. 동남아시아를 여행할 거예요.',rom:'Baenang-yeohang-eul garyeogo haeyo. Dongnam-asia-reul yeohaenghal geoyeyo.',trans:'Planeo hacer mochilero. Voy a viajar por el sudeste asiático.'},
+    {speaker:'지수',kor:'정말요? 혼자 가요?',rom:'Jeongmallyo? Honja gayo?',trans:'¿En serio? ¿Vas solo?'},
+    {speaker:'마크',kor:'아니요, 친구하고 같이 가요. 한 달 동안 여행할 계획이에요.',rom:'Aniyo, chinguhago gachi gayo. Han dal dongan yeohaenghal gyehoegieyo.',trans:'No, voy con un amigo. El plan es viajar durante un mes.'},
+  ]},
+  {title:'Discutiendo el medio ambiente',lines:[
+    {speaker:'유진',kor:'요즘 환경 문제가 정말 심각한 것 같아요.',rom:'Yojeum hwangyeong munjega jeongmal simgakhan geot gatayo.',trans:'Creo que últimamente los problemas ambientales son realmente graves.'},
+    {speaker:'민서',kor:'맞아요. 기후변화 때문에 여름이 점점 더워지고 있잖아요.',rom:'Majayo. Gihubbyeonhwa ttaemune yeoreumi jeomjeom deowoijgo itjanayo.',trans:'Es verdad. Los veranos son cada vez más calurosos por el cambio climático.'},
+    {speaker:'유진',kor:'우리가 뭔가 해야 할 것 같아요. 재활용이라도 열심히 하죠.',rom:'Uriga mwonga heya hal geot gatayo. Jaehwaryong-irado yeolsimhi hajyo.',trans:'Creo que tenemos que hacer algo. Al menos reciclar con dedicación.'},
+  ]},
+  {title:'Recomendando una película',lines:[
+    {speaker:'하준',kor:'요즘 좋은 영화 본 거 있어요?',rom:'Yojeum joeun yeonghwa bon geo isseoyo?',trans:'¿Has visto alguna buena película últimamente?'},
+    {speaker:'이사벨',kor:'네! 기생충 봤어요? 정말 대단한 영화예요.',rom:'Ne! Gisaengchung bwasseoyo? Jeongmal daedanhan yeonghwayeyo.',trans:'¡Sí! ¿Viste Parasite? Es una película increíble.'},
+    {speaker:'하준',kor:'아직 못 봤는데, 어떤 내용이에요?',rom:'Ajik mot bwanneunde, eotteon naeyongieyo?',trans:'Todavía no la he visto. ¿De qué trata?'},
+    {speaker:'이사벨',kor:'사회적 불평등에 관한 이야기인데, 반전이 엄청나요.',rom:'Sahoejok bulpyeongdeunge gwanhan iyagiinde, banjeon-i eomcheongnayo.',trans:'Trata sobre la desigualdad social y tiene un giro impresionante.'},
+  ]},
+  {title:'Hablando del trabajo',lines:[
+    {speaker:'소라',kor:'요즘 회사 생활은 어때요?',rom:'Yojeum hoesa saenghwareun eottaeyo?',trans:'¿Cómo te va en el trabajo últimamente?'},
+    {speaker:'리카',kor:'좀 바쁘긴 한데, 재미있어요. 새 프로젝트를 맡게 됐거든요.',rom:'Jom bappeuggin hande, jaemiisseoyo. Sae peurojecteoreul matke dwaetgeodeunyo.',trans:'Está un poco ajetreado, pero es interesante. Me encargaron un nuevo proyecto.'},
+    {speaker:'소라',kor:'잘 됐네요! 어떤 프로젝트예요?',rom:'Jal dwaenneyo! Eotteon peurojecteyeyo?',trans:'¡Qué bien! ¿Qué tipo de proyecto?'},
+    {speaker:'리카',kor:'새 앱을 개발하는 건데, 팀워크가 중요한 것 같아요.',rom:'Sae apeul gaebalhanneun geonde, timwokeuga jungyohan geot gatayo.',trans:'Es desarrollar una nueva app y creo que el trabajo en equipo es importante.'},
+  ]},
+];
+
+// ── B2 Dialogues ──
+const B2_DIALOGUES=[
+  {title:'Debate sobre redes sociales',lines:[
+    {speaker:'진우',kor:'소셜 미디어가 현대 사회에 미치는 영향이 어떻다고 생각하세요?',rom:'Sosyeol midioga hyeondae sahoe-e michineun yeonghyang-i eottadago saenggakhaseyo?',trans:'¿Qué piensa usted sobre el impacto de las redes sociales en la sociedad moderna?'},
+    {speaker:'나탈리아',kor:'긍정적인 면과 부정적인 면이 공존하는 것 같아요. 소통의 편리함이 증가한 반면, 개인 정보 보호 문제도 심각해졌죠.',rom:'Geungjeongjegin myeongwa bujeongjekin myeoni gongjjonhaneun geot gatayo.',trans:'Creo que coexisten aspectos positivos y negativos. La comunicación mejoró, pero los problemas de privacidad se agravaron.'},
+    {speaker:'진우',kor:'맞습니다. 특히 청소년들에게 미치는 영향이 우려되는 측면이 있죠.',rom:'Matseumnida. Teukhi cheongson-yeondeure michineun yeonghyang-i uryeodoneun cheungmyeoni itjyo.',trans:'Tiene razón. Especialmente preocupa el impacto en los jóvenes.'},
+  ]},
+  {title:'Entrevista de trabajo',lines:[
+    {speaker:'면접관',kor:'우리 회사에 지원한 이유가 뭔가요?',rom:'Uri hoe-sae jiwonanhan iyuga mwongayo?',trans:'¿Por qué razón solicita empleo en nuestra empresa?'},
+    {speaker:'지원자',kor:'귀사의 혁신적인 사업 방향과 사회적 가치를 중시하는 기업 문화에 깊은 인상을 받았습니다.',rom:'Gwisaui hyeoksinjegin saeopbanghyangkwa sahoejok gachireul jungihanneun gieop munhwae gipeun insang-eul badatsseumnida.',trans:'Me impresionó profundamente la dirección innovadora de su empresa y la cultura corporativa que valora el impacto social.'},
+    {speaker:'면접관',kor:'본인의 가장 큰 강점이 무엇이라고 생각하시나요?',rom:'Bonin-ui gajang keun gangjeomi mueosirago saenggaksinanyo?',trans:'¿Cuál considera que es su mayor fortaleza?'},
+    {speaker:'지원자',kor:'다양한 환경에서의 적응력과 팀 내에서의 협업 능력이 저의 강점이라고 생각합니다.',rom:'Dayanghan hwangyeongeseseui jeogeungnyeokgwa tim naeseseui hyeobeop neungnyeogi jeoui gangjeomirago saenggakamnida.',trans:'Creo que mi capacidad de adaptación y mis habilidades de trabajo en equipo son mis principales fortalezas.'},
+  ]},
+  {title:'Conversación filosófica',lines:[
+    {speaker:'세준',kor:'행복이란 무엇이라고 생각해요?',rom:'Haengboginan mueosirago saenggakhaeyo?',trans:'¿Qué cree usted que es la felicidad?'},
+    {speaker:'카밀라',kor:'행복은 절대적인 개념이 아니라 상대적인 것이라고 생각해요. 사람마다 추구하는 행복의 형태가 다르니까요.',rom:'Haengbogeun jeoldaejeoin gaenyeomi anira sangdaejeoin geoirago saenggakhaeyo.',trans:'Creo que la felicidad no es un concepto absoluto sino relativo. La forma en que cada persona busca la felicidad es diferente.'},
+    {speaker:'세준',kor:'흥미로운 관점이네요. 그렇다면 행복을 추구하는 과정 자체가 행복일 수도 있겠네요.',rom:'Heungmiroun gwanjeomineyo. Geureotdamyeon haengbogeul chuguhaneun gwajeong jachega haengbogil sudo itgesneyo.',trans:'Es un punto de vista interesante. Entonces el proceso mismo de buscar la felicidad podría ser la felicidad.'},
+  ]},
+];
+
+// ── B1 Reading ──
+const B1_READING=[
+  {title:'한국의 사계절 (Las cuatro estaciones de Corea)',
+   text:'한국은 사계절이 뚜렷한 나라입니다. 봄에는 꽃이 피고 날씨가 따뜻해집니다. 특히 벚꽃이 유명해서 많은 사람들이 꽃놀이를 즐깁니다. 여름은 덥고 습하며 장마 기간이 있습니다. 가을에는 단풍이 아름답고 날씨가 맑습니다. 겨울은 춥고 눈이 많이 옵니다.',
+   questions:[
+     {q:'한국의 봄에는 무슨 꽃이 유명해요?',a:'벚꽃이 유명해요.'},
+     {q:'여름에 어떤 기간이 있어요?',a:'장마 기간이 있어요.'},
+     {q:'가을 날씨는 어때요?',a:'맑아요.'},
+   ]},
+  {title:'한국의 음식 문화 (Cultura gastronómica coreana)',
+   text:'한국 음식은 세계적으로 유명해졌습니다. 김치, 불고기, 비빔밥은 한국을 대표하는 음식입니다. 한국 사람들은 함께 밥을 먹는 것을 중요하게 생각합니다. 식사할 때 보통 반찬이 여러 가지 나옵니다. 최근에는 한류의 영향으로 한국 음식에 대한 관심이 전 세계적으로 높아지고 있습니다.',
+   questions:[
+     {q:'한국을 대표하는 음식 세 가지는 뭐예요?',a:'김치, 불고기, 비빔밥이에요.'},
+     {q:'식사할 때 보통 뭐가 나와요?',a:'반찬이 여러 가지 나와요.'},
+     {q:'왜 한국 음식에 대한 관심이 높아졌어요?',a:'한류의 영향 때문이에요.'},
+   ]},
+  {title:'서울의 교통 (El transporte de Seúl)',
+   text:'서울은 세계에서 대중교통이 가장 발달한 도시 중 하나입니다. 지하철, 버스, 택시 등 다양한 교통수단이 있습니다. 교통카드 하나로 지하철과 버스를 모두 이용할 수 있습니다. 환승 시스템이 잘 되어 있어서 편리합니다. 카카오택시 같은 앱으로 택시도 쉽게 부를 수 있습니다.',
+   questions:[
+     {q:'서울의 대중교통은 어때요?',a:'세계에서 가장 발달했어요.'},
+     {q:'교통카드로 뭘 이용할 수 있어요?',a:'지하철과 버스를 이용할 수 있어요.'},
+     {q:'어떤 앱으로 택시를 부를 수 있어요?',a:'카카오택시로 부를 수 있어요.'},
+   ]},
+  {title:'한국의 교육 열정 (El fervor educativo coreano)',
+   text:'한국은 교육열이 매우 높은 나라로 알려져 있습니다. 많은 학생들이 학교가 끝난 후 학원에 다닙니다. 수능은 한국에서 가장 중요한 시험으로, 대학 입시에 큰 영향을 미칩니다. 최근에는 이러한 교육 시스템에 대한 반성도 이루어지고 있으며, 창의적 교육의 필요성도 강조되고 있습니다.',
+   questions:[
+     {q:'학교가 끝난 후 많은 학생들은 어디에 가요?',a:'학원에 가요.'},
+     {q:'수능이란 뭐예요?',a:'대학 입시에 중요한 시험이에요.'},
+     {q:'최근 교육에 대해 어떤 변화가 있어요?',a:'창의적 교육의 필요성이 강조되고 있어요.'},
+   ]},
+];
+
+// ── C1 Reading ──
+const C1_READING=[
+  {title:'한국 사회의 변화 (Cambios en la sociedad coreana)',
+   text:'급속한 경제 성장을 이룬 한국 사회는 다양한 변화를 겪고 있습니다. 저출생·고령화 문제는 사회 전반에 걸쳐 심각한 과제로 떠오르고 있으며, 이에 따른 복지 정책의 재편이 불가피한 상황입니다. 한편, 디지털 전환이 가속화되면서 전통적인 산업 구조가 재편되고 있으며, 이 과정에서 발생하는 세대 간 디지털 격차 문제도 주목받고 있습니다. 사회적 불평등과 양극화 현상 역시 지속적인 논의의 대상이 되고 있으며, 이를 해소하기 위한 다양한 정책적 노력이 이루어지고 있습니다.',
+   questions:[
+     {q:'한국 사회가 직면한 주요 인구 문제는 무엇인가요?',a:'저출생과 고령화 문제입니다.'},
+     {q:'디지털 전환으로 어떤 문제가 생겼나요?',a:'세대 간 디지털 격차 문제가 생겼습니다.'},
+     {q:'이 글의 핵심 주제는 무엇인가요?',a:'한국 사회의 다양한 변화와 과제들입니다.'},
+   ]},
+  {title:'언어와 정체성 (Lengua e identidad)',
+   text:'언어는 단순한 의사소통의 도구를 넘어 한 민족의 정체성과 문화를 담고 있는 그릇이라 할 수 있습니다. 한국어의 경우, 경어법이라는 독특한 체계를 통해 사회적 관계와 위계를 반영합니다. 이는 단순한 언어적 현상을 넘어 한국 사회의 집단주의적 문화와 유교적 가치관이 언어에 녹아있음을 보여줍니다. 세계화 시대에 외래어의 유입이 증가하는 한편, 순우리말을 지키려는 노력도 계속되고 있습니다.',
+   questions:[
+     {q:'언어는 무엇을 담고 있다고 했나요?',a:'한 민족의 정체성과 문화를 담고 있습니다.'},
+     {q:'한국어의 경어법이 반영하는 것은 무엇인가요?',a:'사회적 관계와 위계를 반영합니다.'},
+   ]},
+  {title:'한류의 세계화 (La globalización del Hallyu)',
+   text:'21세기 들어 한국의 대중문화가 전 세계적으로 주목받는 현상, 즉 한류는 단순한 문화 수출을 넘어 외교적·경제적 의미를 갖게 되었습니다. K-팝, K-드라마, K-영화에 이어 K-푸드, K-뷰티까지 그 영역이 확장되면서 한국이라는 브랜드 자체의 가치가 높아지고 있습니다. 그러나 한류가 지속적으로 성장하려면 콘텐츠의 다양성 확보와 함께 문화적 다원주의에 대한 이해도 필요하다는 비판적 시각도 존재합니다.',
+   questions:[
+     {q:'한류가 갖게 된 의미는 무엇인가요?',a:'외교적·경제적 의미를 갖게 되었습니다.'},
+     {q:'한류가 지속 성장하려면 무엇이 필요하다고 했나요?',a:'콘텐츠의 다양성 확보와 문화적 다원주의에 대한 이해가 필요합니다.'},
+   ]},
+];
+
+// ── C2 Reading ──
+const C2_READING=[
+  {title:'이상 - 날개 (Alas) [fragmento]',
+   text:'나는 지금 무슨 까닭인지 거울을 아니 봐야 할 처지에 놓여 있다. 그것은 내 눈이 거울을 볼 때마다 내 눈이 내 눈을 쳐다봐서 나는 무서워진다. 내 눈이 내 눈을 쳐다보는 까닭에 나는 차라리 거울을 아니 봐야 한다. 거울은 내 눈을 쳐다보게 하는 아무 이유 없는 위험한 물건이다.',
+   questions:[
+     {q:'화자가 거울을 보지 않으려는 이유는 무엇인가요?',a:'내 눈이 내 눈을 쳐다봐서 무서워지기 때문입니다.'},
+     {q:'이 글의 서술 방식의 특징은 무엇인가요?',a:'1인칭 주관적 서술로 내면 심리를 탐구합니다.'},
+   ]},
+  {title:'현대 한국의 문학 비평 (Crítica literaria coreana moderna)',
+   text:'한국 현대 문학은 식민지 시대의 아픔과 분단의 비극, 급속한 근대화의 명암을 작품 속에 녹여내며 발전해 왔습니다. 특히 1980년대 민주화 운동을 배경으로 한 작품들은 사회 참여적 문학의 전통을 형성하였습니다. 최근에는 세계 문학과의 교류가 활발해지면서 한국 문학의 주제와 형식이 더욱 다양해지고 있으며, 한강의 노벨문학상 수상은 한국 문학의 세계적 위상을 한층 높였습니다.',
+   questions:[
+     {q:'한국 현대 문학이 담아온 역사적 경험은 무엇인가요?',a:'식민지 시대, 분단, 급속한 근대화의 경험입니다.'},
+     {q:'한강의 노벨문학상 수상이 의미하는 바는 무엇인가요?',a:'한국 문학의 세계적 위상이 높아졌음을 의미합니다.'},
+   ]},
+];
+
+// ── C1 Idiomatic Expressions ──
+const C1_EXPRESSIONS=[
+  {expr:'눈에 띄다',rom:'nune ttida',meaning:'Destacarse, llamar la atención',example:'그 배우는 처음부터 눈에 띄었어요.'},
+  {expr:'발 벗고 나서다',rom:'bal beotgo naseoda',meaning:'Ayudar de todo corazón, involucrarse activamente',example:'친구가 어려울 때 발 벗고 나서줬어요.'},
+  {expr:'손이 크다',rom:'soni keuda',meaning:'Ser generoso, dar mucho',example:'우리 엄마는 손이 커서 늘 많이 만들어요.'},
+  {expr:'귀가 얇다',rom:'gwiga yalda',meaning:'Ser fácilmente influenciable',example:'그 사람은 귀가 얇아서 쉽게 설득당해요.'},
+  {expr:'배가 아프다',rom:'baega apeuda',meaning:'Sentir envidia, que le "duela" el éxito ajeno',example:'친구가 취직했다고 하니까 배가 아프네.'},
+  {expr:'발이 넓다',rom:'bari neolda',meaning:'Tener muchos contactos, ser muy conocido',example:'그 분은 정말 발이 넓어서 모르는 사람이 없어요.'},
+  {expr:'눈코 뜰 새 없다',rom:'nunko deul sae eopda',meaning:'Estar extremadamente ocupado',example:'요즘 프로젝트 때문에 눈코 뜰 새 없어요.'},
+  {expr:'하늘의 별 따기',rom:'haneureui byeol ttagi',meaning:'Algo muy difícil de conseguir',example:'그 회사에 취직하는 건 하늘의 별 따기예요.'},
+  {expr:'식은 죽 먹기',rom:'sigeun juk meokgi',meaning:'Pan comido, muy fácil',example:'이 문제는 식은 죽 먹기예요.'},
+  {expr:'작심삼일',rom:'jaksimsam-il',meaning:'Resolución que dura solo tres días',example:'매번 작심삼일로 끝나버려요.'},
+  {expr:'소 귀에 경 읽기',rom:'so gwie gyeong ilki',meaning:'Predicar en el desierto, en vano',example:'그에게 충고하는 건 소 귀에 경 읽기예요.'},
+  {expr:'그림의 떡',rom:'geurimui tteok',meaning:'Algo deseable pero inalcanzable',example:'그 명품 가방은 나한테 그림의 떡이에요.'},
+  {expr:'미역국을 먹다',rom:'miyeokgugeul meokda',meaning:'Reprobar un examen o ser rechazado',example:'시험에서 미역국을 먹었어요.'},
+  {expr:'얼굴이 두껍다',rom:'eolguri dukeopda',meaning:'Ser descarado, sin vergüenza',example:'그 사람은 얼굴이 두꺼워서 뻔뻔하게 굴어요.'},
+  {expr:'고양이 세수',rom:'goyangi sesu',meaning:'Lavarse superficialmente, hacer las cosas a medias',example:'고양이 세수만 하고 나왔어요.'},
+  {expr:'낙동강 오리알',rom:'nakdonggang oriar',meaning:'Persona aislada o excluida del grupo',example:'혼자 낙동강 오리알이 된 것 같았어요.'},
+  {expr:'가는 말이 고와야 오는 말이 곱다',rom:'ganeun mari gowaya oneun mari gopda',meaning:'Trata a los demás como quieres ser tratado',example:'가는 말이 고와야 오는 말이 곱다고, 먼저 친절히 대해봐요.'},
+  {expr:'세 살 버릇 여든까지 간다',rom:'se sal beoreut yeodeunkkaji ganda',meaning:'Los viejos hábitos son difíciles de cambiar',example:'세 살 버릇 여든까지 간다니까, 어릴 때부터 잘 가르쳐야 해요.'},
+  {expr:'호랑이도 제 말 하면 온다',rom:'horangido je mal hamyeon onda',meaning:'Hablando del rey de Roma',example:'호랑이도 제 말 하면 온다더니, 딱 왔네요!'},
+  {expr:'돼지에 진주 목걸이',rom:'dwaejie jinju mokgeori',meaning:'Perlas ante los cerdos',example:'그 사람한테 조언해봤자 돼지에 진주 목걸이예요.'},
+];
+
+// ── C2 Literature ──
+const C2_LITERATURE={
+  sijo:[
+    {title:'황진이 시조 (Sijo de Hwang Jini)',
+     kor:'산은 옛 산이로되 물은 옛 물이 아니로다\n산 아래 물이 흘러 간밤에 떠나더니\n오늘은 새 물이 왔는데 옛 모습은 어디 갔나.',
+     trans:'La montaña es la montaña de siempre, pero el agua ya no es la misma.\nEl agua que corría al pie de la montaña se fue anoche.\nHoy llegó agua nueva, ¿adónde fue el rostro de antes?',
+     notes:'Uno de los sijos más famosos, escrito por la famosa gisaeng (artista) Hwang Jini del período Joseon. Refleja la permanencia de la naturaleza versus la transitoriedad del tiempo.'},
+    {title:'진달래꽃 - 김소월 (Azaleas - Kim Sowol)',
+     kor:'나 보기가 역겨워\n가실 때에는\n말없이 고이 보내 드리오리다\n\n영변에 약산\n진달래꽃\n아름 따다 가실 길에 뿌리오리다',
+     trans:'Cuando te vayas\npor cansarte de mirarme,\nte dejaré ir en silencio.\n\nEsparcirá flores de azalea del monte Yak\nen Yeongbyeon\nen el camino que recorrerás al partir.',
+     notes:'Poema icónico de la literatura coreana moderna. Kim Sowol (1902-1934) expresa la aceptación silenciosa del dolor amoroso, un tema central del "han" (한) coreano.'},
+  ],
+  proverbs:[
+    {kor:'가는 날이 장날이다',trans:'El día que llegas es día de mercado (mala suerte, mal momento)'},
+    {kor:'공든 탑이 무너지랴',trans:'Una torre construida con esfuerzo no se derrumba'},
+    {kor:'급할수록 돌아가라',trans:'Cuanto más prisa tienes, más debes ir despacio'},
+    {kor:'낮말은 새가 듣고 밤말은 쥐가 듣는다',trans:'Los pájaros oyen lo que se dice de día, los ratones lo que se dice de noche (ten cuidado con lo que dices)'},
+    {kor:'모로 가도 서울만 가면 된다',trans:'No importa el camino, lo importante es llegar a Seúl (el fin justifica los medios)'},
+    {kor:'백지장도 맞들면 낫다',trans:'Incluso una hoja en blanco es más fácil de levantar entre dos (dos cabezas piensan mejor que una)'},
+    {kor:'아니 땐 굴뚝에 연기 나랴',trans:'No hay humo sin fuego'},
+    {kor:'원숭이도 나무에서 떨어진다',trans:'Hasta los monos se caen de los árboles (nadie es perfecto)'},
+    {kor:'티끌 모아 태산',trans:'Muchos granos de arena forman una montaña (cada pequeño esfuerzo cuenta)'},
+    {kor:'하늘이 무너져도 솟아날 구멍이 있다',trans:'Aunque caiga el cielo, siempre hay una salida'},
+    {kor:'말 한마디로 천 냥 빚도 갚는다',trans:'Una palabra puede saldar una deuda de mil nyang (las palabras tienen poder)'},
+    {kor:'웃는 낯에 침 못 뱉는다',trans:'No puedes escupirle a alguien que te sonríe (la amabilidad desarma)'},
+    {kor:'병주고 약준다',trans:'Dar la enfermedad y luego el remedio (hacer el mal y luego intentar remediarlo)'},
+    {kor:'자라 보고 놀란 가슴 솥뚜껑 보고 놀란다',trans:'Quien se asustó de una tortuga, se asustará de la tapa de una olla (trauma o fobia)'},
+    {kor:'콩 심은 데 콩 나고 팥 심은 데 팥 난다',trans:'Siembra judías y cosecharás judías (lo que siembras, cosechas)'},
+    {kor:'가재는 게 편이다',trans:'El cangrejo de río apoya al cangrejo (cada oveja con su pareja)'},
+    {kor:'닭 쫓던 개 지붕 쳐다본다',trans:'El perro que perseguía a la gallina mira el techo (quedarse con las manos vacías)'},
+    {kor:'소문난 잔치에 먹을 거 없다',trans:'En la fiesta famosa no hay nada que comer (lo muy anunciado decepciona)'},
+    {kor:'열 번 찍어 안 넘어가는 나무 없다',trans:'No hay árbol que no caiga al décimo hachazo (la perseverancia lo vence todo)'},
+    {kor:'혹 떼러 갔다 혹 붙여 온다',trans:'Fue a quitarse una verruga y volvió con dos (fue a resolver un problema y lo empeoró)'},
+  ],
+  hanja:[
+    {hanja:'一石二鳥',hangul:'일석이조',meaning:'Matar dos pájaros de un tiro'},
+    {hanja:'七轉八起',hangul:'칠전팔기',meaning:'Caer siete veces y levantarse ocho'},
+    {hanja:'四面楚歌',hangul:'사면초가',meaning:'Rodeado por todos lados (sin salida)'},
+    {hanja:'臥薪嘗膽',hangul:'와신상담',meaning:'Soportar privaciones para lograr un objetivo'},
+    {hanja:'矛盾',hangul:'모순',meaning:'Contradicción'},
+    {hanja:'溫故知新',hangul:'온고지신',meaning:'Estudiar lo antiguo para comprender lo nuevo'},
+    {hanja:'以心傳心',hangul:'이심전심',meaning:'Comunicación del corazón al corazón (entenderse sin palabras)'},
+    {hanja:'大器晚成',hangul:'대기만성',meaning:'Las grandes obras requieren tiempo (la grandeza madura lentamente)'},
+  ],
+};
+
+// ── C2 Formal Writing ──
+const C2_FORMAL=[
+  {category:'Fórmulas jurídicas',items:[
+    {kor:'본 계약의 당사자는 다음과 같이 합의한다.',trans:'Las partes del presente contrato acuerdan lo siguiente.'},
+    {kor:'이를 위반할 경우 법적 책임을 진다.',trans:'En caso de incumplimiento, se asumirá la responsabilidad legal.'},
+    {kor:'본 계약은 쌍방의 서명 날인으로 효력이 발생한다.',trans:'Este contrato entra en vigor con la firma de ambas partes.'},
+  ]},
+  {category:'Cartas formales / 공문서',items:[
+    {kor:'다름이 아니라, 이번 건에 대해 협조를 부탁드리고자 연락드립니다.',trans:'Me pongo en contacto con ustedes para solicitar colaboración en este asunto.'},
+    {kor:'귀사의 무궁한 발전을 기원합니다.',trans:'Les deseo un desarrollo sin límites a su empresa.'},
+    {kor:'궁금하신 점이 있으시면 언제든지 연락 주시기 바랍니다.',trans:'Si tienen alguna pregunta, no duden en contactarnos en cualquier momento.'},
+  ]},
+  {category:'Escritura académica',items:[
+    {kor:'본 논문에서는 ~을/를 중심으로 고찰하고자 한다.',trans:'En este artículo, examinaremos principalmente ~.'},
+    {kor:'선행 연구에 따르면, ~라는 결론을 도출할 수 있다.',trans:'Según investigaciones anteriores, se puede concluir que ~.'},
+    {kor:'이상의 논의를 종합하면, 다음과 같은 시사점을 얻을 수 있다.',trans:'En resumen, de la discusión anterior podemos extraer las siguientes implicaciones.'},
+  ]},
+  {category:'Discurso político / 연설',items:[
+    {kor:'존경하는 국민 여러분, 오늘 저는 ~에 대해 말씀드리고자 합니다.',trans:'Estimados ciudadanos, hoy quisiera hablarles sobre ~.'},
+    {kor:'우리는 이 도전을 함께 극복해 나갈 것입니다.',trans:'Superaremos juntos este desafío.'},
+    {kor:'더 나은 미래를 위해 최선을 다할 것을 약속드립니다.',trans:'Les prometo que haré todo lo posible por un futuro mejor.'},
+  ]},
+];
+
+// ── Culture Facts ──
+const CULTURE_FACTS=[
+  {title:'존댓말 (Lenguaje formal)',emoji:'🎎',
+   text:'El coreano tiene un sistema de niveles de cortesía (존댓말/반말). Se usa el formal con personas mayores, desconocidos y superiores. ¡Usar el nivel equivocado puede parecer muy grosero!'},
+  {title:'나이 문화 (Cultura de la edad)',emoji:'🎂',
+   text:'En Corea, cuando naces ya tienes 1 año. El 1 de enero todos ganan un año más. Esto significa que tu "edad coreana" puede ser 1-2 años mayor que tu edad internacional.'},
+  {title:'한식 (Comida coreana)',emoji:'🍲',
+   text:'La comida coreana se caracteriza por la variedad de banchan (반찬, platos secundarios) que acompañan el arroz. El kimchi, presente en casi todas las comidas, es el plato más representativo.'},
+  {title:'한류 (Ola coreana)',emoji:'🎵',
+   text:'Hallyu es la expansión global de la cultura pop coreana: K-pop (BTS, BLACKPINK), K-dramas, K-beauty y K-food. Ha transformado la imagen de Corea en el mundo desde los años 2000.'},
+  {title:'빨리빨리 문화 (Cultura "rápido rápido")',emoji:'⚡',
+   text:'빨리빨리 describe la cultura de velocidad e inmediatez coreana. Desde el internet más rápido del mundo hasta los plazos de entrega ultrarrápidos, la eficiencia es un valor central.'},
+  {title:'눈치 (Percepción social)',emoji:'👁️',
+   text:'눈치 es la habilidad de leer la situación y las emociones de los demás sin que lo digan. Se considera una habilidad social muy valorada. "눈치가 없다" (no tener 눈치) es un insulto social.'},
+  {title:'명절 (Festividades principales)',emoji:'🌕',
+   text:'Chuseok (추석) es el Día de Acción de Gracias coreano en otoño, cuando las familias se reúnen y hacen reverencias ante los ancestros. Seollal (설날) es el Año Nuevo Lunar en invierno.'},
+  {title:'노래방 (Karaoke privado)',emoji:'🎤',
+   text:'Los noraebang son privados, donde vas con amigos y cantas en una sala propia. Son muy populares para después de cenar. ¡Cantar mal está permitido e incluso se celebra!'},
+  {title:'치맥 문화 (Pollo y cerveza)',emoji:'🍺',
+   text:'치맥 (chimaek) = 치킨 (pollo frito) + 맥주 (cerveza). Esta combinación se popularizó globalmente gracias al drama "My Love from the Star". Es la comida social perfecta coreana.'},
+  {title:'한복 (Vestimenta tradicional)',emoji:'👘',
+   text:'El hanbok es el vestido tradicional coreano, caracterizado por sus colores vivos y líneas elegantes. Se lleva en bodas, festividades y cada vez más en ocasiones cotidianas como visitar palacios históricos.'},
+  {title:'태권도 (Taekwondo)',emoji:'🥋',
+   text:'El taekwondo es un arte marcial coreano conocido por sus patadas acrobáticas. Es deporte olímpico desde el año 2000 y uno de los elementos culturales coreanos más exportados al mundo.'},
+  {title:'한강 공원 (Parques del río Han)',emoji:'🌊',
+   text:'Los parques del río Han en Seúl son el corazón social de la ciudad. Los coreanos van a hacer deporte, picnics, beber cerveza instant y ver fuegos artificiales. ¡Un símbolo de Seúl moderno!'},
+];
+
+// ── Verb Conjugation Table ──
+const VERBS=[
+  {base:'가다',trans:'ir',present:'가요',past:'갔어요',future:'갈 거예요',neg:'안 가요',command:'가세요'},
+  {base:'오다',trans:'venir',present:'와요',past:'왔어요',future:'올 거예요',neg:'안 와요',command:'오세요'},
+  {base:'먹다',trans:'comer',present:'먹어요',past:'먹었어요',future:'먹을 거예요',neg:'안 먹어요',command:'먹으세요'},
+  {base:'마시다',trans:'beber',present:'마셔요',past:'마셨어요',future:'마실 거예요',neg:'안 마셔요',command:'마시세요'},
+  {base:'보다',trans:'ver',present:'봐요',past:'봤어요',future:'볼 거예요',neg:'안 봐요',command:'보세요'},
+  {base:'듣다',trans:'escuchar',present:'들어요',past:'들었어요',future:'들을 거예요',neg:'안 들어요',command:'들으세요'},
+  {base:'읽다',trans:'leer',present:'읽어요',past:'읽었어요',future:'읽을 거예요',neg:'안 읽어요',command:'읽으세요'},
+  {base:'쓰다',trans:'escribir',present:'써요',past:'썼어요',future:'쓸 거예요',neg:'안 써요',command:'쓰세요'},
+  {base:'자다',trans:'dormir',present:'자요',past:'잤어요',future:'잘 거예요',neg:'안 자요',command:'자세요'},
+  {base:'공부하다',trans:'estudiar',present:'공부해요',past:'공부했어요',future:'공부할 거예요',neg:'안 공부해요',command:'공부하세요'},
+  {base:'일하다',trans:'trabajar',present:'일해요',past:'일했어요',future:'일할 거예요',neg:'안 일해요',command:'일하세요'},
+  {base:'말하다',trans:'hablar',present:'말해요',past:'말했어요',future:'말할 거예요',neg:'안 말해요',command:'말하세요'},
+  {base:'사다',trans:'comprar',present:'사요',past:'샀어요',future:'살 거예요',neg:'안 사요',command:'사세요'},
+  {base:'주다',trans:'dar',present:'줘요',past:'줬어요',future:'줄 거예요',neg:'안 줘요',command:'주세요'},
+  {base:'받다',trans:'recibir',present:'받아요',past:'받았어요',future:'받을 거예요',neg:'안 받아요',command:'받으세요'},
+];
+
+// ═══ QUIZ DATA per level ═══
+const QUIZZES={
+  A1:[
+    {q:'¿Cómo se dice "Hola" formal en coreano?',opts:['안녕하세요','감사합니다','죄송합니다','안녕히 가세요'],a:0},
+    {q:'¿Qué significa 감사합니다?',opts:['Lo siento','Hola','Gracias','Adiós'],a:2},
+    {q:'¿Cuál es el marcador de tópico?',opts:['을/를','이/가','은/는','에서'],a:2},
+    {q:'저는 학생 ___. (Rellene con "soy")',opts:['이에요','가요','해요','와요'],a:0},
+    {q:'¿Qué significa 집?',opts:['Escuela','Casa','Libro','Amigo'],a:1},
+    {q:'학교___ 가요. ¿Qué partícula va?',opts:['은','을','에','가'],a:2},
+    {q:'¿Cuál NO es un número nativo coreano?',opts:['하나','둘','삼','셋'],a:2},
+    {q:'¿Qué día es 월요일?',opts:['Martes','Lunes','Miércoles','Viernes'],a:1},
+    {q:'¿Qué significa 맛있어요?',opts:['Está caro','Está rico','Está frío','Está lejos'],a:1},
+    {q:'"También" en coreano es:',opts:['도','만','도요','이'],a:0},
+  ],
+  A2:[
+    {q:'한국에 가___ 싶어요. ¿Qué va en el espacio?',opts:['고','서','면','지'],a:0},
+    {q:'어제 뭐 했어요? ¿Qué tiempo verbal es?',opts:['Futuro','Presente','Pasado','Imperativo'],a:2},
+    {q:'¿Cómo se expresa "No se puede" en coreano?',opts:['면 돼요','면 안 돼요','수 있어요','야 해요'],a:1},
+    {q:'맛있___ 음식. ¿Qué forma va?',opts:['는','ㄴ','을','이'],a:0},
+    {q:'한국어를 할 수 있어요 significa:',opts:['Quiero hablar coreano','No puedo hablar coreano','Puedo hablar coreano','Hablo coreano'],a:2},
+    {q:'가다 en pasado es:',opts:['갈 거예요','가요','갔어요','가세요'],a:2},
+    {q:'공부해___ 해요. ¿Qué va en el espacio?',opts:['야','면','서','지'],a:0},
+    {q:'¿Cómo se dice "Por favor ayúdame"?',opts:['감사합니다','죄송합니다','도와주세요','안녕하세요'],a:2},
+    {q:'먹지 않아요. Esta es:',opts:['Negación informal','Negación formal','Pregunta','Exclamación'],a:1},
+    {q:'내일 공부___ 거예요. ¿Qué va?',opts:['하는','한','할','하고'],a:2},
+  ],
+  B1:[
+    {q:'음악을 들으___ 공부해요. ¿Qué va?',opts:['면서','지만','니까','려고'],a:0},
+    {q:'자기 ___ 에 양치해요. ¿Qué va?',opts:['후','전','때','동안'],a:1},
+    {q:'맛있지만 비싸요 significa:',opts:['Es rico y barato','Es rico pero caro','Es malo pero barato','No es rico ni barato'],a:1},
+    {q:'비가 오___ 우산 가져가세요. ¿Qué va?',opts:['면서','니까','지만','려고'],a:1},
+    {q:'배가 고파___ 밥을 먹었어요. ¿Qué va?',opts:['지만','니까','서','면서'],a:2},
+    {q:'한국어를 배우___ 됐어요. ¿Qué va?',opts:['게','면','지','고'],a:0},
+    {q:'살을 빼___ 운동해요. ¿Qué va?',opts:['려고','면서','니까','서'],a:0},
+    {q:'비가 올 것 ___ 아요. ¿Qué va?',opts:['같','있','없','수'],a:0},
+    {q:'같이 갈___ 요? ¿Qué va?',opts:['까','면','야','서'],a:0},
+    {q:'먹은 ___ 에 운동해요. ¿Qué va?',opts:['전','후','때','동안'],a:1},
+  ],
+  B2:[
+    {q:'비가 오___ 집에 있을게요. ¿Qué va?',opts:['면','서','니까','지만'],a:0},
+    {q:'옷을 입은 ___ 로 잤어요. ¿Qué va?',opts:['채','것','줄','수'],a:0},
+    {q:'경기 침체___ 인해 실업률이 올랐다. ¿Qué va?',opts:['를','로','에','이'],a:1},
+    {q:'- 는 반면에 expresa:',opts:['Causa','Contraste','Condición','Tiempo'],a:1},
+    {q:'살아있는 ___ 포기하지 않겠다. ¿Qué va?',opts:['한','채','면','지만'],a:0},
+    {q:'비가 온다고 ___ 어요. ¿Qué va?',opts:['했','봤','갔','왔'],a:0},
+    {q:'힘들 텐데 signfica:',opts:['Aunque es fácil','Debe ser difícil','No es difícil','Es fácil porque'],a:1},
+    {q:'-(으)ㄹ뿐더러 significa:',opts:['No solo...sino también','Aunque','Mientras que','Dado que'],a:0},
+    {q:'¿Cuál es el registro de 경기 침체로 인해?',opts:['Coloquial','Formal/escrito','Infantil','Poético'],a:1},
+    {q:'- 는다고 하다 sirve para:',opts:['Negar','Preguntar','Reportar lo que alguien dijo','Dar órdenes'],a:2},
+  ],
+  C1:[
+    {q:'열심히 했건만 significa:',opts:['Porque trabajé duro','Aunque trabajé duro','Cuando trabajé duro','Si trabajo duro'],a:1},
+    {q:'-더라도 expresa:',opts:['Causa','Propósito','Condición hipotética adversativa','Reporte'],a:2},
+    {q:'눈에 띄다 significa:',opts:['Estar muy cansado','Destacarse','Tener mucha experiencia','Ser muy hablador'],a:1},
+    {q:'하늘의 별 따기 significa:',opts:['Algo muy fácil','Algo muy difícil','Algo muy barato','Algo muy rápido'],a:1},
+    {q:'식은 죽 먹기 significa:',opts:['Algo muy difícil','Algo muy caro','Pan comido (muy fácil)','Algo muy lento'],a:2},
+    {q:'-(이)자 sirve para expresar:',opts:['Dos acciones consecutivas','Dos identidades simultáneas','Causa','Condición'],a:1},
+    {q:'잊으려야 잊을 수가 없어요 significa:',opts:['No quiero olvidar','No puedo olvidarlo aunque quiera','Voy a olvidar','Ya olvidé'],a:1},
+    {q:'작심삼일 describe:',opts:['Una persona muy trabajadora','Una resolución que solo dura 3 días','Un éxito a largo plazo','Un fracaso total'],a:1},
+    {q:'귀가 얇다 significa:',opts:['No escuchar bien','Ser fácilmente influenciable','Tener buena memoria','Ser muy callado'],a:1},
+    {q:'-는지라 pertenece a qué registro?',opts:['Coloquial joven','Infantil','Literario/formal','Científico'],a:2},
+  ],
+  C2:[
+    {q:'알다시피 significa:',opts:['Sin darse cuenta','Como saben','De repente','Por supuesto'],a:1},
+    {q:'-(으)련만 expresa:',opts:['Realidad presente','Deseo contrafactual literario','Pregunta directa','Mandato'],a:1},
+    {q:'-건대 indica:',opts:['Pregunta','Opinión personal formal','Prohibición','Deseo'],a:1},
+    {q:'모순 (矛盾) significa:',opts:['Valor','Paradoja/Contradicción','Paciencia','Dedicación'],a:1},
+    {q:'七轉八起 (칠전팔기) significa:',opts:['Siete victorias','Caer siete veces y levantarse ocho','Ser muy rápido','Tener suerte'],a:1},
+    {q:'¿Quién escribió 진달래꽃 (Azaleas)?',opts:['이상','황진이','김소월','윤동주'],a:2},
+    {q:'문어체 es:',opts:['Estilo hablado coloquial','Estilo escrito formal','Poesía arcaica','Lenguaje infantil'],a:1},
+    {q:'경어법 se refiere a:',opts:['Escritura académica','Sistema de cortesía lingüística','Poesía clásica','Dialecto regional'],a:1},
+    {q:'-(으)ㄹ진저 es:',opts:['Negación literaria','Exclamación literaria arcaica','Pregunta retórica','Condición hipotética'],a:1},
+    {q:'-는 모양이다 significa:',opts:['Definitivamente ocurrió','Parece que (por evidencia indirecta)','No ocurrió','Podría ocurrir'],a:1},
+  ],
+};
+
+// ── Fill-in-the-blank ──
+const FITB={
+  A1:[
+    {sentence:'저___ 학생이에요.',blank:'는',hint:'Partícula de tópico (después de vocal)'},
+    {sentence:'이것은 책___에요.',blank:'이',hint:'이에요 después de consonante (ㄱ)'},
+    {sentence:'물___ 차가워요.',blank:'이',hint:'Marcador de sujeto (después de consonante)'},
+    {sentence:'밥___ 먹어요.',blank:'을',hint:'Marcador de objeto (después de consonante)'},
+    {sentence:'학교___ 가요.',blank:'에',hint:'Dirección/destino'},
+    {sentence:'집에서 공부___ 요.',blank:'해',hint:'공부하다 → 공부해요'},
+    {sentence:'저___ 한국어를 공부해요.',blank:'도',hint:'"También" reemplaza la partícula de tópico'},
+    {sentence:'엄마___ 아빠가 계세요.',blank:'하고',hint:'Partícula "y" informal'},
+  ],
+  A2:[
+    {sentence:'한국에 가___ 싶어요.',blank:'고',hint:'고 싶다 = querer hacer'},
+    {sentence:'내일 공부___ 거예요.',blank:'할',hint:'Futuro: (으)ㄹ 거예요'},
+    {sentence:'어제 뭐 ___어요?',blank:'했',hint:'Pasado de 하다'},
+    {sentence:'사진을 찍으면 안 ___요.',blank:'돼',hint:'면 안 돼요 = no se puede'},
+    {sentence:'한국어를 할 수 ___어요.',blank:'있',hint:'수 있다 = poder'},
+    {sentence:'공부해___ 해요.',blank:'야',hint:'아야/어야 하다 = tener que'},
+    {sentence:'맛있___ 음식이에요.',blank:'는',hint:'는 modifica sustantivos con verbos de acción'},
+    {sentence:'도와___세요.',blank:'주',hint:'아/어 주다 = hacer para alguien'},
+  ],
+  B1:[
+    {sentence:'음악을 들으___ 공부해요.',blank:'면서',hint:'Dos acciones simultáneas'},
+    {sentence:'자기 ___ 에 양치해요.',blank:'전',hint:'기 전에 = antes de'},
+    {sentence:'먹은 ___ 에 운동해요.',blank:'후',hint:'(으)ㄴ 후에 = después de'},
+    {sentence:'맛있___만 비싸요.',blank:'지',hint:'지만 = pero'},
+    {sentence:'비가 오___까 우산 가져가세요.',blank:'니',hint:'(으)니까 = porque (subjetivo)'},
+    {sentence:'배가 고파___ 밥을 먹었어요.',blank:'서',hint:'아/어서 = porque (objetivo)'},
+    {sentence:'한국어를 배우___ 됐어요.',blank:'게',hint:'게 되다 = llegar a'},
+    {sentence:'비가 올 것 ___아요.',blank:'같',hint:'(으)ㄹ 것 같다 = parece que'},
+  ],
+  B2:[
+    {sentence:'비가 오___ 집에 있을게요.',blank:'면',hint:'(으)면 = si (condicional)'},
+    {sentence:'옷을 입은 ___ 로 잤어요.',blank:'채',hint:'(으)ㄴ 채로 = en el estado de'},
+    {sentence:'경기 침체___ 인해 실업률이 올랐다.',blank:'로',hint:'(으)로 인해 = debido a'},
+    {sentence:'살아있는 ___ 포기하지 않겠다.',blank:'한',hint:'는 한 = mientras que / siempre que'},
+    {sentence:'비가 온다고 ___어요.',blank:'했',hint:'는다고 하다 = discurso reportado (pasado)'},
+    {sentence:'힘들 ___데 잘 해낼 거예요.',blank:'텐',hint:'(으)ㄹ 텐데 = debe ser ... pero'},
+    {sentence:'우수할___더러 성실하다.',blank:'뿐',hint:'(으)ㄹ뿐더러 = no solo sino también'},
+    {sentence:'도시화가 진행되는 ___면에 농촌은 쇠퇴한다.',blank:'반',hint:'는 반면에 = mientras que (contraste)'},
+  ],
+  C1:[
+    {sentence:'열심히 했___만 결과가 좋지 않았다.',blank:'건',hint:'-건만 = aunque (literario)'},
+    {sentence:'비가 오___라도 갈 거예요.',blank:'더',hint:'-더라도 = aunque (hipotético)'},
+    {sentence:'일이 많은___라 쉴 수가 없다.',blank:'지',hint:'-는지라 = porque (literario)'},
+    {sentence:'잊으려야 잊을 수___없어요.',blank:'가',hint:'수가 없다 = no se puede'},
+    {sentence:'그는 선생이___작가이다.',blank:'자',hint:'-(이)자 = y al mismo tiempo'},
+    {sentence:'너무 웃는 ___머지 눈물이 났다.',blank:'나',hint:'-는 나머지 = como resultado de'},
+    {sentence:'그것이 사실일___대 대책이 필요하다.',blank:'진',hint:'-(으)ㄹ진대 = dado que'},
+    {sentence:'너무 웃___나머지 눈물이 났다.',blank:'는',hint:'-는 나머지 requiere la forma -는'},
+  ],
+  C2:[
+    {sentence:'알___시피 한국 경제는 성장했다.',blank:'다',hint:'-다시피 = como saben'},
+    {sentence:'그랬으___만 지금은 너무 늦었다.',blank:'련',hint:'-(으)련만 = ojalá (contrafactual)'},
+    {sentence:'생각___대 이 문제는 간단하지 않다.',blank:'건',hint:'-건대 = a mi parecer'},
+    {sentence:'그가 떠난 ___양이다.',blank:'모',hint:'-는 모양이다 = parece que'},
+    {sentence:'본 논문에___는 ~을 중심으로 고찰한다.',blank:'서',hint:'에서는 = en este (artículo)'},
+    {sentence:'귀사의 무궁한 발전을 기___합니다.',blank:'원',hint:'기원하다 = desear/esperar'},
+    {sentence:'이를 위반할 경우 법적 책임을 ___다.',blank:'진',hint:'지다 = asumir/cargar'},
+    {sentence:'선행 연구에 ___르면, 이를 알 수 있다.',blank:'따',hint:'따르면 = según'},
+  ],
+};
+
+// ── Word Order exercises ──
+const WORD_ORDER={
+  A1:[
+    {words:['저는','학생','이에요'],answer:'저는 학생이에요',trans:'Soy estudiante.'},
+    {words:['밥을','먹어요','지금'],answer:'지금 밥을 먹어요',trans:'Ahora como arroz.'},
+    {words:['학교에','가요','내일'],answer:'내일 학교에 가요',trans:'Mañana voy a la escuela.'},
+    {words:['물이','차가워요','정말'],answer:'물이 정말 차가워요',trans:'El agua está realmente fría.'},
+    {words:['집에서','공부해요','혼자'],answer:'집에서 혼자 공부해요',trans:'Estudio solo en casa.'},
+  ],
+  A2:[
+    {words:['한국에','가고','싶어요','나는'],answer:'나는 한국에 가고 싶어요',trans:'Yo quiero ir a Corea.'},
+    {words:['내일','공부할','거예요','혼자'],answer:'내일 혼자 공부할 거예요',trans:'Mañana estudiaré solo.'},
+    {words:['어제','뭐','했어요','친구랑'],answer:'어제 친구랑 뭐 했어요',trans:'¿Qué hiciste ayer con un amigo?'},
+    {words:['한국어를','할','수','있어요','나는'],answer:'나는 한국어를 할 수 있어요',trans:'Yo puedo hablar coreano.'},
+    {words:['공부해야','해요','지금','열심히'],answer:'지금 열심히 공부해야 해요',trans:'Ahora tengo que estudiar mucho.'},
+  ],
+  B1:[
+    {words:['음악을','들으면서','공부해요','나는'],answer:'나는 음악을 들으면서 공부해요',trans:'Estudio mientras escucho música.'},
+    {words:['자기','전에','양치해요','항상'],answer:'항상 자기 전에 양치해요',trans:'Siempre me lavo los dientes antes de dormir.'},
+    {words:['맛있지만','비싸요','그것은','정말'],answer:'그것은 정말 맛있지만 비싸요',trans:'Es realmente delicioso pero caro.'},
+    {words:['한국어를','배우게','됐어요','우연히'],answer:'우연히 한국어를 배우게 됐어요',trans:'Llegué a aprender coreano por casualidad.'},
+    {words:['비가','올','것','같아요','오늘'],answer:'오늘 비가 올 것 같아요',trans:'Parece que hoy va a llover.'},
+  ],
+  B2:[
+    {words:['비가','오면','집에','있을게요'],answer:'비가 오면 집에 있을게요',trans:'Si llueve, me quedaré en casa.'},
+    {words:['경기','침체로','인해','실업률이','올랐다'],answer:'경기 침체로 인해 실업률이 올랐다',trans:'La tasa de desempleo subió debido a la recesión.'},
+    {words:['도시화가','진행되는','반면에','농촌은','쇠퇴한다'],answer:'도시화가 진행되는 반면에 농촌은 쇠퇴한다',trans:'Mientras avanza la urbanización, las zonas rurales declinan.'},
+    {words:['살아있는','한','포기하지','않겠다'],answer:'살아있는 한 포기하지 않겠다',trans:'Mientras esté vivo, no me rendiré.'},
+    {words:['비가','온다고','했어요','그가'],answer:'그가 비가 온다고 했어요',trans:'Él dijo que iba a llover.'},
+  ],
+  C1:[
+    {words:['열심히','했건만','결과가','좋지','않았다'],answer:'열심히 했건만 결과가 좋지 않았다',trans:'Aunque trabajé duro, el resultado no fue bueno.'},
+    {words:['비가','오더라도','갈','거예요','나는'],answer:'나는 비가 오더라도 갈 거예요',trans:'Aunque llueva, iré.'},
+    {words:['그는','선생이자','작가이다','유명한'],answer:'그는 유명한 선생이자 작가이다',trans:'Él es un famoso profesor y escritor a la vez.'},
+    {words:['잊으려야','잊을','수가','없어요','그것을'],answer:'그것을 잊으려야 잊을 수가 없어요',trans:'No puedo olvidarlo aunque quiera.'},
+    {words:['너무','웃는','나머지','눈물이','났다'],answer:'너무 웃는 나머지 눈물이 났다',trans:'Reí tanto que se me salieron las lágrimas.'},
+  ],
+  C2:[
+    {words:['알다시피','한국','경제는','성장했다'],answer:'알다시피 한국 경제는 성장했다',trans:'Como saben, la economía coreana ha crecido.'},
+    {words:['생각건대','이','문제는','간단하지','않다'],answer:'생각건대 이 문제는 간단하지 않다',trans:'A mi parecer, este problema no es sencillo.'},
+    {words:['그랬으련만','지금은','너무','늦었다'],answer:'그랬으련만 지금은 너무 늦었다',trans:'Ojalá hubiera sido así, pero ya es muy tarde.'},
+    {words:['그가','떠난','모양이다','벌써'],answer:'그가 벌써 떠난 모양이다',trans:'Parece que ya se fue.'},
+    {words:['본','논문에서는','이를','고찰하고자','한다'],answer:'본 논문에서는 이를 고찰하고자 한다',trans:'En este artículo, examinaremos esto.'},
+  ],
+};
+
+// ── Matching pairs ──
+const MATCHING={
+  A1:[['안녕하세요','Hola'],['감사합니다','Gracias'],['집','Casa'],['책','Libro'],['물','Agua'],
+      ['학교','Escuela'],['친구','Amigo'],['오늘','Hoy'],['크다','Grande'],['맛있다','Delicioso']],
+  A2:[['여행','Viaje'],['병원','Hospital'],['버스','Autobús'],['날씨','Tiempo/Clima'],['취미','Pasatiempo'],
+      ['생일','Cumpleaños'],['직업','Profesión'],['사진','Foto'],['약속','Cita'],['휴가','Vacaciones']],
+  B1:[['경험','Experiencia'],['꿈','Sueño'],['환경','Medio ambiente'],['감정','Emoción'],['관계','Relación'],
+      ['변화','Cambio'],['건강','Salud'],['습관','Hábito'],['기회','Oportunidad'],['성공','Éxito']],
+  B2:[['갈등','Conflicto'],['경제','Economía'],['불평등','Desigualdad'],['민주주의','Democracia'],['기술','Tecnología'],
+      ['인공지능','IA'],['혁신','Innovación'],['정책','Política/Medida'],['복지','Bienestar'],['평화','Paz']],
+  C1:[['함축','Implicación'],['은유','Metáfora'],['역설','Paradoja'],['가설','Hipótesis'],['윤리','Ética'],
+      ['공감','Empatía'],['창의성','Creatividad'],['성찰','Introspección'],['담론','Discurso'],['정체성','Identidad']],
+  C2:[['존재론','Ontología'],['변증법','Dialéctica'],['해체','Deconstrucción'],['수사학','Retórica'],['어원','Etimología'],
+      ['화용론','Pragmática'],['문체','Estilo literario'],['모순','Contradicción'],['패러다임','Paradigma'],['담화','Discurso lingüístico']],
+};
+
+// ── Hangul consonants & vowels ──
+const INITIALS=[
+  {char:'ㄱ',rom:'g/k'},{char:'ㄴ',rom:'n'},{char:'ㄷ',rom:'d/t'},{char:'ㄹ',rom:'r/l'},
+  {char:'ㅁ',rom:'m'},{char:'ㅂ',rom:'b/p'},{char:'ㅅ',rom:'s'},{char:'ㅇ',rom:'ng/-'},
+  {char:'ㅈ',rom:'j'},{char:'ㅊ',rom:'ch'},{char:'ㅋ',rom:'k'},{char:'ㅌ',rom:'t'},
+  {char:'ㅍ',rom:'p'},{char:'ㅎ',rom:'h'},{char:'ㄲ',rom:'kk'},{char:'ㄸ',rom:'tt'},
+  {char:'ㅃ',rom:'pp'},{char:'ㅆ',rom:'ss'},{char:'ㅉ',rom:'jj'},
+];
+const VOWELS=[
+  {char:'ㅏ',rom:'a'},{char:'ㅑ',rom:'ya'},{char:'ㅓ',rom:'eo'},{char:'ㅕ',rom:'yeo'},
+  {char:'ㅗ',rom:'o'},{char:'ㅛ',rom:'yo'},{char:'ㅜ',rom:'u'},{char:'ㅠ',rom:'yu'},
+  {char:'ㅡ',rom:'eu'},{char:'ㅣ',rom:'i'},{char:'ㅐ',rom:'ae'},{char:'ㅒ',rom:'yae'},
+  {char:'ㅔ',rom:'e'},{char:'ㅖ',rom:'ye'},{char:'ㅘ',rom:'wa'},{char:'ㅙ',rom:'wae'},
+  {char:'ㅚ',rom:'oe'},{char:'ㅝ',rom:'wo'},{char:'ㅞ',rom:'we'},{char:'ㅟ',rom:'wi'},
+  {char:'ㅢ',rom:'ui'},
+];
+const FINALS=[
+  {char:'',rom:'(없음)'},{char:'ㄱ',rom:'k'},{char:'ㄴ',rom:'n'},{char:'ㄷ',rom:'t'},
+  {char:'ㄹ',rom:'l'},{char:'ㅁ',rom:'m'},{char:'ㅂ',rom:'p'},{char:'ㅇ',rom:'ng'},
+  {char:'ㅅ',rom:'t'},{char:'ㅈ',rom:'t'},{char:'ㅎ',rom:'t'},
+];
+
+// ════════════════════════════════════════════════════════════
+//  HANGUL SYLLABLE BUILDER LOGIC
+// ════════════════════════════════════════════════════════════
+// Unicode hangul: syllable = 가(0xAC00) + (initial*21 + vowel)*28 + final
+const INITIAL_IDX={ㄱ:0,ㄲ:1,ㄴ:2,ㄷ:3,ㄸ:4,ㄹ:5,ㅁ:6,ㅂ:7,ㅃ:8,ㅅ:9,ㅆ:10,ㅇ:11,ㅈ:12,ㅉ:13,ㅊ:14,ㅋ:15,ㅌ:16,ㅍ:17,ㅎ:18};
+const VOWEL_IDX={ㅏ:0,ㅐ:1,ㅑ:2,ㅒ:3,ㅓ:4,ㅔ:5,ㅕ:6,ㅖ:7,ㅗ:8,ㅘ:9,ㅙ:10,ㅚ:11,ㅛ:12,ㅜ:13,ㅝ:14,ㅞ:15,ㅟ:16,ㅠ:17,ㅡ:18,ㅢ:19,ㅣ:20};
+const FINAL_IDX={'':0,ㄱ:1,ㄲ:2,ㄳ:3,ㄴ:4,ㄵ:5,ㄶ:6,ㄷ:7,ㄹ:8,ㄺ:9,ㄻ:10,ㄼ:11,ㄽ:12,ㄾ:13,ㄿ:14,ㅀ:15,ㅁ:16,ㅂ:17,ㅄ:18,ㅅ:19,ㅆ:20,ㅇ:21,ㅈ:22,ㅊ:23,ㅋ:24,ㅌ:25,ㅍ:26,ㅎ:27};
+let hbSel={initial:null,vowel:null,final:''};
+function composeSyllable(i,v,f){
+  const ic=INITIAL_IDX[i]??0, vc=VOWEL_IDX[v]??0, fc=FINAL_IDX[f]??0;
+  return String.fromCodePoint(0xAC00+(ic*21+vc)*28+fc);
+}
+function hbSelect(type,char){
+  hbSel[type]=char;
+  renderHangulBuilder();
+}
+function renderHangulBuilder(){
+  const preview=document.getElementById('hb-preview');
+  const romPreview=document.getElementById('hb-rom');
+  if(!preview)return;
+  if(hbSel.initial&&hbSel.vowel){
+    const syl=composeSyllable(hbSel.initial,hbSel.vowel,hbSel.final);
+    preview.textContent=syl;
+    const initRom=INITIALS.find(x=>x.char===hbSel.initial)?.rom||'';
+    const vowRom=VOWELS.find(x=>x.char===hbSel.vowel)?.rom||'';
+    const finRom=hbSel.final?FINALS.find(x=>x.char===hbSel.final)?.rom||'':'';
+    romPreview.textContent=initRom+vowRom+(finRom?'+'+finRom:'');
+  } else {
+    preview.textContent=(hbSel.initial||'?')+(hbSel.vowel||'');
+    romPreview.textContent='Selecciona consonante y vocal';
   }
-  renderMain();
+  // Update selected states
+  document.querySelectorAll('.hb-key').forEach(btn=>{
+    const type=btn.dataset.type, char=btn.dataset.char;
+    btn.classList.toggle('selected',hbSel[type]===char);
+  });
 }
 
-/* ── Render main content ── */
-function renderMain() {
-  const lv = LEVELS.find(l => l.id === currentLevel);
-  const main = document.getElementById('mainContent');
+// ════════════════════════════════════════════════════════════
+//  LEVEL/SECTION CONFIG
+// ════════════════════════════════════════════════════════════
+const LEVELS={
+  A1:{label:'A1 — Principiante',sections:['Hangul','Pronunciación','Vocabulario','Frases','Gramática','Cultura','Ejercicios']},
+  A2:{label:'A2 — Básico',sections:['Vocabulario','Gramática','Conjugación','Diálogos','Flashcards','Ejercicios']},
+  B1:{label:'B1 — Intermedio',sections:['Vocabulario','Gramática','Lectura','Diálogos','Flashcards','Ejercicios']},
+  B2:{label:'B2 — Intermedio Alto',sections:['Vocabulario','Gramática','Escucha','Lectura','Flashcards','Ejercicios']},
+  C1:{label:'C1 — Avanzado',sections:['Vocabulario','Gramática','Lectura','Expresiones','Flashcards','Ejercicios']},
+  C2:{label:'C2 — Maestría',sections:['Vocabulario','Gramática','Literatura','Formal','Flashcards','Ejercicios']},
+};
 
-  // Level header
-  let html = `
-    <div class="fade-in mb-6 p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)]"
-         style="border-left: 5px solid ${lv.color};">
-      <div class="flex items-center gap-3 flex-wrap">
-        <span class="text-4xl">${lv.emoji}</span>
+// ════════════════════════════════════════════════════════════
+//  RENDER LEVEL TABS
+// ════════════════════════════════════════════════════════════
+function buildLevelTabs(){
+  const c=document.getElementById('level-tabs-container');
+  c.innerHTML=Object.keys(LEVELS).map(lvl=>`
+    <button class="level-tab" id="ltab-${lvl}" onclick="selectLevel('${lvl}')">${lvl}</button>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════════════
+//  SELECT LEVEL
+// ════════════════════════════════════════════════════════════
+function selectLevel(lvl){
+  currentLevel=lvl;
+  document.querySelectorAll('.level-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('ltab-'+lvl)?.classList.add('active');
+  renderLevel(lvl);
+  updateOverallProgress();
+}
+
+function renderLevel(lvl){
+  const mc=document.getElementById('main-content');
+  const cfg=LEVELS[lvl];
+  mc.innerHTML=`
+    <div class="mb-4">
+      <h2 class="text-2xl font-bold mb-1" style="color:var(--foreground)">${cfg.label}</h2>
+    </div>
+    <div class="tabs-scroll flex gap-1 mb-6 border-b" style="border-color:var(--border);" id="section-tabs"></div>
+    <div id="section-content"></div>
+  `;
+  const st=document.getElementById('section-tabs');
+  st.innerHTML=cfg.sections.map((s,i)=>`
+    <button class="section-tab${i===0?' active':''}" id="stab-${s}" onclick="selectSection('${lvl}','${s}')">${s}</button>
+  `).join('');
+  currentSection[lvl]=cfg.sections[0];
+  renderSection(lvl,cfg.sections[0]);
+}
+
+function selectSection(lvl,sec){
+  currentSection[lvl]=sec;
+  document.querySelectorAll('.section-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('stab-'+sec)?.classList.add('active');
+  renderSection(lvl,sec);
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER SECTION
+// ════════════════════════════════════════════════════════════
+function renderSection(lvl,sec){
+  const sc=document.getElementById('section-content');
+  if(!sc)return;
+  if(sec==='Hangul') sc.innerHTML=renderHangul();
+  else if(sec==='Pronunciación') sc.innerHTML=renderPronunciation();
+  else if(sec==='Vocabulario') sc.innerHTML=renderVocab(lvl);
+  else if(sec==='Frases') sc.innerHTML=renderPhrases();
+  else if(sec==='Gramática') sc.innerHTML=renderGrammar(lvl);
+  else if(sec==='Cultura') sc.innerHTML=renderCulture();
+  else if(sec==='Ejercicios') sc.innerHTML=renderExercises(lvl);
+  else if(sec==='Conjugación') sc.innerHTML=renderConjugation();
+  else if(sec==='Diálogos') sc.innerHTML=renderDialogues(lvl);
+  else if(sec==='Flashcards') sc.innerHTML=renderFlashcards(lvl);
+  else if(sec==='Lectura') sc.innerHTML=renderReading(lvl);
+  else if(sec==='Escucha') sc.innerHTML=renderListening();
+  else if(sec==='Expresiones') sc.innerHTML=renderExpressions();
+  else if(sec==='Literatura') sc.innerHTML=renderLiterature();
+  else if(sec==='Formal') sc.innerHTML=renderFormal();
+  else sc.innerHTML=`<p class="text-[var(--muted-foreground)]">Sección: ${sec}</p>`;
+  // Post-render inits
+  if(sec==='Flashcards') initFlashcards(lvl);
+  if(sec==='Hangul') setTimeout(renderHangulBuilder,50);
+}
+
+// ════════════════════════════════════════════════════════════
+//  HANGUL SECTION
+// ════════════════════════════════════════════════════════════
+function renderHangul(){
+  return `
+  <div class="space-y-8">
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">Consonantes Iniciales (자음)</h3>
+      <div class="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-10 gap-2">
+        ${INITIALS.map(c=>`<div class="hangul-cell" onclick="speak('${c.char}')">
+          <span class="kor">${c.char}</span><span class="rom">${c.rom}</span><span class="play">▶</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">Vocales (모음)</h3>
+      <div class="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-10 gap-2">
+        ${VOWELS.map(v=>`<div class="hangul-cell" onclick="speak('${v.char}')">
+          <span class="kor">${v.char}</span><span class="rom">${v.rom}</span><span class="play">▶</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">Recibchaim — 받침 (Consonante Final)</h3>
+      <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
+        ${FINALS.map(f=>`<div class="hangul-cell" onclick="${f.char?`speak('${f.char}')`:'void(0)'}">
+          <span class="kor">${f.char||'∅'}</span><span class="rom">${f.rom}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">🔧 Constructor de Sílabas Hangul</h3>
+      <p class="text-sm mb-4" style="color:var(--muted-foreground)">Selecciona una consonante inicial, una vocal y opcionalmente un 받침 para componer una sílaba Unicode.</p>
+      <div class="grid md:grid-cols-3 gap-6">
         <div>
-          <h2 class="text-2xl font-black" style="color:${lv.color}">${lv.label}</h2>
-          <p class="text-[var(--muted-foreground)] text-sm mt-1">${lv.desc}</p>
+          <div class="font-semibold mb-2 text-sm">Consonante inicial</div>
+          <div class="grid grid-cols-5 gap-1">
+            ${INITIALS.map(c=>`<button class="hb-key" data-type="initial" data-char="${c.char}" onclick="hbSelect('initial','${c.char}')">${c.char}</button>`).join('')}
+          </div>
+        </div>
+        <div>
+          <div class="font-semibold mb-2 text-sm">Vocal</div>
+          <div class="grid grid-cols-4 gap-1">
+            ${VOWELS.map(v=>`<button class="hb-key" data-type="vowel" data-char="${v.char}" onclick="hbSelect('vowel','${v.char}')">${v.char}</button>`).join('')}
+          </div>
+        </div>
+        <div>
+          <div class="font-semibold mb-2 text-sm">받침 (opcional)</div>
+          <div class="grid grid-cols-4 gap-1">
+            ${FINALS.map(f=>`<button class="hb-key" data-type="final" data-char="${f.char}" onclick="hbSelect('final','${f.char}')">${f.char||'∅'}</button>`).join('')}
+          </div>
         </div>
       </div>
-    </div>`;
-
-  // Section tabs
-  html += `<div class="flex gap-1 border-b border-[var(--border)] mb-6 overflow-x-auto">`;
-  lv.sections.forEach((s, i) => {
-    html += `<button onclick="selectSection(${i})" id="st-${i}"
-      class="section-tab px-4 py-2 font-semibold text-sm whitespace-nowrap transition-all text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-      ${i===currentSection ? 'style="border-bottom:3px solid '+lv.color+';color:'+lv.color+'"':''}>
-      ${s}</button>`;
-  });
-  html += `</div>`;
-
-  // Section content
-  html += `<div id="sectionContent" class="fade-in">${renderSection(lv, currentSection)}</div>`;
-  main.innerHTML = html;
-}
-
-function selectSection(i) {
-  currentSection = i;
-  document.querySelectorAll('.section-tab').forEach((b,j) => {
-    b.style.borderBottom = '';
-    b.style.color = '';
-  });
-  const lv = LEVELS.find(l => l.id === currentLevel);
-  const btn = document.getElementById('st-'+i);
-  if (btn) { btn.style.borderBottom = `3px solid ${lv.color}`; btn.style.color = lv.color; }
-  document.getElementById('sectionContent').outerHTML = `<div id="sectionContent" class="fade-in">${renderSection(lv, i)}</div>`;
-}
-
-/* ── Route sections ── */
-function renderSection(lv, idx) {
-  const name = lv.sections[idx];
-  if (name === 'Hangul')      return renderHangul();
-  if (name === 'Vocabulario') return renderVocab(lv.id);
-  if (name === 'Frases')      return renderPhrases();
-  if (name === 'Cultura')     return renderCulture();
-  if (name === 'Gramática')   return renderGrammar(lv.id);
-  if (name === 'Diálogos')    return renderDialogos(lv.id);
-  if (name === 'Lectura')     return renderLectura(lv.id);
-  if (name === 'Escucha')     return renderEscucha(lv.id);
-  if (name === 'Literatura')  return renderLiteratura();
-  if (name === 'Flashcards')  return renderFlashcards(lv.id);
-  if (name === 'Ejercicios')  return renderEjercicios(lv.id);
-  return '<p>Próximamente.</p>';
-}
-
-/* ═══════  HANGUL SECTION  ═══════ */
-function renderHangul() {
-  let h = `<div class="space-y-8">`;
-
-  // Vowels
-  h += `<div>
-    <h3 class="text-lg font-bold mb-1 flex items-center gap-2">🔤 Vocales (모음)</h3>
-    <p class="text-[var(--muted-foreground)] text-sm mb-3">Haz clic en cada letra para escuchar su pronunciación.</p>
-    <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">`;
-  VOWELS.forEach(v => {
-    h += `<div class="hangul-cell" onclick="speak('${v.k}')">
-      <span class="kor">${v.k}</span>
-      <span class="rom">${v.r}</span>
-      <span class="play">🔊</span>
-    </div>`;
-  });
-  h += `</div></div>`;
-
-  // Consonants
-  h += `<div>
-    <h3 class="text-lg font-bold mb-1 flex items-center gap-2">🔤 Consonantes (자음)</h3>
-    <p class="text-[var(--muted-foreground)] text-sm mb-3">Haz clic para escuchar. La letra coreana tiene ㅇ (valor cero) como consonante inicial.</p>
-    <div class="grid grid-cols-4 sm:grid-cols-7 gap-2">`;
-  CONSONANTS.forEach(c => {
-    h += `<div class="hangul-cell" onclick="speak('${c.k}')">
-      <span class="kor">${c.k}</span>
-      <span class="rom text-center">${c.r}</span>
-      <span class="play">🔊</span>
-    </div>`;
-  });
-  h += `</div></div>`;
-
-  // Stroke order guide
-  h += `<div class="p-5 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-    <h3 class="text-lg font-bold mb-3">✏️ Cómo escribir Hangul</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      ${['가','나','다'].map((ch,i) => `
-        <div class="text-center">
-          <div class="text-6xl font-black mb-2" style="line-height:1">${ch}</div>
-          <button class="audio-btn" onclick="speak('${ch}')">🔊 ${ch}</button>
-          <p class="text-xs text-[var(--muted-foreground)] mt-2">${['ga/ka — G + A','na — N + A','da/ta — D + A'][i]}</p>
-        </div>`).join('')}
-    </div>
-    <div class="mt-4 p-3 rounded-lg bg-[var(--accent)] text-sm">
-      💡 <strong>Regla de escritura:</strong> En coreano, las sílabas se escriben en bloques cuadrados: consonante inicial → vocal → consonante final (받침). Ejemplo: 한 = ㅎ+ㅏ+ㄴ
+      <div class="mt-6 flex flex-col items-center gap-2">
+        <div id="hb-preview" class="text-7xl font-black" style="color:var(--primary)">?</div>
+        <div id="hb-rom" class="text-sm" style="color:var(--muted-foreground)">Selecciona consonante y vocal</div>
+        <button class="tts-btn mt-2" onclick="if(document.getElementById('hb-preview').textContent!='?')speak(document.getElementById('hb-preview').textContent)">🔊 Escuchar</button>
+      </div>
     </div>
   </div>`;
-
-  // Syllable builder
-  h += `<div class="p-5 rounded-xl bg-[var(--card)] border border-[var(--border)]">
-    <h3 class="text-lg font-bold mb-3">🧩 Constructor de Sílabas</h3>
-    <p class="text-sm text-[var(--muted-foreground)] mb-3">Selecciona una consonante y una vocal para formar una sílaba:</p>
-    <div class="flex flex-wrap gap-2 mb-3" id="consRow">
-      ${['ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅎ'].map(c=>`
-        <button class="px-3 py-1 rounded-lg border border-[var(--border)] bg-[var(--card)] font-mono text-lg cursor-pointer hover:border-[var(--primary)]"
-          onclick="pickCons('${c}')" id="cons-${c}">${c}</button>`).join('')}
-    </div>
-    <div class="flex flex-wrap gap-2 mb-4" id="vowRow">
-      ${['ㅏ','ㅑ','ㅓ','ㅕ','ㅗ','ㅛ','ㅜ','ㅠ','ㅡ','ㅣ'].map(v=>`
-        <button class="px-3 py-1 rounded-lg border border-[var(--border)] bg-[var(--card)] font-mono text-lg cursor-pointer hover:border-[var(--primary)]"
-          onclick="pickVow('${v}')" id="vow-${v}">${v}</button>`).join('')}
-    </div>
-    <div id="syllResult" class="text-center text-7xl font-black" style="min-height:90px; line-height:1">?</div>
-  </div>`;
-
-  h += `</div>`;
-  return h;
 }
 
-/* syllable builder state */
-let _cons = '', _vow = '';
-const CONS_MAP = {ㄱ:'g',ㄴ:'n',ㄷ:'d',ㄹ:'r',ㅁ:'m',ㅂ:'b',ㅅ:'s',ㅇ:'',ㅈ:'j',ㅎ:'h'};
-const VOW_MAP  = {ㅏ:'a',ㅑ:'ya',ㅓ:'eo',ㅕ:'yeo',ㅗ:'o',ㅛ:'yo',ㅜ:'u',ㅠ:'yu',ㅡ:'eu',ㅣ:'i'};
-// Compose unicode syllable from jamo
-function composeSyllable(c, v) {
-  const initials = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-  const medials  = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
-  const ci = initials.indexOf(c); const mi = medials.indexOf(v);
-  if (ci < 0 || mi < 0) return c+v;
-  return String.fromCharCode(0xAC00 + ci*21*28 + mi*28);
-}
-function pickCons(c) {
-  _cons = c;
-  document.querySelectorAll('#consRow button').forEach(b => b.style.borderColor='');
-  const btn = document.getElementById('cons-'+c);
-  if (btn) btn.style.borderColor = 'var(--primary)';
-  updateSyllable();
-}
-function pickVow(v) {
-  _vow = v;
-  document.querySelectorAll('#vowRow button').forEach(b => b.style.borderColor='');
-  const btn = document.getElementById('vow-'+v);
-  if (btn) btn.style.borderColor = 'var(--primary)';
-  updateSyllable();
-}
-function updateSyllable() {
-  const el = document.getElementById('syllResult');
-  if (!el) return;
-  if (_cons && _vow) {
-    const syll = composeSyllable(_cons, _vow);
-    const rom = (CONS_MAP[_cons]||'')+(VOW_MAP[_vow]||'');
-    el.innerHTML = `<div>${syll}</div><div class="text-base font-normal text-[var(--muted-foreground)] mt-1">${rom}</div><button class="audio-btn mt-2" onclick="speak('${syll}')">🔊 Escuchar</button>`;
-  } else {
-    el.textContent = '?';
-  }
-}
-
-/* ═══════  VOCAB SECTION  ═══════ */
-function renderVocab(lvId) {
-  const words = VOCAB[lvId] || [];
-  const cats = [...new Set(words.map(w=>w.cat))];
-  let h = `<div class="space-y-6">`;
-  cats.forEach(cat => {
-    h += `<div>
-      <h3 class="text-base font-bold mb-3 text-[var(--muted-foreground)] uppercase tracking-wide">${cat}</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">`;
-    words.filter(w=>w.cat===cat).forEach(w => {
-      h += `<div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] flex items-center gap-3 hover:shadow-md transition-shadow">
-        <span class="text-3xl">${w.emoji}</span>
-        <div class="flex-1 min-w-0">
-          <div class="text-xl font-black">${w.k}</div>
-          <div class="text-sm text-[var(--muted-foreground)]">${w.r}</div>
-          <div class="text-sm font-semibold">${w.es}</div>
-        </div>
-        <button class="audio-btn shrink-0" onclick="speak('${w.k}')">🔊</button>
-      </div>`;
-    });
-    h += `</div></div>`;
-  });
-  h += `</div>`;
-  return h;
-}
-
-/* ═══════  PHRASES SECTION  ═══════ */
-function renderPhrases() {
-  let h = `<div class="space-y-3">
-    <p class="text-[var(--muted-foreground)] text-sm mb-4">Haz clic en 🔊 para escuchar la pronunciación nativa.</p>`;
-  PHRASES_A1.forEach((p, i) => {
-    h += `<div class="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] flex items-center gap-4">
-      <span class="text-2xl font-bold text-[var(--primary)] w-7 shrink-0">${i+1}</span>
-      <div class="flex-1 min-w-0">
-        <div class="text-lg font-black">${p.k}</div>
-        <div class="text-sm text-[var(--muted-foreground)]">${p.r}</div>
-        <div class="text-sm">${p.es}</div>
-      </div>
-      <button class="audio-btn shrink-0" onclick="speak('${p.k}')">🔊</button>
-    </div>`;
-  });
-  h += `</div>`;
-  return h;
-}
-
-/* ═══════  CULTURE SECTION  ═══════ */
-function renderCulture() {
-  let h = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">`;
-  CULTURE.forEach(c => {
-    h += `<div class="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] space-y-2">
-      <div class="text-3xl">${c.emoji}</div>
-      <h3 class="font-bold text-base">${c.title}</h3>
-      <p class="text-sm text-[var(--muted-foreground)]">${c.text}</p>
-      <div class="text-sm p-2 rounded-lg bg-[var(--accent)]">💬 ${c.example}</div>
-    </div>`;
-  });
-  h += `</div>`;
-  return h;
-}
-
-/* ═══════  GRAMMAR SECTION  ═══════ */
-function renderGrammar(lvId) {
-  const items = GRAMMAR[lvId];
-  if (!items || !items.length) return `<div class="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center text-[var(--muted-foreground)]">📌 Contenido gramatical avanzado en desarrollo.</div>`;
-  let h = `<div class="space-y-5">`;
-  items.forEach(g => {
-    h += `<div class="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] space-y-3">
-      <h3 class="font-black text-lg">${g.title}</h3>
-      <div class="p-3 rounded-xl bg-[var(--accent)] space-y-1">
-        <div class="text-xl font-bold">${g.kor}</div>
-        <div class="text-sm text-[var(--muted-foreground)]">${g.rom}</div>
-        <div class="text-sm font-semibold">${g.esp}</div>
-      </div>
-      <div class="flex items-start gap-2 text-sm">
-        <span>📌</span><span class="text-[var(--muted-foreground)]">${g.note}</span>
-      </div>
-      <button class="audio-btn" onclick="speak('${g.kor}')">🔊 Escuchar ejemplo</button>
-    </div>`;
-  });
-  h += `</div>`;
-  return h;
-}
-
-/* ═══════  DIALOGOS SECTION  ═══════ */
-const DIALOGOS = {
-  A2: [
-    { title:'🛒 En la tienda', lines:[
-      {who:'A',k:'어서 오세요!',r:'Eoseo oseyo!',es:'¡Bienvenido/a!'},
-      {who:'B',k:'이거 얼마예요?',r:'Igeo eolmayeyo?',es:'¿Cuánto cuesta esto?'},
-      {who:'A',k:'오천 원이에요.',r:'Ocheon woniyeyo.',es:'Son 5.000 wones.'},
-      {who:'B',k:'감사합니다.',r:'Gamsahamnida.',es:'Gracias.'},
+// ════════════════════════════════════════════════════════════
+//  PRONUNCIATION SECTION
+// ════════════════════════════════════════════════════════════
+function renderPronunciation(){
+  const rules=[
+    {title:'Sonidos especiales',items:[
+      {sym:'ㅓ',desc:'Como "eo" abierto, entre "o" y "e". Labios relajados, boca semiabierta.'},
+      {sym:'ㅡ',desc:'Como "eu" francés. Labios estirados sin abrir la boca.'},
+      {sym:'ㅢ',desc:'Diptongo "ui": pronunciar ㅡ seguido de ㅣ rápidamente.'},
+      {sym:'ㄹ',desc:'Entre "r" y "l". Similar al tap español en "pero" pero más vibrante.'},
+      {sym:'ㅅ','desc':'Antes de ㅣ,ㅑ,ㅕ,ㅛ,ㅠ suena como "sh". Ej: 시 = "shi"'},
     ]},
-    { title:'🏫 En la clase', lines:[
-      {who:'선생님',k:'오늘 숙제 했어요?',r:'Oneul sukje haesseoyo?',es:'¿Hicieron la tarea hoy?'},
-      {who:'학생',k:'네, 했어요!',r:'Ne, haesseoyo!',es:'¡Sí, la hice!'},
-      {who:'선생님',k:'잘 했어요!',r:'Jal haesseoyo!',es:'¡Bien hecho!'},
+    {title:'Reglas de 받침 (consonante final)',items:[
+      {sym:'Neutralización',desc:'ㄷ,ㅅ,ㅆ,ㅈ,ㅊ,ㅌ,ㅎ → se pronuncian [ㄷ] al final de sílaba'},
+      {sym:'Sonorización',desc:'ㄱ,ㄷ,ㅂ,ㅈ → se suavizan entre vocales (ej: 사기 "sagi", no "saki")'},
+      {sym:'Enlace',desc:'받침 + vocal siguiente → la consonante se une a la vocal. Ej: 먹어요 → [머거요]'},
+      {sym:'Nasalización',desc:'ㄱ+ㄴ → [ㅇ+ㄴ], ㅂ+ㄴ → [ㅁ+ㄴ], ㄷ+ㄴ → [ㄴ+ㄴ]'},
     ]},
-  ],
-};
-function renderDialogos(lvId) {
-  const dialogs = DIALOGOS[lvId];
-  if (!dialogs) return `<div class="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center text-[var(--muted-foreground)]">📌 Diálogos en desarrollo para este nivel.</div>`;
-  let h = `<div class="space-y-6">`;
-  dialogs.forEach(d => {
-    h += `<div class="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
-      <h3 class="font-bold text-base mb-4">${d.title}</h3>
-      <div class="space-y-3">`;
-    d.lines.forEach(l => {
-      const isA = l.who === 'A' || l.who === '선생님';
-      h += `<div class="flex ${isA?'justify-start':'justify-end'}">
-        <div class="max-w-xs p-3 rounded-2xl ${isA?'rounded-tl-sm bg-[var(--accent)]':'rounded-tr-sm'}" style="${!isA?'background:var(--primary);color:var(--primary-foreground)':''}">
-          <div class="text-xs font-semibold opacity-70 mb-1">${l.who}</div>
-          <div class="font-bold">${l.k}</div>
-          <div class="text-xs opacity-70">${l.r}</div>
-          <div class="text-xs">${l.es}</div>
-          <button class="audio-btn mt-2 text-xs" style="${!isA?'border-color:rgba(255,255,255,0.5);color:rgba(255,255,255,0.9)':''}" onclick="speak('${l.k}')">🔊</button>
-        </div>
-      </div>`;
-    });
-    h += `</div></div>`;
-  });
-  h += `</div>`;
-  return h;
-}
-
-/* ═══════  LECTURA SECTION  ═══════ */
-const LECTURAS = {
-  B1: { title:'📰 Una carta de Seúl', text:'안녕하세요! 저는 서울에서 살고 있어요. 서울은 매우 큰 도시예요. 사람들이 많고, 음식도 맛있어요. 저는 매일 지하철을 타요. 한국 생활이 정말 좋아요!', rom:'Annyeonghaseyo! Jeoneun Seoureseo salgo isseoyo. Seoureun maeu keun dosiyeyo. Saramdeuri mako, eumsikdo massisseoyo. Jeoneun maeil jihacheoreul tayo. Hanguk saengari jeongmal joayo!', esp:'¡Hola! Vivo en Seúl. Seúl es una ciudad muy grande. Hay mucha gente y la comida es deliciosa. Todos los días tomo el metro. ¡La vida en Corea me encanta!', questions:[
-    {q:'¿Dónde vive la persona?',opts:['Busan','Seúl','Incheon','Jeju'],a:1},
-    {q:'¿Qué transporte usa todos los días?',opts:['Bus','Taxi','Metro','Bicicleta'],a:2},
-  ]},
-  C1: { title:'📰 Extracto — Sociedad moderna', text:'현대 사회에서 기술의 발전은 우리의 삶을 근본적으로 변화시키고 있습니다. 인공지능과 자동화는 노동 시장의 구조를 재편하고 있으며, 이는 새로운 도전과 기회를 동시에 제시합니다.', rom:'Hyeondae sahoeeseo gisureui baljeon-eun uri-ui salm-eul geunbonjeok-euro byeonhwasikigo issseumnida. Ingongjineung-gwa jadong-hwa-neun nodong sijang-ui gujo-reul jaepyeonhago isseuumyeo, i-neun saeroun dojeon-gwa gihoe-reul dongsi-e jesimnida.', esp:'En la sociedad moderna, el avance tecnológico está transformando fundamentalmente nuestras vidas. La inteligencia artificial y la automatización están restructurando el mercado laboral, presentando simultáneamente nuevos desafíos y oportunidades.', questions:[
-    {q:'¿Qué está transformando la vida moderna?',opts:['La política','El avance tecnológico','El clima','La educación'],a:1},
-    {q:'¿Qué está restructurando la IA y la automatización?',opts:['El sistema educativo','El mercado laboral','La cultura','La medicina'],a:1},
-  ]},
-};
-function renderLectura(lvId) {
-  const lec = LECTURAS[lvId];
-  if (!lec) return `<div class="p-6 rounded-xl bg-[var(--card)] border border-[var(--border)] text-center text-[var(--muted-foreground)]">📌 Texto de lectura en desarrollo.</div>`;
-  let h = `<div class="space-y-5">
-    <div class="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
-      <h3 class="font-bold text-lg mb-3">${lec.title}</h3>
-      <div class="text-lg leading-relaxed mb-3">${lec.text}</div>
-      <div class="text-sm text-[var(--muted-foreground)] mb-2">${lec.rom}</div>
-      <button class="audio-btn mb-3" onclick="speak(\`${lec.text}\`)">🔊 Escuchar texto completo</button>
-      <div class="p-3 rounded-xl bg-[var(--accent)] text-sm">${lec.esp}</div>
-    </div>
-    <div class="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
-      <h3 class="font-bold mb-4">❓ Comprensión de lectura</h3>`;
-  lec.questions.forEach((q,qi) => {
-    h += `<div class="mb-4">
-      <p class="font-semibold mb-2">${qi+1}. ${q.q}</p>`;
-    q.opts.forEach((o,oi) => {
-      h += `<button class="quiz-opt" onclick="checkLecOpt(this,${oi},${q.a})">${o}</button>`;
-    });
-    h += `</div>`;
-  });
-  h += `</div></div>`;
-  return h;
-}
-function checkLecOpt(btn, chosen, correct) {
-  const parent = btn.parentElement;
-  parent.querySelectorAll('.quiz-opt').forEach(b => { b.disabled = true; });
-  if (chosen === correct) btn.classList.add('correct');
-  else { btn.classList.add('wrong'); parent.querySelectorAll('.quiz-opt')[correct].classList.add('correct'); }
-}
-
-/* ═══════  ESCUCHA SECTION  ═══════ */
-function renderEscucha(lvId) {
-  const phrases = [
-    {k:'안녕하세요, 저는 한국 사람이에요.',r:'Annyeonghaseyo, jeoneun hanguk saramiyeyo.',es:'Hola, soy coreano/a.'},
-    {k:'오늘 날씨가 어때요?',r:'Oneul nalssiga eottaeyo?',es:'¿Cómo está el clima hoy?'},
-    {k:'저는 한국어를 공부해요.',r:'Jeoneun hangugeoreul gongbuhaeyo.',es:'Estudio coreano.'},
+    {title:'Consonantes aspiradas vs. tensas',items:[
+      {sym:'Aspiradas (ㅋ,ㅌ,ㅍ,ㅊ,ㅎ)',desc:'Pronunciadas con un soplo de aire. Coloca la mano frente a la boca: debes sentir el aire.'},
+      {sym:'Tensas (ㄲ,ㄸ,ㅃ,ㅆ,ㅉ)',desc:'Pronunciadas con la glotis tensa, sin aire. Suenan más fuertes y cortas.'},
+      {sym:'Laxas (ㄱ,ㄷ,ㅂ,ㅅ,ㅈ)',desc:'Sonido intermedio. Al inicio de sílaba son más suaves, como en español.'},
+    ]},
+    {title:'Acento y entonación',items:[
+      {sym:'Sin acento tonal',desc:'A diferencia del chino, el coreano no tiene tonos. El acento es de intensidad.'},
+      {sym:'Entonación de pregunta',desc:'Las preguntas (¿...?) suben la entonación al final, como en español.'},
+      {sym:'Dialecto seulita vs. dialectos',desc:'El coreano estándar (표준어) se basa en el dialecto de Seúl. Los dialectos regionales varían.'},
+    ]},
   ];
-  let h = `<div class="space-y-5">
-    <div class="p-4 rounded-xl bg-[var(--accent)] text-sm">
-      🎧 <strong>Instrucciones:</strong> Escucha cada frase y luego intenta repetirla. Presiona el botón para escuchar.
-    </div>`;
-  phrases.forEach((p, i) => {
-    h += `<div class="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
-      <div class="flex items-center gap-3 mb-3">
-        <span class="font-black text-2xl text-[var(--primary)]">${i+1}</span>
-        <button class="audio-btn" onclick="speak('${p.k}')">🔊 Escuchar</button>
-        <button class="audio-btn" onclick="speak('${p.k}');setTimeout(()=>speak('${p.k}'),2500)">🔁 x2</button>
+  return `
+  <div class="space-y-6">
+    ${rules.map(section=>`
+      <div class="card">
+        <h3 class="text-lg font-bold mb-4" style="color:var(--foreground)">${section.title}</h3>
+        <div class="space-y-3">
+          ${section.items.map(item=>`
+            <div class="flex gap-4 p-3 rounded-lg" style="background:var(--accent)">
+              <div class="font-black text-lg min-w-[80px]" style="color:var(--primary)">${item.sym}</div>
+              <div class="text-sm" style="color:var(--foreground)">${item.desc}</div>
+            </div>
+          `).join('')}
+        </div>
       </div>
-      <div id="esc-reveal-${i}" class="cursor-pointer text-[var(--muted-foreground)] text-sm italic hover:text-[var(--foreground)]"
-           onclick="document.getElementById('esc-text-${i}').classList.toggle('hidden')">
-        👁️ Mostrar / ocultar transcripción
+    `).join('')}
+    <div class="card">
+      <h3 class="text-lg font-bold mb-4">Práctica de pronunciación</h3>
+      <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+        ${['가나다라마바사아자차카타파하','아야어여오요우유으이','가나다라마바사아자차'].split('').filter((c,i,a)=>a.indexOf(c)===i&&c!=='').slice(0,18).map((_,i)=>{
+          const words=['안녕하세요','감사합니다','한국어','먹다','가다','오다','학교','친구','사랑','행복','비빔밥','김치','불고기','서울','부산','제주도','한복','태권도'];
+          const w=words[i%words.length];
+          return `<button class="tts-btn justify-center p-3 rounded-xl" onclick="speak('${w}')" style="border:1px solid var(--border)">🔊 ${w}</button>`;
+        }).join('')}
       </div>
-      <div id="esc-text-${i}" class="hidden mt-3 space-y-1">
-        <div class="text-lg font-bold">${p.k}</div>
-        <div class="text-sm text-[var(--muted-foreground)]">${p.r}</div>
-        <div class="text-sm">${p.es}</div>
-      </div>
-    </div>`;
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  VOCABULARY SECTION
+// ════════════════════════════════════════════════════════════
+function getVocab(lvl){
+  if(lvl==='A1')return A1_VOCAB;
+  if(lvl==='A2')return A2_VOCAB;
+  if(lvl==='B1')return B1_VOCAB;
+  if(lvl==='B2')return B2_VOCAB;
+  if(lvl==='C1')return C1_VOCAB;
+  if(lvl==='C2')return C2_VOCAB;
+  return [];
+}
+function renderVocab(lvl){
+  const vocab=getVocab(lvl);
+  return `
+  <div class="card">
+    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+      <h3 class="text-xl font-bold" style="color:var(--foreground)">Vocabulario ${lvl} — ${vocab.length} palabras</h3>
+      <input id="vocab-search" type="text" placeholder="Buscar..." onInput="filterVocab()" class="fitb-input" style="width:160px"/>
+    </div>
+    <div id="vocab-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      ${vocab.map((w,i)=>`
+        <div class="vocab-item p-3 rounded-xl border flex flex-col gap-1 cursor-pointer hover:border-[var(--primary)] transition-colors" style="border-color:var(--border);background:var(--card)" onclick="speak('${w[0].replace(/'/g,"\\'")}')">
+          <div class="text-xl font-bold" style="color:var(--primary)">${w[0]}</div>
+          <div class="text-xs" style="color:var(--muted-foreground)">${w[1]}</div>
+          <div class="text-sm font-medium" style="color:var(--foreground)">${w[2]}</div>
+          <span class="text-xs" style="color:var(--primary)">🔊 Escuchar</span>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+function filterVocab(){
+  const q=document.getElementById('vocab-search')?.value.toLowerCase()||'';
+  document.querySelectorAll('.vocab-item').forEach(el=>{
+    el.style.display=el.textContent.toLowerCase().includes(q)?'':'none';
   });
-  h += `</div>`;
-  return h;
 }
 
-/* ═══════  LITERATURA SECTION  ═══════ */
-function renderLiteratura() {
-  return `<div class="space-y-6">
-    <div class="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
-      <h3 class="font-bold text-lg mb-3">📜 Poema tradicional (시조, Sijo)</h3>
-      <div class="text-xl leading-relaxed mb-2">산은 옛 산이로되 물은 옛 물이 아니로다.</div>
-      <div class="text-sm text-[var(--muted-foreground)] mb-3">San-eun yet san-irode mul-eun yet mul-i aniroda.</div>
-      <div class="p-3 rounded-xl bg-[var(--accent)] text-sm mb-3">La montaña es la montaña de antes, pero el agua ya no es la misma agua.</div>
-      <button class="audio-btn" onclick="speak('산은 옛 산이로되 물은 옛 물이 아니로다.')">🔊 Escuchar</button>
-      <p class="mt-3 text-sm text-[var(--muted-foreground)]">Este verso del poeta Hwang Jini (황진이) del siglo XVI refleja la filosofía budista del cambio y la impermanencia.</p>
+// ════════════════════════════════════════════════════════════
+//  PHRASES SECTION
+// ════════════════════════════════════════════════════════════
+function renderPhrases(){
+  return `
+  <div class="space-y-6">
+    ${Object.entries(A1_PHRASES).map(([cat,phrases])=>`
+      <div class="card">
+        <h3 class="text-lg font-bold mb-4" style="color:var(--foreground)">📌 ${cat}</h3>
+        <div class="space-y-3">
+          ${phrases.map(([kor,rom,esp])=>`
+            <div class="flex flex-wrap items-start gap-3 p-3 rounded-xl" style="background:var(--accent)">
+              <button class="tts-btn" onclick="speak('${kor.replace(/'/g,"\\'")}')">🔊</button>
+              <div class="flex-1">
+                <div class="text-lg font-bold" style="color:var(--foreground)">${kor}</div>
+                <div class="text-xs" style="color:var(--muted-foreground)">${rom}</div>
+                <div class="text-sm font-medium mt-1" style="color:var(--primary)">${esp}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  GRAMMAR SECTION
+// ════════════════════════════════════════════════════════════
+function getGrammar(lvl){
+  if(lvl==='A1')return A1_GRAMMAR;
+  if(lvl==='A2')return A2_GRAMMAR;
+  if(lvl==='B1')return B1_GRAMMAR;
+  if(lvl==='B2')return B2_GRAMMAR;
+  if(lvl==='C1')return C1_GRAMMAR;
+  if(lvl==='C2')return C2_GRAMMAR;
+  return [];
+}
+function renderGrammar(lvl){
+  const grammar=getGrammar(lvl);
+  return `
+  <div class="space-y-5">
+    ${grammar.map((g,i)=>`
+      <div class="card">
+        <div class="flex items-start gap-3">
+          <div class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center font-black text-sm" style="background:var(--primary);color:var(--primary-foreground)">${i+1}</div>
+          <div class="flex-1">
+            <div class="font-bold text-lg mb-2" style="color:var(--foreground)">${g.point}</div>
+            <div class="p-3 rounded-xl mb-2 flex flex-wrap items-center gap-3" style="background:var(--accent)">
+              <button class="tts-btn" onclick="speak('${g.example.replace(/'/g,"\\'")}')">🔊</button>
+              <div>
+                <div class="text-lg font-bold" style="color:var(--primary)">${g.example}</div>
+                <div class="text-xs" style="color:var(--muted-foreground)">${g.rom}</div>
+                <div class="text-sm" style="color:var(--foreground)">${g.trans}</div>
+              </div>
+            </div>
+            <div class="text-sm p-3 rounded-xl" style="background:var(--card);border:1px solid var(--border);color:var(--muted-foreground)">💡 ${g.note}</div>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  CULTURE SECTION
+// ════════════════════════════════════════════════════════════
+function renderCulture(){
+  return `
+  <div class="grid sm:grid-cols-2 gap-5">
+    ${CULTURE_FACTS.map(f=>`
+      <div class="card flex gap-4">
+        <div class="text-4xl">${f.emoji}</div>
+        <div>
+          <div class="font-bold text-base mb-1" style="color:var(--foreground)">${f.title}</div>
+          <div class="text-sm" style="color:var(--muted-foreground)">${f.text}</div>
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  CONJUGATION TABLE
+// ════════════════════════════════════════════════════════════
+function renderConjugation(){
+  return `
+  <div class="card overflow-x-auto">
+    <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">Tabla de Conjugación — 15 verbos</h3>
+    <table class="verb-table w-full border-collapse text-xs md:text-sm">
+      <thead><tr>
+        <th>기본형</th><th>Traducción</th>
+        <th>현재 (해요체)</th><th>과거</th><th>미래</th><th>부정</th><th>명령</th>
+      </tr></thead>
+      <tbody>
+        ${VERBS.map(v=>`<tr>
+          <td class="font-bold" style="color:var(--primary)">
+            <button class="tts-btn" onclick="speak('${v.base}')">${v.base}</button>
+          </td>
+          <td style="color:var(--muted-foreground)">${v.trans}</td>
+          <td><button class="tts-btn" onclick="speak('${v.present}')">${v.present}</button></td>
+          <td><button class="tts-btn" onclick="speak('${v.past}')">${v.past}</button></td>
+          <td><button class="tts-btn" onclick="speak('${v.future}')">${v.future}</button></td>
+          <td><button class="tts-btn" onclick="speak('${v.neg}')">${v.neg}</button></td>
+          <td><button class="tts-btn" onclick="speak('${v.command}')">${v.command}</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  DIALOGUES SECTION
+// ════════════════════════════════════════════════════════════
+function getDialogues(lvl){
+  if(lvl==='A2')return A2_DIALOGUES;
+  if(lvl==='B1')return B1_DIALOGUES;
+  if(lvl==='B2')return B2_DIALOGUES;
+  return [];
+}
+function renderDialogues(lvl){
+  const dialogs=getDialogues(lvl);
+  return `
+  <div class="space-y-6">
+    ${dialogs.map((d,di)=>`
+      <div class="card">
+        <h3 class="text-lg font-bold mb-4" style="color:var(--foreground)">💬 ${d.title}</h3>
+        <div>
+          ${d.lines.map(line=>`
+            <div class="dialog-line">
+              <div class="font-bold text-xs px-2 py-1 rounded" style="background:var(--primary);color:var(--primary-foreground);white-space:nowrap">${line.speaker}</div>
+              <div class="pl-2">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                  <button class="tts-btn" onclick="speak('${line.kor.replace(/'/g,"\\'")}')">🔊</button>
+                  <span class="font-bold" style="color:var(--foreground)">${line.kor}</span>
+                </div>
+                <div class="text-xs" style="color:var(--muted-foreground)">${line.rom}</div>
+                <div class="text-sm mt-1" style="color:var(--primary)">${line.trans}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <button class="tts-btn mt-4" onclick="playDialog(${di},'${lvl}')">▶ Reproducir diálogo completo</button>
+      </div>
+    `).join('')}
+  </div>`;
+}
+function playDialog(di,lvl){
+  const dialogs=getDialogues(lvl);
+  const lines=dialogs[di]?.lines||[];
+  let i=0;
+  function next(){
+    if(i<lines.length){speak(lines[i].kor);i++;setTimeout(next,2000);}
+  }
+  next();
+}
+
+// ════════════════════════════════════════════════════════════
+//  FLASHCARDS
+// ════════════════════════════════════════════════════════════
+function getFlashcardData(lvl){
+  const v=getVocab(lvl);
+  return v.map(w=>({front:w[0],rom:w[1],back:w[2]}));
+}
+let fcIndex={};let fcFlipped={};
+function initFlashcards(lvl){
+  fcIndex[lvl]=0;fcFlipped[lvl]=false;
+  renderCardView(lvl);
+}
+function renderFlashcards(lvl){
+  const data=getFlashcardData(lvl);
+  return `
+  <div class="card max-w-lg mx-auto text-center">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="font-bold text-lg" style="color:var(--foreground)">Flashcards ${lvl}</h3>
+      <div id="fc-counter-${lvl}" class="text-sm" style="color:var(--muted-foreground)">1 / ${data.length}</div>
     </div>
-    <div class="p-5 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
-      <h3 class="font-bold text-lg mb-3">📖 Proverbios coreanos (속담)</h3>
-      <div class="space-y-3">
+    <div id="fc-wrap-${lvl}" class="flashcard-wrap mb-6" onclick="flipCard('${lvl}')">
+      <div id="fc-${lvl}" class="flashcard">
+        <div class="flashcard-face flashcard-front" id="fc-front-${lvl}">
+          <div class="text-5xl font-black mb-3" id="fc-kor-${lvl}" style="color:var(--primary)"></div>
+          <div class="text-sm" id="fc-rom-${lvl}" style="color:var(--muted-foreground)"></div>
+          <div class="text-xs mt-4" style="color:var(--muted-foreground)">Haz clic para ver la traducción</div>
+        </div>
+        <div class="flashcard-face flashcard-back" id="fc-back-${lvl}">
+          <div class="text-2xl font-bold" id="fc-trans-${lvl}" style="color:var(--foreground)"></div>
+          <div class="text-xs mt-4" style="color:var(--muted-foreground)">Haz clic para volver</div>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-3 justify-center flex-wrap">
+      <button class="tts-btn px-4 py-2" onclick="prevCard('${lvl}')">← Anterior</button>
+      <button class="tts-btn px-4 py-2" onclick="speakCard('${lvl}')">🔊 Escuchar</button>
+      <button class="tts-btn px-4 py-2" onclick="nextCard('${lvl}')">Siguiente →</button>
+    </div>
+    <div class="mt-4 text-xs" style="color:var(--muted-foreground)">⌨️ Espacio = voltear · ← → = navegar</div>
+    <div class="progress-bar mt-4"><div id="fc-progress-${lvl}" class="progress-fill" style="width:${100/getFlashcardData(lvl).length}%"></div></div>
+  </div>`;
+}
+function renderCardView(lvl){
+  const data=getFlashcardData(lvl);
+  const idx=fcIndex[lvl]||0;
+  const card=data[idx]||data[0];
+  const korEl=document.getElementById('fc-kor-'+lvl);
+  const romEl=document.getElementById('fc-rom-'+lvl);
+  const transEl=document.getElementById('fc-trans-'+lvl);
+  const counter=document.getElementById('fc-counter-'+lvl);
+  const progress=document.getElementById('fc-progress-'+lvl);
+  const fcEl=document.getElementById('fc-'+lvl);
+  if(korEl)korEl.textContent=card.front;
+  if(romEl)romEl.textContent=card.rom;
+  if(transEl)transEl.textContent=card.back;
+  if(counter)counter.textContent=`${idx+1} / ${data.length}`;
+  if(progress)progress.style.width=`${((idx+1)/data.length)*100}%`;
+  if(fcEl){fcEl.classList.remove('flipped');fcFlipped[lvl]=false;}
+}
+function flipCard(lvl){
+  const fcEl=document.getElementById('fc-'+lvl);
+  if(!fcEl)return;
+  fcFlipped[lvl]=!fcFlipped[lvl];
+  fcEl.classList.toggle('flipped',fcFlipped[lvl]);
+}
+function nextCard(lvl){
+  const data=getFlashcardData(lvl);
+  fcIndex[lvl]=((fcIndex[lvl]||0)+1)%data.length;
+  renderCardView(lvl);
+}
+function prevCard(lvl){
+  const data=getFlashcardData(lvl);
+  fcIndex[lvl]=((fcIndex[lvl]||0)-1+data.length)%data.length;
+  renderCardView(lvl);
+}
+function speakCard(lvl){
+  const data=getFlashcardData(lvl);
+  const idx=fcIndex[lvl]||0;
+  speak(data[idx].front);
+}
+
+// ════════════════════════════════════════════════════════════
+//  READING SECTION
+// ════════════════════════════════════════════════════════════
+function getReadings(lvl){
+  if(lvl==='B1')return B1_READING;
+  if(lvl==='C1')return C1_READING;
+  if(lvl==='C2')return C2_READING;
+  return [];
+}
+function renderReading(lvl){
+  const readings=getReadings(lvl);
+  if(!readings.length)return `<div class="card"><p style="color:var(--muted-foreground)">Textos de lectura no disponibles para este nivel.</p></div>`;
+  return `
+  <div class="space-y-6">
+    ${readings.map((r,ri)=>`
+      <div class="reading-card">
+        <div class="flex flex-wrap gap-3 items-center mb-3">
+          <h3 class="font-bold text-lg" style="color:var(--foreground)">${r.title}</h3>
+          <button class="tts-btn" onclick="speak('${r.text.replace(/'/g,"\\'").replace(/\n/g,' ')}')">🔊 Leer</button>
+        </div>
+        <div class="korean-text whitespace-pre-line mb-4">${r.text}</div>
+        <div class="mt-4">
+          <div class="font-semibold text-sm mb-2" style="color:var(--foreground)">📝 Preguntas de comprensión:</div>
+          ${r.questions.map((q,qi)=>`
+            <div class="mb-3 p-3 rounded-xl" style="background:var(--accent)">
+              <div class="font-medium text-sm mb-1">${qi+1}. ${q.q}</div>
+              <details><summary class="text-xs cursor-pointer" style="color:var(--primary)">Ver respuesta</summary>
+                <div class="mt-1 text-sm font-bold" style="color:var(--foreground)">${q.a}</div>
+              </details>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  LISTENING SECTION (B2)
+// ════════════════════════════════════════════════════════════
+function renderListening(){
+  const exercises=[
+    {title:'Escucha y repite — Trabalenguas',items:['간장공장공장장은 강공장장이고 된장공장공장장은 장공장장이다','경찰청 쇠창살은 외쇠창살이고 검찰청 쇠창살은 쌍쇠창살이다','저기 계신 저 분이 박 법학박사이고 여기 계신 이 분이 백 법학박사이다']},
+    {title:'Escucha e identifica — Noticias simuladas',items:['오늘 서울의 날씨는 맑고 기온은 23도로 예상됩니다.','한국 경제 성장률이 올해 2.5%를 기록할 것으로 전망됩니다.','새로운 환경 보호 정책이 내년부터 시행될 예정입니다.']},
+    {title:'Dictado — Oraciones B2',items:['도시화가 진행되는 반면에 농촌 인구는 감소하고 있다.','인공지능 기술의 발전으로 인해 많은 직업들이 변화하고 있다.','개인 정보 보호의 중요성은 디지털 시대에 더욱 부각되고 있다.']},
+  ];
+  return `
+  <div class="space-y-6">
+    ${exercises.map(ex=>`
+      <div class="card">
+        <h3 class="font-bold text-lg mb-4" style="color:var(--foreground)">${ex.title}</h3>
+        <div class="space-y-3">
+          ${ex.items.map((item,i)=>`
+            <div class="p-3 rounded-xl flex flex-wrap items-start gap-3" style="background:var(--accent)">
+              <button class="tts-btn" onclick="speak('${item.replace(/'/g,"\\'")}')">🔊 Escuchar</button>
+              <details class="flex-1"><summary class="text-xs cursor-pointer" style="color:var(--primary)">Ver texto</summary>
+                <div class="mt-2 text-base font-medium" style="color:var(--foreground)">${item}</div>
+              </details>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  EXPRESSIONS SECTION (C1)
+// ════════════════════════════════════════════════════════════
+function renderExpressions(){
+  return `
+  <div class="space-y-4">
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">20 Expresiones Idiomáticas Coreanas</h3>
+      <div class="grid sm:grid-cols-2 gap-4">
+        ${C1_EXPRESSIONS.map((e,i)=>`
+          <div class="p-4 rounded-xl border" style="border-color:var(--border);background:var(--card)">
+            <div class="flex flex-wrap gap-2 items-start mb-2">
+              <span class="font-black text-base" style="color:var(--primary)">${i+1}. ${e.expr}</span>
+              <button class="tts-btn" onclick="speak('${e.expr.replace(/'/g,"\\'")}')">🔊</button>
+            </div>
+            <div class="text-xs mb-1" style="color:var(--muted-foreground)">${e.rom}</div>
+            <div class="text-sm font-semibold mb-2" style="color:var(--foreground)">${e.meaning}</div>
+            <div class="text-sm p-2 rounded-lg" style="background:var(--accent);color:var(--muted-foreground)">
+              <button class="tts-btn" onclick="speak('${e.example.replace(/'/g,"\\'")}')">🔊</button>
+              ${e.example}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  LITERATURE SECTION (C2)
+// ════════════════════════════════════════════════════════════
+function renderLiterature(){
+  return `
+  <div class="space-y-6">
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">📜 Sijo (시조) — Poesía clásica</h3>
+      ${C2_LITERATURE.sijo.map(s=>`
+        <div class="mb-6 p-4 rounded-xl" style="background:var(--accent)">
+          <div class="font-bold text-lg mb-2 flex gap-2 items-center" style="color:var(--foreground)">
+            ${s.title}
+            <button class="tts-btn" onclick="speak('${s.kor.replace(/'/g,"\\'")}')">🔊</button>
+          </div>
+          <div class="korean-text text-lg whitespace-pre-line mb-3">${s.kor}</div>
+          <div class="text-sm italic mb-2" style="color:var(--muted-foreground)">${s.trans}</div>
+          <div class="text-xs p-2 rounded-lg" style="background:var(--card);color:var(--muted-foreground)">📚 ${s.notes}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">📖 이상 — 날개 (Alas) [Fragmento]</h3>
+      <div class="p-4 rounded-xl" style="background:var(--accent)">
+        <div class="flex gap-2 mb-2">
+          <button class="tts-btn" onclick="speak('나는 지금 무슨 까닭인지 거울을 아니 봐야 할 처지에 놓여 있다.')">🔊 Leer</button>
+        </div>
+        <div class="korean-text text-base">나는 지금 무슨 까닭인지 거울을 아니 봐야 할 처지에 놓여 있다. 그것은 내 눈이 거울을 볼 때마다 내 눈이 내 눈을 쳐다봐서 나는 무서워진다. 내 눈이 내 눈을 쳐다보는 까닭에 나는 차라리 거울을 아니 봐야 한다. 거울은 내 눈을 쳐다보게 하는 아무 이유 없는 위험한 물건이다.</div>
+        <div class="mt-3 text-sm" style="color:var(--muted-foreground)"><em>No sé por qué razón me encuentro en la situación de no deber mirar el espejo. Es porque cada vez que mis ojos miran el espejo, mis ojos me miran a mí y me asusto...</em></div>
+        <div class="text-xs mt-2" style="color:var(--primary)">— 이상 (Yi Sang), 1936. Precursor del modernismo y surrealismo en la literatura coreana.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">📚 Proverbios Coreanos — 속담 (20)</h3>
+      <div class="grid sm:grid-cols-2 gap-3">
+        ${C2_LITERATURE.proverbs.map((p,i)=>`
+          <div class="p-3 rounded-xl border" style="border-color:var(--border);background:var(--card)">
+            <div class="flex gap-2 items-start mb-1">
+              <button class="tts-btn" onclick="speak('${p.kor.replace(/'/g,"\\'")}')">🔊</button>
+              <span class="font-bold text-sm" style="color:var(--primary)">${p.kor}</span>
+            </div>
+            <div class="text-sm" style="color:var(--foreground)">${p.trans}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">漢字 Hanja — Compuestos chino-coreanos</h3>
+      <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-3">
+        ${C2_LITERATURE.hanja.map(h=>`
+          <div class="p-4 rounded-xl border text-center" style="border-color:var(--border);background:var(--card)">
+            <div class="text-3xl font-black mb-1" style="color:var(--primary)">${h.hanja}</div>
+            <div class="font-bold text-base mb-1" style="color:var(--foreground)">${h.hangul}</div>
+            <div class="text-xs" style="color:var(--muted-foreground)">${h.meaning}</div>
+            <button class="tts-btn mt-2" onclick="speak('${h.hangul}')">🔊</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  FORMAL WRITING SECTION (C2)
+// ════════════════════════════════════════════════════════════
+function renderFormal(){
+  return `
+  <div class="space-y-6">
+    ${C2_FORMAL.map(cat=>`
+      <div class="card">
+        <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">${cat.category}</h3>
+        <div class="space-y-3">
+          ${cat.items.map(item=>`
+            <div class="p-4 rounded-xl border" style="border-color:var(--border);background:var(--accent)">
+              <div class="flex gap-2 items-start mb-2">
+                <button class="tts-btn" onclick="speak('${item.kor.replace(/'/g,"\\'")}')">🔊</button>
+                <div class="font-bold text-base" style="color:var(--foreground)">${item.kor}</div>
+              </div>
+              <div class="text-sm" style="color:var(--muted-foreground)"><em>${item.trans}</em></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+    <div class="card">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">📝 Conectores formales escritos</h3>
+      <div class="grid sm:grid-cols-2 gap-3">
         ${[
-          {k:'가는 말이 고와야 오는 말이 곱다.',r:'Ganeun mari gowaya oneun mari gopda.',es:'Si tus palabras son amables, las palabras que recibirás también lo serán. (Lo que das, recibes)'},
-          {k:'빛 좋은 개살구',r:'Bit joheun gaesalgu',es:'Un albaricoque silvestre de buen brillo. (Las apariencias engañan)'},
-          {k:'호랑이도 제 말 하면 온다.',r:'Horangido je mal hamyeon onda.',es:'Hasta el tigre viene si hablas de él. (Hablando del rey de Roma...)'},
-        ].map(p=>`<div class="p-3 rounded-xl bg-[var(--accent)]">
-          <div class="font-bold">${p.k}</div>
-          <div class="text-xs text-[var(--muted-foreground)]">${p.r}</div>
-          <div class="text-sm mt-1">${p.es}</div>
-          <button class="audio-btn mt-2" onclick="speak('${p.k}')">🔊</button>
-        </div>`).join('')}
+          ['따라서','Por lo tanto'],['그러므로','Por consiguiente'],['반면에','Por otro lado'],
+          ['더불어','Además / Junto con'],['이에 따라','Según esto'],['한편','Por otra parte'],
+          ['뿐만 아니라','No solo... sino también'],['요컨대','En resumen'],
+          ['다시 말해','Es decir / O sea'],['결론적으로','En conclusión'],
+        ].map(([k,s])=>`
+          <div class="flex justify-between items-center p-3 rounded-xl" style="background:var(--card);border:1px solid var(--border)">
+            <div class="font-bold" style="color:var(--primary)">${k}</div>
+            <div class="text-sm" style="color:var(--muted-foreground)">${s}</div>
+            <button class="tts-btn" onclick="speak('${k}')">🔊</button>
+          </div>
+        `).join('')}
       </div>
     </div>
   </div>`;
 }
 
-/* ═══════  FLASHCARDS SECTION  ═══════ */
-let fcIdx = 0, fcFlipped = false;
-function renderFlashcards(lvId) {
-  fcIdx = 0; fcFlipped = false;
-  const words = VOCAB[lvId] || [];
-  if (!words.length) return '<p>No hay palabras para este nivel.</p>';
-  return `<div class="max-w-md mx-auto space-y-5">
-    <div class="flex items-center justify-between mb-2">
-      <span class="text-sm text-[var(--muted-foreground)]">Tarjeta <span id="fcNum">1</span> de ${words.length}</span>
-      <div class="progress-bar w-32"><div class="progress-fill" id="fcProg" style="width:${100/words.length}%"></div></div>
+// ════════════════════════════════════════════════════════════
+//  EXERCISES (Quiz + Matching + FITB + Word Order)
+// ════════════════════════════════════════════════════════════
+function renderExercises(lvl){
+  const savedScore=getScore(lvl,'quiz');
+  const matchData=MATCHING[lvl]||[];
+  return `
+  <div class="space-y-8">
+
+    <!-- ── QUIZ ── -->
+    <div class="card" id="quiz-section-${lvl}">
+      <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+        <h3 class="text-xl font-bold" style="color:var(--foreground)">📝 Quiz — 10 preguntas</h3>
+        ${savedScore?`<span class="text-sm font-semibold" style="color:var(--primary)">Mejor puntuación: ${savedScore}/10</span>`:''}
+      </div>
+      <div id="quiz-container-${lvl}"></div>
     </div>
-    <div class="flashcard-wrap" onclick="flipCard()">
-      <div class="flashcard" id="theCard">
-        <div class="flashcard-face flashcard-front">
-          <div class="text-5xl mb-2" id="fcEmoji">${words[0].emoji}</div>
-          <div class="text-4xl font-black" id="fcKor">${words[0].k}</div>
-          <div class="text-sm text-[var(--muted-foreground)] mt-2">Haz clic para voltear</div>
-        </div>
-        <div class="flashcard-face flashcard-back">
-          <div class="text-5xl mb-2">${words[0].emoji}</div>
-          <div class="text-2xl font-black" id="fcEs">${words[0].es}</div>
-          <div class="text-sm text-[var(--muted-foreground)]" id="fcRom">${words[0].r}</div>
-          <button class="audio-btn mt-3" onclick="event.stopPropagation();speak('${words[0].k}')">🔊 Escuchar</button>
-        </div>
+
+    <!-- ── MATCHING GAME ── -->
+    <div class="card" id="match-section-${lvl}">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">🎮 Juego de Emparejamiento — 10 pares</h3>
+      <button class="tts-btn px-4 py-2 mb-4" onclick="startMatch('${lvl}')">▶ Iniciar / Reiniciar</button>
+      <div id="match-container-${lvl}" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+      <div id="matchResult-${lvl}" class="hidden text-center mt-4 p-4 rounded-xl" style="background:var(--accent)">
+        <div class="text-2xl font-black" style="color:var(--primary)">🎉 ¡Completado!</div>
+        <div class="text-sm mt-1" style="color:var(--muted-foreground)">¡Excelente trabajo! Reinicia para practicar de nuevo.</div>
       </div>
     </div>
-    <div class="flex gap-3 justify-center">
-      <button onclick="prevCard('${lvId}')" class="px-5 py-2 rounded-full border border-[var(--border)] font-semibold text-sm hover:bg-[var(--accent)]">← Anterior</button>
-      <button onclick="flipCard()" class="px-5 py-2 rounded-full border border-[var(--primary)] text-[var(--primary)] font-semibold text-sm hover:bg-[var(--primary)] hover:text-[var(--primary-foreground)]">Voltear</button>
-      <button onclick="nextCard('${lvId}')" class="px-5 py-2 rounded-full border border-[var(--border)] font-semibold text-sm hover:bg-[var(--accent)]">Siguiente →</button>
-    </div>
-    <p class="text-center text-xs text-[var(--muted-foreground)]">💡 También puedes hacer clic en la tarjeta para voltearla</p>
-  </div>`;
-}
-function flipCard() {
-  fcFlipped = !fcFlipped;
-  document.getElementById('theCard')?.classList.toggle('flipped', fcFlipped);
-}
-function goToCard(lvId, idx) {
-  const words = VOCAB[lvId] || [];
-  if (idx < 0 || idx >= words.length) return;
-  fcIdx = idx; fcFlipped = false;
-  const card = document.getElementById('theCard');
-  if (!card) return;
-  card.classList.remove('flipped');
-  document.getElementById('fcEmoji').textContent = words[idx].emoji;
-  document.getElementById('fcKor').textContent   = words[idx].k;
-  document.getElementById('fcEs').textContent    = words[idx].es;
-  document.getElementById('fcRom').textContent   = words[idx].r;
-  document.getElementById('fcNum').textContent   = idx+1;
-  document.getElementById('fcProg').style.width  = `${(idx+1)*100/words.length}%`;
-  // update audio button
-  const audBtn = card.querySelector('.audio-btn');
-  if (audBtn) audBtn.setAttribute('onclick', `event.stopPropagation();speak('${words[idx].k}')`);
-}
-function nextCard(lvId){ goToCard(lvId, fcIdx+1); }
-function prevCard(lvId){ goToCard(lvId, fcIdx-1); }
 
-/* ═══════  EJERCICIOS SECTION  ═══════ */
-let quizState = { current: 0, score: 0, answered: false };
-function renderEjercicios(lvId) {
-  quizState = { current: 0, score: 0, answered: false };
-  return renderQuizUI(lvId);
-}
-function renderQuizUI(lvId) {
-  const qs = QUIZZES[lvId] || [];
-  if (!qs.length) return '<p>Ejercicios próximamente.</p>';
-  return `<div class="max-w-lg mx-auto space-y-5">
-    <!-- Progress -->
-    <div class="flex items-center justify-between">
-      <span class="text-sm font-semibold">Pregunta <span id="qNum">1</span> de ${qs.length}</span>
-      <span class="text-sm font-semibold text-[var(--primary)]">Puntuación: <span id="qScore">0</span></span>
-    </div>
-    <div class="progress-bar"><div class="progress-fill" id="quizProg" style="width:${100/qs.length}%"></div></div>
-
-    <!-- Question card -->
-    <div id="quizCard" class="p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
-      <p class="font-bold text-lg mb-5" id="qText">${qs[0].q}</p>
-      <div id="qOpts">
-        ${qs[0].opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz('${lvId}',${i})">${o}</button>`).join('')}
+    <!-- ── FILL IN THE BLANK ── -->
+    <div class="card" id="fitb-section-${lvl}">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">✏️ Rellena el espacio — 8 oraciones</h3>
+      <div id="fitb-container-${lvl}"></div>
+      <div class="flex gap-3 mt-4 flex-wrap">
+        <button class="tts-btn px-4 py-2" onclick="checkFitb('${lvl}')">✓ Comprobar</button>
+        <button class="tts-btn px-4 py-2" onclick="resetFitb('${lvl}')">↺ Reiniciar</button>
       </div>
-      <div id="qFeedback" class="hidden mt-3 p-3 rounded-xl text-sm font-semibold"></div>
+      <div id="fitb-result-${lvl}" class="mt-3 text-sm font-bold" style="color:var(--primary)"></div>
     </div>
 
-    <!-- Next button -->
-    <div class="text-center">
-      <button id="nextQBtn" onclick="nextQuestion('${lvId}')" class="hidden px-8 py-3 rounded-full font-bold" style="background:var(--primary);color:var(--primary-foreground)">
-        Siguiente →
-      </button>
+    <!-- ── WORD ORDER ── -->
+    <div class="card" id="wo-section-${lvl}">
+      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">🔀 Orden de palabras — 5 oraciones</h3>
+      <div id="wo-container-${lvl}"></div>
     </div>
 
-    <!-- Matching game below -->
-    <div class="mt-8">
-      <h3 class="font-bold text-base mb-3">🎮 Juego de Emparejamiento</h3>
-      <p class="text-sm text-[var(--muted-foreground)] mb-4">Une cada palabra coreana con su traducción.</p>
-      ${renderMatchGame(lvId)}
-    </div>
-
-    <!-- Completion -->
-    <div id="quizComplete" class="hidden text-center p-8 rounded-2xl border border-[var(--border)] bg-[var(--card)]">
-      <div class="text-5xl mb-3">🎉</div>
-      <h3 class="text-2xl font-black mb-2">¡Completado!</h3>
-      <p class="text-[var(--muted-foreground)] mb-4">Tu puntuación: <span id="finalScore" class="text-[var(--primary)] font-black text-xl"></span></p>
-      <button onclick="restartQuiz('${lvId}')" class="px-6 py-2 rounded-full font-bold" style="background:var(--primary);color:var(--primary-foreground)">🔄 Reintentar</button>
-    </div>
   </div>`;
 }
-function answerQuiz(lvId, chosen) {
-  if (quizState.answered) return;
-  quizState.answered = true;
-  const qs = QUIZZES[lvId];
-  const q = qs[quizState.current];
-  const opts = document.querySelectorAll('#qOpts .quiz-opt');
-  opts.forEach(b => b.disabled = true);
-  const fb = document.getElementById('qFeedback');
-  if (chosen === q.a) {
-    opts[chosen].classList.add('correct');
-    quizState.score++;
-    document.getElementById('qScore').textContent = quizState.score;
-    fb.textContent = '✅ ¡Correcto! 잘 했어요!';
-    fb.style.background = '#22c55e22'; fb.style.color = '#16a34a';
-  } else {
-    opts[chosen].classList.add('wrong');
-    opts[q.a].classList.add('correct');
-    fb.textContent = `❌ La respuesta correcta es: ${q.opts[q.a]}`;
-    fb.style.background = '#ef444422'; fb.style.color = '#dc2626';
+
+// ── QUIZ LOGIC ──
+function renderQuiz(lvl){
+  const qs=QUIZZES[lvl]||[];
+  if(!qs.length)return;
+  quizState[lvl]={current:0,score:0,answered:false};
+  const c=document.getElementById('quiz-container-'+lvl);
+  if(c)c.innerHTML=buildQuizQuestion(lvl);
+}
+function buildQuizQuestion(lvl){
+  const qs=QUIZZES[lvl];
+  const st=quizState[lvl];
+  if(!qs||st.current>=qs.length){
+    saveScore(lvl,'quiz',st.score);
+    return `<div class="text-center p-6">
+      <div class="text-5xl mb-3">${st.score>=8?'🏆':st.score>=5?'👍':'📚'}</div>
+      <div class="text-2xl font-black mb-2" style="color:var(--primary)">${st.score}/10</div>
+      <div class="text-base mb-4" style="color:var(--foreground)">${st.score>=8?'¡Excelente!':st.score>=5?'¡Bien hecho!':'Sigue practicando'}</div>
+      <button class="tts-btn px-6 py-2" onclick="restartQuiz('${lvl}')">↺ Reintentar</button>
+    </div>`;
   }
-  fb.classList.remove('hidden');
-  if (quizState.current < qs.length - 1) {
-    document.getElementById('nextQBtn').classList.remove('hidden');
-  } else {
-    setTimeout(() => showQuizComplete(lvId), 800);
-  }
+  const q=qs[st.current];
+  return `
+    <div class="mb-3 text-sm font-semibold" style="color:var(--muted-foreground)">Pregunta ${st.current+1} de 10 · Puntuación: ${st.score}</div>
+    <div class="text-lg font-bold mb-4" style="color:var(--foreground)">${q.q}</div>
+    <div>
+      ${q.opts.map((opt,i)=>`
+        <button class="quiz-opt" id="qopt-${lvl}-${i}" onclick="answerQuiz('${lvl}',${i})">${opt}</button>
+      `).join('')}
+    </div>
+  `;
 }
-function nextQuestion(lvId) {
-  quizState.current++;
-  quizState.answered = false;
-  const qs = QUIZZES[lvId];
-  const q = qs[quizState.current];
-  document.getElementById('qNum').textContent = quizState.current + 1;
-  document.getElementById('quizProg').style.width = `${(quizState.current+1)*100/qs.length}%`;
-  document.getElementById('qText').textContent = q.q;
-  document.getElementById('qOpts').innerHTML = q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz('${lvId}',${i})">${o}</button>`).join('');
-  document.getElementById('qFeedback').classList.add('hidden');
-  document.getElementById('nextQBtn').classList.add('hidden');
+function answerQuiz(lvl,chosen){
+  const st=quizState[lvl];
+  if(st.answered)return;
+  st.answered=true;
+  const q=QUIZZES[lvl][st.current];
+  if(chosen===q.a)st.score++;
+  document.querySelectorAll(`[id^="qopt-${lvl}-"]`).forEach((btn,i)=>{
+    btn.disabled=true;
+    if(i===q.a)btn.classList.add('correct');
+    if(i===chosen&&chosen!==q.a)btn.classList.add('wrong');
+  });
+  setTimeout(()=>{
+    st.current++;st.answered=false;
+    const c=document.getElementById('quiz-container-'+lvl);
+    if(c)c.innerHTML=buildQuizQuestion(lvl);
+  },1200);
 }
-function showQuizComplete(lvId) {
-  document.getElementById('quizCard').classList.add('hidden');
-  document.getElementById('nextQBtn').classList.add('hidden');
-  const complete = document.getElementById('quizComplete');
-  complete.classList.remove('hidden');
-  document.getElementById('finalScore').textContent = `${quizState.score}/${QUIZZES[lvId].length}`;
-}
-function restartQuiz(lvId) {
-  document.getElementById('sectionContent').outerHTML = `<div id="sectionContent" class="fade-in">${renderEjercicios(lvId)}</div>`;
+function restartQuiz(lvl){
+  quizState[lvl]={current:0,score:0,answered:false};
+  const c=document.getElementById('quiz-container-'+lvl);
+  if(c)c.innerHTML=buildQuizQuestion(lvl);
 }
 
-/* ═══════  MATCHING GAME  ═══════ */
-let matchState = { sel: null, matched: 0, total: 0 };
-function renderMatchGame(lvId) {
-  const pairs = MATCH_PAIRS[lvId] || [];
-  matchState = { sel: null, matched: 0, total: pairs.length };
-  // Shuffle
-  const leftCards  = pairs.map((p,i)=>({id:`k${i}`,text:p.k,pair:i,type:'k'}));
-  const rightCards = pairs.map((p,i)=>({id:`e${i}`,text:p.e,pair:i,type:'e'}));
-  shuffle(rightCards);
-  let h = `<div id="matchGameArea"><div class="grid grid-cols-2 gap-3">
-    <div class="space-y-2">`;
-  leftCards.forEach(c => { h += `<div class="match-card" id="mc-${c.id}" onclick="matchClick('${c.id}',${c.pair},'${c.type}')">${c.text}</div>`; });
-  h += `</div><div class="space-y-2">`;
-  rightCards.forEach(c => { h += `<div class="match-card" id="mc-${c.id}" onclick="matchClick('${c.id}',${c.pair},'${c.type}')">${c.text}</div>`; });
-  h += `</div></div>
-    <div id="matchResult" class="hidden text-center mt-4 p-4 rounded-xl bg-[var(--accent)] font-bold">🎊 ¡Excelente! Todas las parejas encontradas.</div>
-  </div>`;
-  return h;
+// ── MATCHING GAME LOGIC ──
+function startMatch(lvl){
+  const pairs=MATCHING[lvl]||[];
+  matchState[lvl]={sel:null,matched:0,total:pairs.length};
+  const result=document.getElementById('matchResult-'+lvl);
+  if(result)result.classList.add('hidden');
+  const c=document.getElementById('match-container-'+lvl);
+  if(!c)return;
+  // Create shuffled items: korean side + spanish side
+  const kor=pairs.map((p,i)=>({text:p[0],pair:i,type:'kor'}));
+  const esp=pairs.map((p,i)=>({text:p[1],pair:i,type:'esp'}));
+  const all=shuffle([...kor,...esp]);
+  c.innerHTML=all.map((item,i)=>`
+    <button class="match-btn" id="mc-${lvl}-${i}" onclick="matchClick('${lvl}',${i},${item.pair},'${item.type}')">
+      ${item.text}
+    </button>
+  `).join('');
+  matchState[lvl].items=all;
 }
-function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
-function matchClick(id, pair, type) {
-  const el = document.getElementById('mc-'+id);
-  if (!el || el.classList.contains('matched')) return;
-  if (!matchState.sel) {
-    matchState.sel = {id, pair, type, el};
-    el.classList.add('selected');
-    return;
+function matchClick(lvl,id,pair,type){
+  const ms=matchState[lvl];if(!ms)return;
+  const el=document.getElementById('mc-'+lvl+'-'+id);
+  if(!el||el.classList.contains('matched'))return;
+  if(!ms.sel){
+    ms.sel={id,pair,type,el};el.classList.add('selected');return;
   }
-  const prev = matchState.sel;
-  if (prev.id === id) { el.classList.remove('selected'); matchState.sel = null; return; }
-  if (prev.pair === pair && prev.type !== type) {
-    // correct
-    prev.el.classList.remove('selected'); prev.el.classList.add('matched');
-    el.classList.add('matched');
-    matchState.matched++;
-    if (matchState.matched === matchState.total) {
-      document.getElementById('matchResult')?.classList.remove('hidden');
+  const prev=ms.sel;
+  if(prev.id===id){el.classList.remove('selected');ms.sel=null;return;}
+  if(prev.pair===pair&&prev.type!==type){
+    prev.el.classList.remove('selected');prev.el.classList.add('matched');
+    el.classList.add('matched');ms.matched++;
+    if(ms.matched===ms.total){
+      document.getElementById('matchResult-'+lvl)?.classList.remove('hidden');
+      saveScore(lvl,'match',100);
     }
   } else {
-    // wrong
-    prev.el.classList.add('wrong-shake'); el.classList.add('wrong-shake');
-    setTimeout(() => { prev.el.classList.remove('selected','wrong-shake'); el.classList.remove('wrong-shake'); }, 400);
+    prev.el.classList.add('wrong-shake');el.classList.add('wrong-shake');
+    setTimeout(()=>{prev.el.classList.remove('selected','wrong-shake');el.classList.remove('wrong-shake');},400);
   }
-  matchState.sel = null;
+  ms.sel=null;
 }
-</script>
 
-<!-- ══════════════════  BOOT  ══════════════════ -->
-<script>
-  buildLevelTabs();
-  selectLevel('A1');
-  // Keyboard navigation for flashcards
-  document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight') nextCard && nextCard(currentLevel);
-    if (e.key === 'ArrowLeft')  prevCard && prevCard(currentLevel);
-    if (e.key === ' ') { e.preventDefault(); flipCard && flipCard(); }
+// ── FILL-IN-THE-BLANK LOGIC ──
+function renderFitb(lvl){
+  const items=FITB[lvl]||[];
+  const c=document.getElementById('fitb-container-'+lvl);
+  if(!c)return;
+  c.innerHTML=items.map((item,i)=>`
+    <div class="mb-4 p-3 rounded-xl" style="background:var(--accent)">
+      <div class="text-base font-medium mb-2 flex flex-wrap items-center gap-2" style="color:var(--foreground)">
+        <button class="tts-btn" onclick="speak('${item.sentence.replace('___',item.blank).replace(/'/g,"\\'")}')">🔊</button>
+        ${item.sentence.replace('___',`<input class="fitb-input" id="fitb-${lvl}-${i}" placeholder="___" />`)}
+      </div>
+      <div class="text-xs" style="color:var(--muted-foreground)">💡 ${item.hint}</div>
+    </div>
+  `).join('');
+}
+function checkFitb(lvl){
+  const items=FITB[lvl]||[];
+  let correct=0;
+  items.forEach((item,i)=>{
+    const inp=document.getElementById(`fitb-${lvl}-${i}`);
+    if(!inp)return;
+    const val=inp.value.trim();
+    if(val===item.blank){correct++;inp.classList.add('correct');inp.classList.remove('wrong');}
+    else{inp.classList.add('wrong');inp.classList.remove('correct');}
   });
+  const r=document.getElementById('fitb-result-'+lvl);
+  if(r){
+    r.textContent=`✓ ${correct}/${items.length} correctas`;
+    if(correct===items.length)saveScore(lvl,'fitb',100);
+  }
+}
+function resetFitb(lvl){
+  renderFitb(lvl);
+  const r=document.getElementById('fitb-result-'+lvl);
+  if(r)r.textContent='';
+}
+
+// ── WORD ORDER LOGIC ──
+function renderWordOrder(lvl){
+  const exercises=WORD_ORDER[lvl]||[];
+  const c=document.getElementById('wo-container-'+lvl);
+  if(!c)return;
+  woState[lvl]=exercises.map(ex=>({placed:[],done:false}));
+  c.innerHTML=exercises.map((ex,ei)=>`
+    <div class="mb-6 p-4 rounded-xl" style="background:var(--accent)">
+      <div class="text-sm font-semibold mb-2" style="color:var(--muted-foreground)">Oración ${ei+1}: <em>${ex.trans}</em></div>
+      <div id="wo-tokens-${lvl}-${ei}" class="mb-3 flex flex-wrap gap-1">
+        ${shuffle([...ex.words]).map((w,wi)=>`<button class="wo-token" id="wot-${lvl}-${ei}-${wi}" data-word="${w}" onclick="woTokenClick('${lvl}',${ei},this)">${w}</button>`).join('')}
+      </div>
+      <div id="wo-answer-${lvl}-${ei}" class="flex flex-wrap items-center gap-1 min-h-[36px] p-2 rounded-xl border" style="border-color:var(--primary);border-style:dashed;min-width:200px">
+        <span class="text-xs" style="color:var(--muted-foreground)" id="wo-placeholder-${lvl}-${ei}">Haz clic en las palabras en orden</span>
+      </div>
+      <div class="flex gap-2 mt-2">
+        <button class="tts-btn" onclick="checkWordOrder('${lvl}',${ei})">✓ Comprobar</button>
+        <button class="tts-btn" onclick="resetWordOrder('${lvl}',${ei})">↺</button>
+      </div>
+      <div id="wo-result-${lvl}-${ei}" class="mt-2 text-sm font-bold" style="color:var(--primary)"></div>
+    </div>
+  `).join('');
+}
+function woTokenClick(lvl,ei,btn){
+  if(btn.classList.contains('placed'))return;
+  const word=btn.dataset.word;
+  if(!woState[lvl])return;
+  woState[lvl][ei].placed.push(word);
+  btn.classList.add('placed');
+  const answerEl=document.getElementById(`wo-answer-${lvl}-${ei}`);
+  const placeholder=document.getElementById(`wo-placeholder-${lvl}-${ei}`);
+  if(placeholder)placeholder.style.display='none';
+  if(answerEl){
+    const span=document.createElement('span');
+    span.className='wo-token';span.textContent=word;
+    span.style.cursor='default';
+    answerEl.appendChild(span);
+  }
+}
+function checkWordOrder(lvl,ei){
+  const ex=WORD_ORDER[lvl][ei];
+  const st=woState[lvl][ei];
+  const placed=st.placed.join(' ');
+  const r=document.getElementById(`wo-result-${lvl}-${ei}`);
+  if(placed===ex.answer){
+    if(r){r.textContent='✓ ¡Correcto!';r.style.color='#22c55e';}
+    document.getElementById(`wo-answer-${lvl}-${ei}`)?.querySelectorAll('.wo-token').forEach(t=>t.style.borderColor='#22c55e');
+  } else {
+    if(r){r.textContent=`✗ Respuesta correcta: ${ex.answer}`;r.style.color='#ef4444';}
+  }
+}
+function resetWordOrder(lvl,ei){
+  woState[lvl][ei]={placed:[],done:false};
+  renderWordOrder(lvl);// re-render all — simpler
+}
+
+// ════════════════════════════════════════════════════════════
+//  POST-RENDER INIT (exercises section)
+// ════════════════════════════════════════════════════════════
+const origRenderSection=renderSection;
+function renderSection(lvl,sec){
+  origRenderSection(lvl,sec);
+  if(sec==='Ejercicios'){
+    setTimeout(()=>{
+      renderQuiz(lvl);
+      startMatch(lvl);
+      renderFitb(lvl);
+      renderWordOrder(lvl);
+    },50);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  UTILITY
+// ════════════════════════════════════════════════════════════
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
+  return arr;
+}
+
+// ════════════════════════════════════════════════════════════
+//  KEYBOARD NAVIGATION
+// ════════════════════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  const sec=currentSection[currentLevel];
+  if(sec==='Flashcards'){
+    if(e.key==='ArrowRight')nextCard(currentLevel);
+    if(e.key==='ArrowLeft')prevCard(currentLevel);
+    if(e.key===' '){e.preventDefault();flipCard(currentLevel);}
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════════════════
+buildLevelTabs();
+selectLevel('A1');
+updateOverallProgress();
 </script>
 </body>
 </html>
