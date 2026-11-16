@@ -1714,7 +1714,7 @@ function renderHangulBuilder(){
 //  LEVEL/SECTION CONFIG
 // ════════════════════════════════════════════════════════════
 const LEVELS={
-  A1:{label:'A1 — Principiante',sections:['Hangul','Pronunciación','Vocabulario','Frases','Gramática','Cultura','Ejercicios']},
+  A1:{label:'A1 — Principiante',sections:['Hangul','Pronunciación','Números','Familia','Vocabulario','Frases','Gramática','Cultura','Ejercicios']},
   A2:{label:'A2 — Básico',sections:['Vocabulario','Gramática','Conjugación','Diálogos','Flashcards','Ejercicios']},
   B1:{label:'B1 — Intermedio',sections:['Vocabulario','Gramática','Lectura','Diálogos','Flashcards','Ejercicios']},
   B2:{label:'B2 — Intermedio Alto',sections:['Vocabulario','Gramática','Escucha','Lectura','Flashcards','Ejercicios']},
@@ -1776,6 +1776,8 @@ function renderSection(lvl,sec){
   if(!sc)return;
   if(sec==='Hangul') sc.innerHTML=renderHangul();
   else if(sec==='Pronunciación') sc.innerHTML=renderPronunciation();
+  else if(sec==='Números') sc.innerHTML=renderNumbers();
+  else if(sec==='Familia') sc.innerHTML=renderFamily();
   else if(sec==='Vocabulario') sc.innerHTML=renderVocab(lvl);
   else if(sec==='Frases') sc.innerHTML=renderPhrases();
   else if(sec==='Gramática') sc.innerHTML=renderGrammar(lvl);
@@ -1794,6 +1796,7 @@ function renderSection(lvl,sec){
   if(sec==='Flashcards') initFlashcards(lvl);
   if(sec==='Conjugación') setTimeout(initConjugator,50);
   if(sec==='Hangul') setTimeout(renderHangulBuilder,50);
+  if(sec==='Números') setTimeout(initNumbersTrainer,50);
   if(sec==='Ejercicios'){
     setTimeout(()=>{
       renderQuiz(lvl);
@@ -2080,6 +2083,589 @@ function renderCulture(){
     `).join('')}
   </div>`;
 }
+
+
+// ════════════════════════════════════════════════════════════
+//  NUMBERS & FAMILY DATA (A1 DEDICATED LESSONS)
+// ════════════════════════════════════════════════════════════
+
+const SINO_NUMBERS = [
+  {num:0, ko:'영 / 공', rom:'yeong / gong', note:'영 se usa para matemáticas; 공 para teléfonos y habitaciones.'},
+  {num:1, ko:'일', rom:'il', note:'Número 1'},
+  {num:2, ko:'이', rom:'i', note:'Número 2'},
+  {num:3, ko:'삼', rom:'sam', note:'Número 3'},
+  {num:4, ko:'사', rom:'sa', note:'Número 4 (suena similar a muerte, a veces sustituido por F)'},
+  {num:5, ko:'오', rom:'o', note:'Número 5'},
+  {num:6, ko:'육', rom:'yuk', note:'Número 6'},
+  {num:7, ko:'칠', rom:'chil', note:'Número 7'},
+  {num:8, ko:'팔', rom:'pal', note:'Número 8'},
+  {num:9, ko:'구', rom:'gu', note:'Número 9'},
+  {num:10, ko:'십', rom:'sip', note:'Número 10'},
+  {num:11, ko:'십일', rom:'sip-il', note:'10 + 1'},
+  {num:20, ko:'이십', rom:'i-sip', note:'2 × 10'},
+  {num:30, ko:'삼십', rom:'sam-sip', note:'3 × 10'},
+  {num:50, ko:'오십', rom:'o-sip', note:'5 × 10'},
+  {num:100, ko:'백', rom:'baek', note:'Cien'},
+  {num:1000, ko:'천', rom:'cheon', note:'Mil'},
+  {num:10000, ko:'만', rom:'man', note:'Diez mil (Unidad base de 4 ceros)'},
+  {num:100000, ko:'십만', rom:'sip-man', note:'Cien mil (10 × 10.000)'},
+  {num:1000000, ko:'백만', rom:'baek-man', note:'Un millón (100 × 10.000)'},
+  {num:100000000, ko:'억', rom:'eok', note:'Cien millones'}
+];
+
+const NATIVE_NUMBERS = [
+  {num:1, ko:'하나', mod:'한', rom:'hana (han)', note:'Cambia a 한 ante contador: 한 개 (1 unidad), 한 시 (la 1:00)'},
+  {num:2, ko:'둘', mod:'두', rom:'dul (du)', note:'Cambia a 두 ante contador: 두 명 (2 personas), 두 시 (las 2:00)'},
+  {num:3, ko:'셋', mod:'세', rom:'set (se)', note:'Cambia a 세 ante contador: 세 잔 (3 tazas), 세 살 (3 años)'},
+  {num:4, ko:'넷', mod:'네', rom:'net (ne)', note:'Cambia a 네 ante contador: 네 마리 (4 animales), 네 시 (las 4:00)'},
+  {num:5, ko:'다섯', mod:'다섯', rom:'daseot', note:'Cinco'},
+  {num:6, ko:'여섯', mod:'여섯', rom:'yeoseot', note:'Seis'},
+  {num:7, ko:'일곱', mod:'일곱', rom:'ilgop', note:'Siete'},
+  {num:8, ko:'여덟', mod:'여덟', rom:'yeodeol', note:'Ocho (la consonante final ㅂ no se pronuncia)'},
+  {num:9, ko:'아홉', mod:'아홉', rom:'ahop', note:'Nueve'},
+  {num:10, ko:'열', mod:'열', rom:'yeol', note:'Diez'},
+  {num:20, ko:'스물', mod:'스무', rom:'seumul (seumu)', note:'Cambia a 스무 ante contador: 스무 살 (20 años)'},
+  {num:30, ko:'서른', mod:'서른', rom:'seoreun', note:'Treinta'},
+  {num:40, ko:'마흔', mod:'마흔', rom:'maheun', note:'Cuarenta'},
+  {num:50, ko:'쉰', mod:'쉰', rom:'swin', note:'Cincuenta'},
+  {num:60, ko:'예순', mod:'예순', rom:'yesun', note:'Sesenta'},
+  {num:70, ko:'일흔', mod:'일흔', rom:'ilheun', note:'Setenta'},
+  {num:80, ko:'여든', mod:'여든', rom:'yeodeun', note:'Ochenta'},
+  {num:90, ko:'아흔', mod:'아흔', rom:'aheun', note:'Noventa'}
+];
+
+const CLASSIFIERS = [
+  {name:'개 (gae)', forWhom:'Objetos y cosas en general', exKo:'사과 세 개 주세요', exEs:'Deme tres manzanas por favor'},
+  {name:'명 (myeong) / 분 (bun)', forWhom:'Personas (명 general / 분 honorífico)', exKo:'손님 두 분 오셨어요', exEs:'Han venido dos personas / clientes'},
+  {name:'마리 (mari)', forWhom:'Animales (perros, gatos, aves)', exKo:'귀여운 고양이 한 마리', exEs:'Un gato tierno'},
+  {name:'잔 (jan)', forWhom:'Tazas o vasos de bebidas', exKo:'따뜻한 커피 두 잔 주세요', exEs:'Deme dos tazas de café tibio por favor'},
+  {name:'병 (byeong)', forWhom:'Botellas (agua, jugo, cerveza, soju)', exKo:'물 한 병과 콜라 두 병', exEs:'Una botella de agua y dos botellas de refresco'},
+  {name:'권 (gwon)', forWhom:'Libros, cuadernos y revistas', exKo:'한국어 책 네 권을 샀어요', exEs:'Compré cuatro libros de coreano'},
+  {name:'장 (jang)', forWhom:'Hojas de papel, fotos y boletos/tickets', exKo:'영화 티켓 두 장 예약했어요', exEs:'Reservé dos boletos de cine'},
+  {name:'대 (dae)', forWhom:'Vehículos y aparatos electrónicos', exKo:'컴퓨터 한 대와 스마트폰 두 대', exEs:'Una computadora y dos smartphones'}
+];
+
+const FAMILY_MEMBERS = [
+  {ko:'할아버지', rom:'harabeoji', trans:'Abuelo paterno', group:'Abuelos', icon:'👴', note:'Término respetuoso para el padre del padre.'},
+  {ko:'할머니', rom:'halmeoni', trans:'Abuela paterna', group:'Abuelos', icon:'👵', note:'Término cariñoso para la madre del padre.'},
+  {ko:'외할아버지', rom:'oeharabeoji', trans:'Abuelo materno', group:'Abuelos', icon:'👴', note:'El prefijo 외 (oe) indica el lado exterior / materno.'},
+  {ko:'외할머니', rom:'oehalmeoni', trans:'Abuela materna', group:'Abuelos', icon:'👵', note:'Abuela por parte de madre.'},
+  {ko:'아버지', rom:'abeoji', trans:'Padre (formal)', group:'Padres', icon:'👨', note:'Forma tradicional y respetuosa.'},
+  {ko:'아빠', rom:'appa', trans:'Papá (afectuoso)', group:'Padres', icon:'🧔', note:'Forma familiar y cariñosa de uso diario.'},
+  {ko:'어머니', rom:'eomeoni', trans:'Madre (formal)', group:'Padres', icon:'👩', note:'Forma educada y respetuosa.'},
+  {ko:'엄마', rom:'eomma', trans:'Mamá (afectuosa)', group:'Padres', icon:'👩‍🦰', note:'Forma cálida de uso diario.'},
+  {ko:'부모님', rom:'bumonim', trans:'Padres (los dos juntos)', group:'Padres', icon:'👫', note:'Término respetuoso para referirse a papá y mamá.'},
+  {ko:'형', rom:'hyeong', trans:'Hermano mayor (dicho por un HOMBRE)', group:'Hermanos', icon:'👦', note:'Entre hombres. También para amigos mayores muy cercanos.'},
+  {ko:'누나', rom:'nuna', trans:'Hermana mayor (dicho por un HOMBRE)', group:'Hermanos', icon:'👧', note:'De un hombre hacia una mujer mayor cercana.'},
+  {ko:'오빠', rom:'oppa', trans:'Hermano mayor (dicho por una MUJER)', group:'Hermanos', icon:'👱‍♂️', note:'De una mujer hacia un hombre mayor. ¡Clásico en K-Dramas y parejas!'},
+  {ko:'언니', rom:'eonni', trans:'Hermana mayor (dicho por una MUJER)', group:'Hermanos', icon:'👱‍♀️', note:'De una mujer hacia otra mujer mayor cercana.'},
+  {ko:'남동생', rom:'namdongsaeng', trans:'Hermano menor (chico)', group:'Hermanos', icon:'🧒', note:'Igual para hombres y mujeres.'},
+  {ko:'여동생', rom:'yeodongsaeng', trans:'Hermana menor (chica)', group:'Hermanos', icon:'👧', note:'Igual para hombres y mujeres.'},
+  {ko:'동생', rom:'dongsaeng', trans:'Hermano/a menor en general', group:'Hermanos', icon:'👶', note:'Término general para cualquier menor.'},
+  {ko:'남편', rom:'nampyeon', trans:'Esposo / Marido', group:'Hogar', icon:'💍', note:'El cónyuge masculino.'},
+  {ko:'아내', rom:'anae', trans:'Esposa / Mujer', group:'Hogar', icon:'👰', note:'La cónyuge femenina (también 부인 formal).'},
+  {ko:'아들', rom:'adeul', trans:'Hijo', group:'Hogar', icon:'👦', note:'Hijo varón.'},
+  {ko:'딸', rom:'ttal', trans:'Hija', group:'Hogar', icon:'👧', note:'Hija mujer.'},
+  {ko:'삼촌', rom:'samchon', trans:'Tío (hermano del padre)', group:'Tíos y Parientes', icon:'🧔', note:'Tío paterno o término general para tíos.'},
+  {ko:'고모', rom:'gomo', trans:'Tía paterna (hermana del padre)', group:'Tíos y Parientes', icon:'👩‍💼', note:'Tía del lado del padre.'},
+  {ko:'이모', rom:'imo', trans:'Tía materna (hermana de la madre)', group:'Tíos y Parientes', icon:'🍲', note:'¡También se usa con cariño para llamar a la dueña o cocinera de un restaurante coreano!'},
+  {ko:'외삼촌', rom:'oesamchon', trans:'Tío materno', group:'Tíos y Parientes', icon:'👨‍💼', note:'Hermano de la madre.'},
+  {ko:'사촌', rom:'sachon', trans:'Primo / Prima', group:'Tíos y Parientes', icon:'🧑‍🤝‍🧑', note:'Hijo o hija de los tíos.'}
+];
+
+// ════════════════════════════════════════════════════════════
+//  RENDER NUMBERS LESSON
+// ════════════════════════════════════════════════════════════
+function renderNumbers(){
+  return `
+  <div class="space-y-12">
+    <!-- Header -->
+    <div class="card bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-yellow-500/10 border-2 border-amber-400 p-6 md:p-8 rounded-2xl">
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider rounded-full bg-amber-500 text-white">Lección Fundamental A1</span>
+        <span class="px-3 py-1 text-xs font-bold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300">한국어 숫자</span>
+        <span class="px-3 py-1 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300">Dos Sistemas Numéricos</span>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-black mb-3" style="color:var(--foreground)">Los Números en Coreano: Dos Mundos en Armonía</h2>
+      <p class="text-base md:text-lg leading-relaxed text-[var(--muted-foreground)]">
+        El coreano tiene uno de los sistemas numéricos más fascinantes del mundo: <strong>dos sistemas completos que conviven</strong>. Descubre cuándo usar el sistema Sino-coreano y cuándo el Nativo Coreano, cómo decir la hora y cómo contar objetos con clasificadores.
+      </p>
+    </div>
+
+    <!-- Book Illustration: Two Kingdoms of Numbers -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">🏰</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">1. Los Dos Reinos de Números</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">¿Por qué hay dos formas de contar en coreano?</p>
+        </div>
+      </div>
+
+      <div class="mb-8 rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-sm bg-white dark:bg-slate-900">
+        <div class="max-h-[420px] w-full overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+          <img src="assets/korean_numbers_two_kingdoms.jpg" alt="Los Dos Reinos de Números en Coreano" class="w-full h-auto max-h-[420px] object-contain transition-transform duration-500 hover:scale-102" loading="lazy"/>
+        </div>
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 border-t border-[var(--border)] flex items-center gap-3">
+          <span class="text-xl">📖</span>
+          <p class="text-xs md:text-sm text-[var(--muted-foreground)]">
+            <strong>Ilustración del Libro:</strong> A la izquierda, el <em>Reino Sino-Coreano</em> gobierna el dinero (Won), el calendario, los minutos y los pisos de edificios. A la derecha, el <em>Reino Nativo</em> gobierna las personas, los animales, las horas del reloj y la edad.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick summary columns -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- Sino-Korean Box -->
+        <div class="p-6 rounded-2xl border-2 border-blue-300 bg-blue-50/50 dark:bg-blue-950/20 dark:border-blue-800/60">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 text-xs font-black rounded bg-blue-600 text-white">REINO SINO-COREANO</span>
+            <span class="text-xs font-bold text-blue-700 dark:text-blue-300">한자어 수사</span>
+          </div>
+          <h4 class="text-xl font-black mb-2 text-blue-950 dark:text-blue-200">일, 이, 삼, 사, 오, 육...</h4>
+          <p class="text-xs md:text-sm text-[var(--muted-foreground)] mb-4">
+            Derivados de caracteres chinos. Es el sistema matemático infinito para calcular grandes cifras y medidas exactas.
+          </p>
+          <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900/40 space-y-1.5 text-xs font-medium">
+            <div class="flex items-center gap-2"><span>💰</span><span><strong>Dinero:</strong> 5,000원 = 오천 원</span></div>
+            <div class="flex items-center gap-2"><span>📅</span><span><strong>Fechas:</strong> 11월 16일 = 십일월 십육일</span></div>
+            <div class="flex items-center gap-2"><span>⏱️</span><span><strong>Minutos/Segundos:</strong> 30분 = 삼십 분</span></div>
+            <div class="flex items-center gap-2"><span>🏢</span><span><strong>Pisos de edificios:</strong> 3층 = 삼 층</span></div>
+            <div class="flex items-center gap-2"><span>📞</span><span><strong>Teléfonos y medidas:</strong> kg, km, cm</span></div>
+          </div>
+        </div>
+
+        <!-- Native Korean Box -->
+        <div class="p-6 rounded-2xl border-2 border-emerald-300 bg-emerald-50/50 dark:bg-emerald-950/20 dark:border-emerald-800/60">
+          <div class="flex items-center justify-between mb-3">
+            <span class="px-2.5 py-1 text-xs font-black rounded bg-emerald-600 text-white">REINO NATIVO COREANO</span>
+            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300">고유어 수사</span>
+          </div>
+          <h4 class="text-xl font-black mb-2 text-emerald-950 dark:text-emerald-200">하나, 둘, 셋, 넷, 다섯...</h4>
+          <p class="text-xs md:text-sm text-[var(--muted-foreground)] mb-4">
+            Palabras 100% de origen coreano. Se utilizan para contar cosas cotidianas de la vida real (del 1 al 99).
+          </p>
+          <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-900/40 space-y-1.5 text-xs font-medium">
+            <div class="flex items-center gap-2"><span>📦</span><span><strong>Contar objetos:</strong> 사과 세 개 (3 manzanas)</span></div>
+            <div class="flex items-center gap-2"><span>👥</span><span><strong>Personas:</strong> 학생 두 명 (2 estudiantes)</span></div>
+            <div class="flex items-center gap-2"><span>🐱</span><span><strong>Animales:</strong> 강아지 한 마리 (1 perrito)</span></div>
+            <div class="flex items-center gap-2"><span>⏰</span><span><strong>Horas del reloj:</strong> 3시 = 세 시 (las 3:00)</span></div>
+            <div class="flex items-center gap-2"><span>🎂</span><span><strong>Edad personal:</strong> 25살 = 스물다섯 살</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparative Table of 1-10 + Decenas -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <h3 class="text-2xl font-black mb-4" style="color:var(--foreground)">2. Tabla Comparativa: Números del 1 al 10</h3>
+      <p class="text-sm text-[var(--muted-foreground)] mb-6">
+        Haz clic en cada botón para escuchar la pronunciación auténtica de cada número.
+      </p>
+
+      <div class="overflow-x-auto rounded-xl border border-[var(--border)]">
+        <table class="w-full text-left text-xs md:text-sm border-collapse">
+          <thead>
+            <tr class="bg-slate-100 dark:bg-slate-800 border-b border-[var(--border)] font-bold">
+              <th class="p-3">Número</th>
+              <th class="p-3 text-blue-700 dark:text-blue-300">Sino-Coreano (한자)</th>
+              <th class="p-3 text-emerald-700 dark:text-emerald-300">Nativo Coreano (고유어)</th>
+              <th class="p-3">Forma Modificada ante Contador</th>
+              <th class="p-3">Uso Típico</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[
+              {n:1, s:'일', sr:'il', nat:'하나', nr:'hana', mod:'한 (han)', ex:'한 개 (1 cosa) / 1월 (Enero)'},
+              {n:2, s:'이', sr:'i', nat:'둘', nr:'dul', mod:'두 (du)', ex:'두 명 (2 personas) / 2층 (Piso 2)'},
+              {n:3, s:'삼', sr:'sam', nat:'셋', nr:'set', mod:'세 (se)', ex:'세 잔 (3 tazas) / 3분 (3 minutos)'},
+              {n:4, s:'사', sr:'sa', nat:'넷', nr:'net', mod:'네 (ne)', ex:'네 마리 (4 animales) / 4월 (Abril)'},
+              {n:5, s:'오', sr:'o', nat:'다섯', nr:'daseot', mod:'다섯 (igual)', ex:'다섯 살 (5 años) / 500원 (500 wons)'},
+              {n:6, s:'육', sr:'yuk', nat:'여섯', nr:'yeoseot', mod:'여섯 (igual)', ex:'여섯 시 (Las 6:00) / 6kg'},
+              {n:7, s:'칠', sr:'chil', nat:'일곱', nr:'ilgop', mod:'일곱 (igual)', ex:'일곱 권 (7 libros) / 7월 (Julio)'},
+              {n:8, s:'팔', sr:'pal', nat:'여덟', nr:'yeodeol', mod:'여덟 (igual)', ex:'여덟 시 (Las 8:00) / 8번 (Número 8)'},
+              {n:9, s:'구', sr:'gu', nat:'아홉', nr:'ahop', mod:'아홉 (igual)', ex:'아홉 살 (9 años) / 9월 (Septiembre)'},
+              {n:10, s:'십', sr:'sip', nat:'열', nr:'yeol', mod:'열 (igual)', ex:'열 개 (10 unidades) / 10분 (10 minutos)'}
+            ].map(row => `
+              <tr class="border-b border-[var(--border)] hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                <td class="p-3 font-black text-base text-slate-800 dark:text-white">${row.n}</td>
+                <td class="p-3">
+                  <button class="tts-btn font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5" onclick="speak('${row.s}')">
+                    <span>${row.s}</span> <span class="text-xs text-[var(--muted-foreground)]">(${row.sr}) 🔊</span>
+                  </button>
+                </td>
+                <td class="p-3">
+                  <button class="tts-btn font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5" onclick="speak('${row.nat}')">
+                    <span>${row.nat}</span> <span class="text-xs text-[var(--muted-foreground)]">(${row.nr}) 🔊</span>
+                  </button>
+                </td>
+                <td class="p-3 font-semibold text-amber-700 dark:text-amber-400">${row.mod}</td>
+                <td class="p-3 text-xs text-[var(--muted-foreground)]">${row.ex}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Regla de modificación de 1, 2, 3, 4 y 20 -->
+      <div class="mt-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-800/60 flex items-start gap-3">
+        <span class="text-2xl">⚠️</span>
+        <div class="text-xs md:text-sm text-[var(--muted-foreground)] leading-relaxed">
+          <strong class="text-amber-800 dark:text-amber-200">¡Regla de Oro de los Números Nativos!</strong><br/>
+          Los números <strong>하나 (1), 둘 (2), 셋 (3), 넷 (4)</strong> y <strong>스물 (20)</strong> pierden su última letra cuando van delante de un contador o de la palabra de tiempo:
+          <span class="block mt-1 font-mono font-bold text-slate-800 dark:text-white">
+            하나 ➔ 한 (한 개, 한 시) · 둘 ➔ 두 (두 명, 두 시) · 셋 ➔ 세 (세 잔, 세 시) · 넷 ➔ 네 (네 마리, 네 시) · 스물 ➔ 스무 (스무 살)
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: CÓMO DECIR LA HORA -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">⏰</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">3. Cómo Decir la Hora: El Puente entre Ambos Sistemas</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">¡El ejemplo perfecto donde se usan los dos reinos al mismo tiempo!</p>
+        </div>
+      </div>
+
+      <div class="p-6 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-amber-500/10 to-blue-500/10 border-2 border-[var(--border)] mb-6 text-center">
+        <div class="text-xs md:text-sm font-bold uppercase tracking-wider text-[var(--muted-foreground)] mb-2">Fórmula de la Hora Coreana</div>
+        <div class="text-2xl md:text-4xl font-black text-slate-900 dark:text-white flex flex-wrap items-center justify-center gap-3">
+          <span class="text-emerald-600 dark:text-emerald-400">[Número Nativo] + 시 (Hora)</span>
+          <span class="text-slate-400">+</span>
+          <span class="text-blue-600 dark:text-blue-400">[Número Sino] + 분 (Minuto)</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="p-5 rounded-xl border border-[var(--border)] bg-white dark:bg-slate-800 text-center shadow-sm">
+          <div class="text-3xl mb-1 font-black text-slate-800 dark:text-white">2:30</div>
+          <div class="text-base font-bold text-emerald-700 dark:text-emerald-300">두 시 삼십 분</div>
+          <div class="text-xs text-[var(--muted-foreground)] mb-3">o también: 두 시 반 (2 y media)</div>
+          <button class="tts-btn w-full py-1.5 text-xs font-bold rounded-lg bg-[var(--primary)] text-white" onclick="speak('두 시 삼십 분')">🔊 Escuchar Pronunciación</button>
+        </div>
+
+        <div class="p-5 rounded-xl border border-[var(--border)] bg-white dark:bg-slate-800 text-center shadow-sm">
+          <div class="text-3xl mb-1 font-black text-slate-800 dark:text-white">7:15</div>
+          <div class="text-base font-bold text-emerald-700 dark:text-emerald-300">일곱 시 십오 분</div>
+          <div class="text-xs text-[var(--muted-foreground)] mb-3">Las 7 y quince minutos</div>
+          <button class="tts-btn w-full py-1.5 text-xs font-bold rounded-lg bg-[var(--primary)] text-white" onclick="speak('일곱 시 십오 분')">🔊 Escuchar Pronunciación</button>
+        </div>
+
+        <div class="p-5 rounded-xl border border-[var(--border)] bg-white dark:bg-slate-800 text-center shadow-sm">
+          <div class="text-3xl mb-1 font-black text-slate-800 dark:text-white">12:45</div>
+          <div class="text-base font-bold text-emerald-700 dark:text-emerald-300">열두 시 사십오 분</div>
+          <div class="text-xs text-[var(--muted-foreground)] mb-3">Las 12 y cuarenta y cinco</div>
+          <button class="tts-btn w-full py-1.5 text-xs font-bold rounded-lg bg-[var(--primary)] text-white" onclick="speak('열두 시 사십오 분')">🔊 Escuchar Pronunciación</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN: LOS 8 CLASIFICADORES INDISPENSABLES -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">📦</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">4. Los 8 Clasificadores Indispensables (단위명사)</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">En coreano nunca dices "dos cafés", dices "café dos tazas"</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        ${CLASSIFIERS.map(c => `
+          <div class="p-5 rounded-xl border border-[var(--border)] bg-slate-50/60 dark:bg-slate-800/40 hover:shadow-md transition-shadow">
+            <div class="text-lg font-black text-[var(--primary)] mb-1">${c.name}</div>
+            <p class="text-xs font-semibold text-[var(--muted-foreground)] mb-3">${c.forWhom}</p>
+            <div class="p-2.5 rounded-lg bg-white dark:bg-slate-800 border border-[var(--border)] text-xs">
+              <div class="font-bold text-slate-900 dark:text-white mb-1">${c.exKo}</div>
+              <div class="text-[var(--muted-foreground)]">${c.exEs}</div>
+            </div>
+            <button class="tts-btn mt-3 w-full py-1 text-xs font-bold rounded bg-slate-200 dark:bg-slate-700 hover:bg-[var(--primary)] hover:text-white transition-colors" onclick="speak('${c.exKo}')">🔊 Escuchar frase</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- SECCIÓN: ENTRENADOR INTERACTIVO DE NÚMEROS -->
+    <div class="card p-6 md:p-8 rounded-2xl border-2 border-[var(--primary)] shadow-md bg-gradient-to-b from-white to-amber-50/30 dark:from-slate-900 dark:to-slate-900/60">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-2xl">🎮</span>
+            <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">5. Convertidor & Entrenador de Números</h3>
+          </div>
+          <p class="text-sm text-[var(--muted-foreground)]">Escribe o selecciona cualquier número del 1 al 99 para ver y escuchar cómo se dice en ambos sistemas</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="number" id="num-input-trainer" min="1" max="99" value="7" oninput="updateNumberTrainer(this.value)" class="w-24 p-2.5 text-center text-lg font-black rounded-xl border border-[var(--border)] bg-white dark:bg-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"/>
+        </div>
+      </div>
+
+      <!-- Quick Number Chips -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <span class="text-xs font-bold text-[var(--muted-foreground)] self-center mr-2">Prueba rápida:</span>
+        ${[1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 48, 77, 99].map(n => `
+          <button onclick="updateNumberTrainer(${n})" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-[var(--border)] hover:bg-[var(--primary)] hover:text-white transition-colors bg-white dark:bg-slate-800 shadow-sm">
+            ${n}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Dynamic Trainer Card -->
+      <div id="number-trainer-result" class="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-[var(--border)] shadow-sm">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>`;
+}
+
+// Trainer logic
+function initNumbersTrainer(){
+  updateNumberTrainer(7);
+}
+
+function updateNumberTrainer(numVal){
+  const n = parseInt(numVal, 10);
+  const container = document.getElementById('number-trainer-result');
+  const inputElem = document.getElementById('num-input-trainer');
+  if(inputElem && inputElem.value != n) inputElem.value = n;
+  if(!container || isNaN(n) || n < 1 || n > 99){
+    if(container) container.innerHTML = `<p class="text-sm text-red-500 font-bold">Por favor ingresa un número válido entre 1 y 99.</p>`;
+    return;
+  }
+
+  // Sino calculation
+  const sinoUnits = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
+  const sinoTens = ['', '십', '이십', '삼십', '사십', '오십', '육십', '칠십', '팔십', '구십'];
+  let sinoText = '';
+  if(n === 10) sinoText = '십';
+  else {
+    const tens = Math.floor(n / 10);
+    const units = n % 10;
+    sinoText = (sinoTens[tens] || '') + (sinoUnits[units] || '');
+  }
+
+  // Native calculation
+  const natUnits = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉'];
+  const natTens = ['', '열', '스물', '서른', '마흔', '쉰', '예순', '일흔', '여든', '아흔'];
+  let natText = '';
+  const tens = Math.floor(n / 10);
+  const units = n % 10;
+  natText = (natTens[tens] || '') + (natUnits[units] || '');
+
+  container.innerHTML = `
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Sino card -->
+      <div class="p-5 rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/20">
+        <span class="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 block mb-1">Sino-Coreano (Dinero, Minutos, Fechas)</span>
+        <div class="text-3xl font-black text-blue-950 dark:text-blue-100 mb-2">${sinoText}</div>
+        <div class="text-xs text-[var(--muted-foreground)] mb-4">Ejemplo: ${sinoText}분 (minutos) · ${sinoText}00원 (wons)</div>
+        <button class="tts-btn px-4 py-2 text-xs font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm" onclick="speak('${sinoText}')">🔊 Escuchar Sino-Coreano</button>
+      </div>
+
+      <!-- Native card -->
+      <div class="p-5 rounded-xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/50 dark:bg-emerald-950/20">
+        <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 block mb-1">Nativo Coreano (Contar cosas, Horas, Edad)</span>
+        <div class="text-3xl font-black text-emerald-950 dark:text-emerald-100 mb-2">${natText}</div>
+        <div class="text-xs text-[var(--muted-foreground)] mb-4">Ejemplo: ${natText}살 (años de edad)</div>
+        <button class="tts-btn px-4 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm" onclick="speak('${natText}')">🔊 Escuchar Nativo Coreano</button>
+      </div>
+    </div>
+  `;
+}
+
+// ════════════════════════════════════════════════════════════
+//  RENDER FAMILY LESSON
+// ════════════════════════════════════════════════════════════
+let currentSpeakerGender = 'man'; // 'man' or 'woman'
+
+function renderFamily(){
+  return `
+  <div class="space-y-12">
+    <!-- Header -->
+    <div class="card bg-gradient-to-r from-rose-500/10 via-pink-500/10 to-purple-500/10 border-2 border-rose-400 p-6 md:p-8 rounded-2xl">
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="px-3 py-1 text-xs font-black uppercase tracking-wider rounded-full bg-rose-500 text-white">Lección Esencial A1</span>
+        <span class="px-3 py-1 text-xs font-bold rounded-full bg-pink-100 text-pink-800 dark:bg-pink-900/40 dark:text-pink-300">우리 가족 (Mi Familia)</span>
+        <span class="px-3 py-1 text-xs font-bold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">Árbol Genealógico y Cultura</span>
+      </div>
+      <h2 class="text-3xl md:text-4xl font-black mb-3" style="color:var(--foreground)">La Familia Coreana: Árbol Genealógico y Títulos de Respeto</h2>
+      <p class="text-base md:text-lg leading-relaxed text-[var(--muted-foreground)]">
+        En Corea, los títulos familiares son el corazón de la sociedad y del idioma. Aprende cómo dirigirte a cada miembro de la familia, por qué la forma en que llamas a tus hermanos depende de si eres hombre o mujer (<strong>Oppa, Hyung, Noona, Unnie</strong>) y cómo presentar a tu familia con orgullo.
+      </p>
+    </div>
+
+    <!-- Book Illustration: Korean Family Portrait -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">👨‍👩‍👧‍👦</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">1. Retrato Familiar: 우리 가족</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">Una mirada cálida a las generaciones que conviven en el hogar coreano</p>
+        </div>
+      </div>
+
+      <div class="mb-8 rounded-2xl overflow-hidden border-2 border-[var(--border)] shadow-sm bg-white dark:bg-slate-900">
+        <div class="max-h-[420px] w-full overflow-hidden flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+          <img src="assets/korean_family_portrait.jpg" alt="Retrato de la Familia Coreana" class="w-full h-auto max-h-[420px] object-contain transition-transform duration-500 hover:scale-102" loading="lazy"/>
+        </div>
+        <div class="p-4 bg-slate-50 dark:bg-slate-800/60 border-t border-[var(--border)] flex items-center gap-3">
+          <span class="text-xl">📖</span>
+          <p class="text-xs md:text-sm text-[var(--muted-foreground)]">
+            <strong>Ilustración del Libro:</strong> Abuelos respetados (<code class="font-bold">할아버지, 할머니</code>), padres amorosos (<code class="font-bold">아빠, 엄마</code>) y hermanos con sus títulos honoríficos. ¡En Corea la armonía familiar es el valor supremo!
+          </p>
+        </div>
+      </div>
+
+      <!-- CRITICAL RULE: HOMBRE VS MUJER -->
+      <div class="p-6 md:p-8 rounded-2xl bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 border-2 border-purple-300 dark:border-purple-800/60 mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="text-3xl">⚡</span>
+          <div>
+            <h4 class="text-xl md:text-2xl font-black text-purple-950 dark:text-purple-200">La Regla de Oro: ¿Quién está hablando?</h4>
+            <p class="text-xs md:text-sm text-[var(--muted-foreground)]">En coreano, la palabra para "hermano mayor" y "hermana mayor" cambia completamente según tu propio género:</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Si habla un HOMBRE -->
+          <div class="p-5 rounded-xl bg-white dark:bg-slate-800 border-2 border-blue-300 shadow-sm">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="px-3 py-1 text-xs font-black rounded-full bg-blue-600 text-white">SI ERES HOMBRE (남자)</span>
+            </div>
+            <div class="space-y-3 text-sm">
+              <div class="flex items-center justify-between p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40">
+                <div>
+                  <span class="text-xs text-[var(--muted-foreground)] block">Mi hermano mayor</span>
+                  <strong class="text-lg text-blue-700 dark:text-blue-300">형 (hyeong)</strong>
+                </div>
+                <button class="tts-btn px-3 py-1.5 text-xs font-bold rounded bg-blue-600 text-white" onclick="speak('형')">🔊 형</button>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40">
+                <div>
+                  <span class="text-xs text-[var(--muted-foreground)] block">Mi hermana mayor</span>
+                  <strong class="text-lg text-blue-700 dark:text-blue-300">누나 (nuna)</strong>
+                </div>
+                <button class="tts-btn px-3 py-1.5 text-xs font-bold rounded bg-blue-600 text-white" onclick="speak('누나')">🔊 누나</button>
+              </div>
+            </div>
+            <p class="text-[11px] text-[var(--muted-foreground)] mt-3">
+              💡 Los hombres coreanos también llaman <strong>형 (Hyung)</strong> a sus amigos varones mayores y mentores como muestra de fraternidad.
+            </p>
+          </div>
+
+          <!-- Si habla una MUJER -->
+          <div class="p-5 rounded-xl bg-white dark:bg-slate-800 border-2 border-pink-300 shadow-sm">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="px-3 py-1 text-xs font-black rounded-full bg-pink-600 text-white">SI ERES MUJER (여자)</span>
+            </div>
+            <div class="space-y-3 text-sm">
+              <div class="flex items-center justify-between p-3 rounded-lg bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-900/40">
+                <div>
+                  <span class="text-xs text-[var(--muted-foreground)] block">Mi hermano mayor</span>
+                  <strong class="text-lg text-pink-700 dark:text-pink-300">오빠 (oppa)</strong>
+                </div>
+                <button class="tts-btn px-3 py-1.5 text-xs font-bold rounded bg-pink-600 text-white" onclick="speak('오빠')">🔊 오빠</button>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-900/40">
+                <div>
+                  <span class="text-xs text-[var(--muted-foreground)] block">Mi hermana mayor</span>
+                  <strong class="text-lg text-pink-700 dark:text-pink-300">언니 (eonni)</strong>
+                </div>
+                <button class="tts-btn px-3 py-1.5 text-xs font-bold rounded bg-pink-600 text-white" onclick="speak('언니')">🔊 언니</button>
+              </div>
+            </div>
+            <p class="text-[11px] text-[var(--muted-foreground)] mt-3">
+              💡 Famoso en K-Pop y K-Dramas: Las mujeres llaman <strong>오빠 (Oppa)</strong> tanto a su hermano de sangre mayor como a su novio o amigos mayores cercanos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Hermanos menores -->
+        <div class="mt-4 p-4 rounded-xl bg-white dark:bg-slate-800 border border-[var(--border)] text-xs md:text-sm text-center">
+          <span class="font-bold text-slate-800 dark:text-white">Para hermanos menores (igual para hombres y mujeres):</span>
+          <span class="ml-2 text-indigo-600 dark:text-indigo-400 font-bold">남동생 (hermano menor)</span> · 
+          <span class="text-rose-600 dark:text-rose-400 font-bold">여동생 (hermana menor)</span> · 
+          <span class="text-[var(--muted-foreground)]">동생 (menor en general)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DICCIONARIO COMPLETO DEL ÁRBOL FAMILIAR -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+        <div>
+          <h3 class="text-2xl font-black mb-1" style="color:var(--foreground)">2. Diccionario Visual del Árbol Genealógico</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">Haz clic en cualquier miembro para escuchar su pronunciación correcta</p>
+        </div>
+      </div>
+
+      <!-- Categories tabs for family -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        ${FAMILY_MEMBERS.map(m => `
+          <div class="p-4 rounded-xl border border-[var(--border)] bg-slate-50/60 dark:bg-slate-800/40 hover:border-[var(--primary)] transition-all">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">${m.icon}</span>
+                <div>
+                  <button class="tts-btn font-black text-lg text-[var(--primary)] flex items-center gap-1.5 text-left" onclick="speak('${m.ko}')">
+                    <span>${m.ko}</span> <span class="text-xs opacity-60">🔊</span>
+                  </button>
+                  <span class="text-xs text-[var(--muted-foreground)] font-mono">${m.rom}</span>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">${m.group}</span>
+            </div>
+            <div class="text-sm font-bold text-slate-800 dark:text-white mb-1">${m.trans}</div>
+            <p class="text-xs text-[var(--muted-foreground)] leading-snug">${m.note}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- DIÁLOGO Y FRASES PRÁCTICAS PARA PRESENTAR A TU FAMILIA -->
+    <div class="card p-6 md:p-8 rounded-2xl border border-[var(--border)]">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">🗣️</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black" style="color:var(--foreground)">3. Frases Clave: Cómo Presentar a Tu Familia</h3>
+          <p class="text-sm text-[var(--muted-foreground)]">Aprende las frases más naturales para responder "¿cuántos son en tu familia?"</p>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        ${[
+          {qKo:'가족이 몇 명이에요?', qEs:'¿Cuántas personas son en tu familia?', aKo:'우리 가족은 네 명이에요. 부모님과 여동생, 그리고 저예요.', aEs:'Somos cuatro personas: mis padres, mi hermana menor y yo.'},
+          {qKo:'형제나 자매가 있어요?', qEs:'¿Tienes hermanos o hermanas?', aKo:'네, 형 한 명과 남동생 한 명이 있어요.', aEs:'Sí, tengo un hermano mayor y un hermano menor.'},
+          {qKo:'부모님은 어디에 사세요?', qEs:'¿Dónde viven tus padres?', aKo:'부모님은 고향에 사세요.', aEs:'Mis padres viven en mi ciudad natal.'},
+          {qKo:'결혼하셨어요?', qEs:'¿Está usted casado/a?', aKo:'네, 남편과 예쁜 딸이 한 명 있어요.', aEs:'Sí, tengo esposo y una linda hija.'}
+        ].map((dlg, i) => `
+          <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-[var(--border)] space-y-3">
+            <div class="flex items-start justify-between gap-4">
+              <div class="space-y-1">
+                <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">Pregunta:</span>
+                <div class="text-base font-bold text-slate-900 dark:text-white">${dlg.qKo}</div>
+                <div class="text-xs text-[var(--muted-foreground)]">${dlg.qEs}</div>
+              </div>
+              <button class="tts-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-[var(--primary)] text-white shrink-0" onclick="speak('${dlg.qKo}')">🔊 Pregunta</button>
+            </div>
+            <div class="pt-2 border-t border-[var(--border)] flex items-start justify-between gap-4">
+              <div class="space-y-1">
+                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Respuesta:</span>
+                <div class="text-base font-bold text-slate-900 dark:text-white">${dlg.aKo}</div>
+                <div class="text-xs text-[var(--muted-foreground)]">${dlg.aEs}</div>
+              </div>
+              <button class="tts-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 text-white shrink-0" onclick="speak('${dlg.aKo}')">🔊 Respuesta</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
 
 // ════════════════════════════════════════════════════════════
 //  CONJUGATION MASTER MODULE (A2 EXTENDED)
