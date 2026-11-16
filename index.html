@@ -301,6 +301,56 @@
       font-weight:500;
     }
 
+    
+    /* ── Buy Me a Coffee Styles ── */
+    .bmac-btn {
+      background-color: #FFDD00;
+      color: #000000 !important;
+      font-weight: 700;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 4px 14px rgba(255, 221, 0, 0.4);
+      border: 1px solid rgba(0,0,0,0.08);
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .bmac-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 221, 0, 0.6);
+      filter: brightness(1.05);
+    }
+    .bmac-btn:active {
+      transform: translateY(0);
+    }
+    .bmac-floating {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 50;
+      animation: bmacFloat 3s ease-in-out infinite alternate;
+    }
+    @keyframes bmacFloat {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-4px); }
+    }
+    #bmac-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #bmac-modal-overlay.active {
+      display: flex;
+    }
+
     /* ── Particle canvas ── */
     canvas{display:block;}
   </style>
@@ -327,7 +377,12 @@
      LEVEL TABS
 ═══════════════════════════════════════════════════════════════ -->
 <div class="sticky top-0 z-30 py-3 px-4" style="background:var(--background);border-bottom:1px solid var(--border);">
-  <div class="tabs-scroll flex gap-2 max-w-5xl mx-auto" id="level-tabs-container"></div>
+  <div class="flex items-center justify-between gap-3 max-w-5xl mx-auto">
+    <div class="tabs-scroll flex gap-2 overflow-x-auto flex-1" id="level-tabs-container"></div>
+    <button onclick="openBmacModal()" class="bmac-btn px-3 py-1.5 text-xs shrink-0 whitespace-nowrap shadow-md" title="Apoyar el proyecto">
+      <span>☕</span><span class="hidden sm:inline">Invítame un café</span>
+    </button>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════
@@ -3291,5 +3346,124 @@ buildLevelTabs();
 selectLevel('A1');
 updateOverallProgress();
 </script>
+
+<!-- ═════════════════════════════════════════════════════════════
+     BUY ME A COFFEE / FOOTER SUPPORT SECTION
+═══════════════════════════════════════════════════════════════ -->
+<footer class="mt-16 border-t border-[var(--border)] py-12 px-4 bg-slate-50 dark:bg-slate-900/50">
+  <div class="max-w-4xl mx-auto">
+    <div class="card p-6 md:p-8 rounded-2xl border-2 border-amber-300 dark:border-amber-700/60 bg-gradient-to-br from-amber-50/70 via-white to-orange-50/40 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 shadow-lg text-center md:text-left">
+      <div class="flex flex-col md:flex-row items-center gap-8">
+        <!-- QR Code Container -->
+        <div class="shrink-0 relative group">
+          <div class="p-3 bg-white rounded-2xl shadow-md border-2 border-amber-400">
+            <img src="assets/buymeacoffee_qr.png" alt="Código QR Buy Me a Coffee" class="w-40 h-40 md:w-44 md:h-44 object-contain rounded-xl" loading="lazy"/>
+          </div>
+          <div class="text-center mt-2">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Escanea con tu cámara</span>
+          </div>
+        </div>
+
+        <!-- Description and Action -->
+        <div class="flex-1 space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-xs font-black">
+            <span>💛</span> APOYA ESTE PROYECTO EDUCATIVO
+          </div>
+          <h3 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">
+            ¿Te ha servido este curso gratuito de coreano?
+          </h3>
+          <p class="text-sm md:text-base text-[var(--muted-foreground)] leading-relaxed">
+            Este sitio fue creado con mucha dedicación para que cualquier persona de habla hispana pueda aprender coreano desde A1 hasta C2 de forma 100% gratuita, interactiva y con audio nativo. Tu donación ayuda a mantener los servidores, mejorar los audios y crear más contenido cada semana.
+          </p>
+          <div class="flex flex-wrap items-center gap-4 pt-2 justify-center md:justify-start">
+            <a href="https://buymeacoffee.com/khalessi17" target="_blank" rel="noopener noreferrer" class="bmac-btn px-6 py-3 text-sm md:text-base font-black">
+              <span class="text-xl">☕</span>
+              <span>Invítame un café en buymeacoffee.com/khalessi17</span>
+            </a>
+            <button onclick="openBmacModal()" class="px-4 py-2.5 rounded-xl border border-[var(--border)] bg-white dark:bg-slate-800 text-xs font-bold hover:bg-slate-100 transition-colors">
+              Ver código QR ampliado
+            </button>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 italic">
+            ¡Muchísimas gracias por tu generosidad y apoyo! 감사합니다! 🌸
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Small copyright and credits -->
+    <div class="text-center mt-8 text-xs text-[var(--muted-foreground)]">
+      <p>한국어 배우기 · Curso Interactivo de Coreano (A1 — C2) · Hecho con dedicación</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═════════════════════════════════════════════════════════════
+     FLOATING BUY ME A COFFEE PILL BUTTON
+═══════════════════════════════════════════════════════════════ -->
+<div class="bmac-floating">
+  <button onclick="openBmacModal()" class="bmac-btn px-4 py-2.5 text-xs md:text-sm shadow-xl flex items-center gap-2 font-bold" title="Apóyame en Buy Me a Coffee">
+    <span class="text-lg">☕</span>
+    <span class="font-black">Apoya el proyecto</span>
+  </button>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════
+     BUY ME A COFFEE MODAL DIALOG
+═══════════════════════════════════════════════════════════════ -->
+<div id="bmac-modal-overlay" onclick="handleBmacOverlayClick(event)">
+  <div class="relative w-full max-w-md p-6 rounded-3xl bg-white dark:bg-slate-900 border-2 border-amber-300 dark:border-amber-700 shadow-2xl text-center space-y-4 animate-in fade-in zoom-in duration-200" onclick="event.stopPropagation()">
+    <!-- Close button -->
+    <button onclick="closeBmacModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center font-bold text-lg transition-colors">
+      ✕
+    </button>
+
+    <div class="inline-flex p-3 rounded-2xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-300 text-3xl">
+      ☕
+    </div>
+
+    <h3 class="text-2xl font-black text-slate-900 dark:text-white">
+      ¡Gracias por apoyar el curso!
+    </h3>
+
+    <p class="text-xs md:text-sm text-[var(--muted-foreground)]">
+      Puedes invitarme un café escaneando el código QR con la cámara de tu teléfono móvil o haciendo clic en el botón directo:
+    </p>
+
+    <!-- QR Code Card -->
+    <div class="p-3 bg-white rounded-2xl inline-block shadow-md border-2 border-amber-400">
+      <img src="assets/buymeacoffee_qr.png" alt="QR buymeacoffee.com/khalessi17" class="w-56 h-56 object-contain rounded-xl mx-auto" />
+    </div>
+
+    <div class="pt-2">
+      <a href="https://buymeacoffee.com/khalessi17" target="_blank" rel="noopener noreferrer" class="bmac-btn w-full justify-center py-3 text-sm font-black shadow-lg">
+        <span>☕</span>
+        <span>Ir a buymeacoffee.com/khalessi17 ➔</span>
+      </a>
+    </div>
+
+    <p class="text-[11px] text-slate-400 dark:text-slate-500">
+      Tu donación permite mantener la plataforma libre y con nuevo material cada semana. 감사합니다! 💛
+    </p>
+  </div>
+</div>
+
+<script>
+function openBmacModal(){
+  const modal = document.getElementById('bmac-modal-overlay');
+  if(modal) modal.classList.add('active');
+}
+function closeBmacModal(){
+  const modal = document.getElementById('bmac-modal-overlay');
+  if(modal) modal.classList.remove('active');
+}
+function handleBmacOverlayClick(e){
+  if(e.target.id === 'bmac-modal-overlay') closeBmacModal();
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeBmacModal();
+});
+</script>
+
 </body>
 </html>
