@@ -7,94 +7,271 @@
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     :root {
-      --background: #0f172a;
-      --foreground: #f8fafc;
-      --card: #1e293b;
-      --border: #334155;
-      --primary: #3b82f6;
+      --background: #f8fafc;
+      --foreground: #0f172a;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --primary: #2563eb;
       --primary-foreground: #ffffff;
-      --muted-foreground: #94a3b8;
-      --accent: #26334d;
-      --sidebar: #0f172a;
+      --muted-foreground: #64748b;
+      --accent: #f1f5f9;
+      --sidebar: #ffffff;
     }
     *{box-sizing:border-box;}
-    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--background);color:var(--foreground);margin:0;padding:0;}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+      background:var(--background);
+      color:var(--foreground);
+      margin:0;
+      padding:0;
+      font-size:1.1rem;
+      line-height:1.7;
+      -webkit-font-smoothing:antialiased;
+    }
 
     /* ── Hero Particle Banner ── */
     #hero-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
-    #hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--primary),var(--accent));}
+    #hero{
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+      color:#ffffff;
+      box-shadow:0 4px 20px -2px rgba(37,99,235,0.25);
+    }
 
     /* ── Level Tabs ── */
-    .level-tab{padding:10px 20px;border-radius:9999px;cursor:pointer;font-weight:700;transition:background .2s,color .2s;border:2px solid transparent;white-space:nowrap;}
-    .level-tab.active{background:var(--primary);color:var(--primary-foreground);}
-    .level-tab:not(.active){background:var(--card);color:var(--muted-foreground);border-color:var(--border);}
+    .level-tab{
+      padding:12px 26px;
+      border-radius:9999px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:1.15rem;
+      transition:all .2s ease;
+      border:2px solid transparent;
+      white-space:nowrap;
+      box-shadow:0 1px 3px rgba(0,0,0,0.06);
+    }
+    .level-tab.active{
+      background:var(--primary);
+      color:var(--primary-foreground);
+      box-shadow:0 4px 14px rgba(37,99,235,0.35);
+    }
+    .level-tab:not(.active){
+      background:var(--card);
+      color:var(--muted-foreground);
+      border-color:var(--border);
+    }
+    .level-tab:hover:not(.active){
+      background:#ffffff;
+      border-color:var(--primary);
+      color:var(--primary);
+    }
 
     /* ── Section Tabs ── */
-    .section-tab{padding:8px 16px;cursor:pointer;border-bottom:3px solid transparent;font-weight:600;white-space:nowrap;transition:color .2s,border-color .2s;color:var(--muted-foreground);}
+    .section-tab{
+      padding:12px 22px;
+      cursor:pointer;
+      border-bottom:3px solid transparent;
+      font-weight:700;
+      font-size:1.15rem;
+      white-space:nowrap;
+      transition:color .2s,border-color .2s;
+      color:var(--muted-foreground);
+    }
     .section-tab.active{border-bottom-color:var(--primary);color:var(--primary);}
+    .section-tab:hover:not(.active){color:var(--foreground);}
 
     /* ── Cards ── */
-    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:28px;
+      box-shadow:0 4px 6px -1px rgba(0,0,0,0.05),0 2px 4px -2px rgba(0,0,0,0.05);
+    }
 
     /* ── Hangul Cells ── */
-    .hangul-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;transition:transform .15s,box-shadow .15s;background:var(--card);}
-    .hangul-cell:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(0,0,0,.18);}
-    .hangul-cell .kor{font-size:2rem;font-weight:700;line-height:1;}
-    .hangul-cell .rom{font-size:.78rem;color:var(--muted-foreground);margin-top:4px;}
-    .hangul-cell .play{font-size:.7rem;color:var(--primary);margin-top:2px;}
+    .hangul-cell{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      border:1.5px solid var(--border);
+      border-radius:14px;
+      padding:14px 10px;
+      cursor:pointer;
+      transition:transform .15s,box-shadow .15s,border-color .15s;
+      background:var(--card);
+      box-shadow:0 2px 5px rgba(0,0,0,0.04);
+    }
+    .hangul-cell:hover{
+      transform:translateY(-3px) scale(1.05);
+      box-shadow:0 8px 20px rgba(37,99,235,0.15);
+      border-color:var(--primary);
+    }
+    .hangul-cell .kor{font-size:2.6rem;font-weight:800;line-height:1.1;color:var(--foreground);}
+    .hangul-cell .rom{font-size:0.95rem;font-weight:600;color:var(--muted-foreground);margin-top:6px;}
+    .hangul-cell .play{font-size:0.85rem;font-weight:700;color:var(--primary);margin-top:4px;}
 
     /* ── Flashcards ── */
-    .flashcard-wrap{perspective:900px;cursor:pointer;}
-    .flashcard{width:100%;min-height:200px;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);}
+    .flashcard-wrap{perspective:1000px;cursor:pointer;}
+    .flashcard{width:100%;min-height:240px;position:relative;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);}
     .flashcard.flipped{transform:rotateY(180deg);}
-    .flashcard-face{position:absolute;inset:0;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:16px;padding:24px;border:1.5px solid var(--border);background:var(--card);}
-    .flashcard-back{transform:rotateY(180deg);background:var(--accent);}
+    .flashcard-face{
+      position:absolute;
+      inset:0;
+      backface-visibility:hidden;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      border-radius:20px;
+      padding:32px;
+      border:2px solid var(--border);
+      background:var(--card);
+      box-shadow:0 10px 25px -5px rgba(0,0,0,0.08);
+    }
+    .flashcard-back{transform:rotateY(180deg);background:#eff6ff;border-color:#bfdbfe;}
 
     /* ── Quiz ── */
-    .quiz-opt{display:block;width:100%;text-align:left;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--card);color:var(--foreground);margin-bottom:8px;transition:background .15s,border-color .15s;}
-    .quiz-opt:hover:not(:disabled){border-color:var(--primary);background:var(--accent);}
-    .quiz-opt.correct{border-color:#22c55e;background:#dcfce7;color:#15803d;}
-    .quiz-opt.wrong{border-color:#ef4444;background:#fee2e2;color:#991b1b;}
+    .quiz-opt{
+      display:block;
+      width:100%;
+      text-align:left;
+      padding:16px 20px;
+      border:2px solid var(--border);
+      border-radius:12px;
+      cursor:pointer;
+      background:var(--card);
+      color:var(--foreground);
+      font-size:1.1rem;
+      font-weight:600;
+      margin-bottom:10px;
+      transition:all .15s ease;
+      box-shadow:0 1px 2px rgba(0,0,0,0.04);
+    }
+    .quiz-opt:hover:not(:disabled){
+      border-color:var(--primary);
+      background:#eff6ff;
+      color:var(--primary);
+      transform:translateX(4px);
+    }
+    .quiz-opt.correct{border-color:#16a34a;background:#dcfce7;color:#15803d;font-weight:700;}
+    .quiz-opt.wrong{border-color:#dc2626;background:#fee2e2;color:#991b1b;font-weight:700;}
 
     /* ── Matching Game ── */
-    .match-btn{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--card);color:var(--foreground);text-align:center;transition:all .15s;font-size:.85rem;}
-    .match-btn.selected{border-color:var(--primary);background:var(--accent);color:var(--primary);}
-    .match-btn.matched{border-color:#22c55e;background:#dcfce7;color:#15803d;pointer-events:none;opacity:.7;}
+    .match-btn{
+      padding:14px 18px;
+      border:2px solid var(--border);
+      border-radius:12px;
+      cursor:pointer;
+      background:var(--card);
+      color:var(--foreground);
+      text-align:center;
+      transition:all .15s;
+      font-size:1.05rem;
+      font-weight:700;
+      box-shadow:0 1px 3px rgba(0,0,0,0.05);
+    }
+    .match-btn:hover:not(.matched){border-color:var(--primary);background:#eff6ff;}
+    .match-btn.selected{border-color:var(--primary);background:#dbeafe;color:var(--primary);transform:scale(1.03);}
+    .match-btn.matched{border-color:#22c55e;background:#dcfce7;color:#15803d;pointer-events:none;opacity:.8;}
     .match-btn.wrong-shake{animation:shake .3s;}
     @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px)};}
 
     /* ── Verb table ── */
-    .verb-table th{background:var(--accent);color:var(--foreground);padding:8px 10px;font-weight:700;font-size:.8rem;border:1px solid var(--border);}
-    .verb-table td{padding:7px 10px;font-size:.82rem;border:1px solid var(--border);background:var(--card);}
-    .verb-table tr:hover td{background:var(--accent);}
+    .verb-table th{background:#f1f5f9;color:var(--foreground);padding:12px 14px;font-weight:800;font-size:1rem;border:1px solid var(--border);}
+    .verb-table td{padding:10px 14px;font-size:1.05rem;border:1px solid var(--border);background:var(--card);}
+    .verb-table tr:hover td{background:#f8fafc;}
 
     /* ── Hangul Builder ── */
-    .hb-key{padding:8px;border:1px solid var(--border);border-radius:8px;cursor:pointer;background:var(--card);font-size:1.1rem;font-weight:700;text-align:center;transition:transform .1s,box-shadow .1s;}
-    .hb-key:hover{transform:scale(1.12);box-shadow:0 2px 8px rgba(0,0,0,.2);}
-    .hb-key.selected{border-color:var(--primary);background:var(--accent);color:var(--primary);}
+    .hb-key{
+      padding:12px 8px;
+      border:1.5px solid var(--border);
+      border-radius:10px;
+      cursor:pointer;
+      background:var(--card);
+      font-size:1.3rem;
+      font-weight:800;
+      text-align:center;
+      transition:transform .1s,box-shadow .1s;
+      box-shadow:0 1px 2px rgba(0,0,0,0.04);
+    }
+    .hb-key:hover{transform:scale(1.1);box-shadow:0 4px 12px rgba(37,99,235,0.15);border-color:var(--primary);}
+    .hb-key.selected{border-color:var(--primary);background:#dbeafe;color:var(--primary);}
 
     /* ── Fill-in-the-blank ── */
-    .fitb-input{border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;background:var(--card);color:var(--foreground);font-size:.9rem;width:120px;outline:none;transition:border-color .15s;}
+    .fitb-input{
+      border:2px solid var(--border);
+      border-radius:8px;
+      padding:6px 12px;
+      background:var(--card);
+      color:var(--foreground);
+      font-size:1.1rem;
+      font-weight:600;
+      width:140px;
+      outline:none;
+      transition:border-color .15s;
+    }
     .fitb-input:focus{border-color:var(--primary);}
     .fitb-input.correct{border-color:#22c55e;background:#dcfce7;}
     .fitb-input.wrong{border-color:#ef4444;background:#fee2e2;}
 
     /* ── Word Order ── */
-    .wo-token{display:inline-block;padding:6px 12px;border:1.5px solid var(--border);border-radius:9999px;cursor:pointer;background:var(--card);color:var(--foreground);font-size:.85rem;margin:4px;transition:all .15s;user-select:none;}
-    .wo-token:hover{border-color:var(--primary);background:var(--accent);}
-    .wo-token.placed{opacity:.4;cursor:default;pointer-events:none;}
-    .wo-slot{display:inline-block;min-width:70px;padding:6px 12px;border-bottom:2px solid var(--primary);margin:4px;text-align:center;font-size:.85rem;cursor:pointer;color:var(--primary);min-height:34px;}
+    .wo-token{
+      display:inline-block;
+      padding:8px 16px;
+      border:2px solid var(--border);
+      border-radius:9999px;
+      cursor:pointer;
+      background:var(--card);
+      color:var(--foreground);
+      font-size:1.05rem;
+      font-weight:600;
+      margin:5px;
+      transition:all .15s;
+      user-select:none;
+      box-shadow:0 1px 2px rgba(0,0,0,0.05);
+    }
+    .wo-token:hover{border-color:var(--primary);background:#eff6ff;color:var(--primary);}
+    .wo-token.placed{opacity:.35;cursor:default;pointer-events:none;}
+    .wo-slot{
+      display:inline-block;
+      min-width:80px;
+      padding:8px 14px;
+      border-bottom:2px solid var(--primary);
+      margin:4px;
+      text-align:center;
+      font-size:1.05rem;
+      cursor:pointer;
+      color:var(--primary);
+      min-height:38px;
+    }
 
     /* ── TTS button ── */
-    .tts-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:9999px;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:.75rem;color:var(--primary);transition:background .15s;}
-    .tts-btn:hover{background:var(--accent);}
+    .tts-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 14px;
+      border-radius:9999px;
+      border:1.5px solid var(--border);
+      background:var(--card);
+      cursor:pointer;
+      font-size:0.95rem;
+      font-weight:600;
+      color:var(--primary);
+      transition:all .15s ease;
+      box-shadow:0 1px 2px rgba(0,0,0,0.04);
+    }
+    .tts-btn:hover{background:#eff6ff;border-color:var(--primary);transform:scale(1.02);}
 
     /* ── Progress bar ── */
-    .progress-bar{height:8px;border-radius:9999px;background:var(--border);overflow:hidden;}
+    .progress-bar{height:10px;border-radius:9999px;background:#e2e8f0;overflow:hidden;}
     .progress-fill{height:100%;background:var(--primary);border-radius:9999px;transition:width .4s;}
 
     /* ── Dialogs ── */
-    .dialog-line{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--border);}
+    .dialog-line{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:14px 0;border-bottom:1px solid var(--border);}
     .dialog-line:last-child{border-bottom:none;}
 
     /* ── Responsive scrollable tabs ── */
@@ -107,8 +284,22 @@
     .section-panel.active{display:block;}
     
     /* ── Reading cards ── */
-    .reading-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px;}
-    .reading-card .korean-text{font-size:1.05rem;line-height:1.9;color:var(--foreground);border-left:3px solid var(--primary);padding-left:14px;}
+    .reading-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:28px;
+      margin-bottom:20px;
+      box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);
+    }
+    .reading-card .korean-text{
+      font-size:1.35rem;
+      line-height:2.2;
+      color:var(--foreground);
+      border-left:4px solid var(--primary);
+      padding-left:18px;
+      font-weight:500;
+    }
 
     /* ── Particle canvas ── */
     canvas{display:block;}
@@ -1137,10 +1328,10 @@ function renderLevel(lvl){
   const mc=document.getElementById('main-content');
   const cfg=LEVELS[lvl];
   mc.innerHTML=`
-    <div class="mb-4">
-      <h2 class="text-2xl font-bold mb-1" style="color:var(--foreground)">${cfg.label}</h2>
+    <div class="mb-5">
+      <h2 class="text-3xl font-black mb-1" style="color:var(--foreground)">${cfg.label}</h2>
     </div>
-    <div class="tabs-scroll flex gap-1 mb-6 border-b" style="border-color:var(--border);" id="section-tabs"></div>
+    <div class="tabs-scroll flex gap-2 mb-8 border-b pb-1" style="border-color:var(--border);" id="section-tabs"></div>
     <div id="section-content"></div>
   `;
   const st=document.getElementById('section-tabs');
@@ -1326,17 +1517,17 @@ function renderVocab(lvl){
   const vocab=getVocab(lvl);
   return `
   <div class="card">
-    <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
-      <h3 class="text-xl font-bold" style="color:var(--foreground)">Vocabulario ${lvl} — ${vocab.length} palabras</h3>
-      <input id="vocab-search" type="text" placeholder="Buscar..." onInput="filterVocab()" class="fitb-input" style="width:160px"/>
+    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+      <h3 class="text-2xl font-black" style="color:var(--foreground)">Vocabulario ${lvl} — ${vocab.length} palabras</h3>
+      <input id="vocab-search" type="text" placeholder="🔍 Buscar palabra..." onInput="filterVocab()" class="fitb-input" style="width:200px"/>
     </div>
-    <div id="vocab-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+    <div id="vocab-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
       ${vocab.map((w,i)=>`
-        <div class="vocab-item p-3 rounded-xl border flex flex-col gap-1 cursor-pointer hover:border-[var(--primary)] transition-colors" style="border-color:var(--border);background:var(--card)" onclick="speak('${w[0].replace(/'/g,"\\'")}')">
-          <div class="text-xl font-bold" style="color:var(--primary)">${w[0]}</div>
-          <div class="text-xs" style="color:var(--muted-foreground)">${w[1]}</div>
-          <div class="text-sm font-medium" style="color:var(--foreground)">${w[2]}</div>
-          <span class="text-xs" style="color:var(--primary)">🔊 Escuchar</span>
+        <div class="vocab-item p-4 rounded-2xl border flex flex-col gap-1.5 cursor-pointer hover:border-[var(--primary)] hover:shadow-md transition-all" style="border-color:var(--border);background:var(--card)" onclick="speak('${w[0].replace(/'/g,"\\'")}')">
+          <div class="text-2xl font-black" style="color:var(--primary)">${w[0]}</div>
+          <div class="text-sm font-semibold" style="color:var(--muted-foreground)">${w[1]}</div>
+          <div class="text-base font-bold" style="color:var(--foreground)">${w[2]}</div>
+          <span class="text-sm font-bold mt-1" style="color:var(--primary)">🔊 Escuchar</span>
         </div>
       `).join('')}
     </div>
@@ -1357,15 +1548,15 @@ function renderPhrases(){
   <div class="space-y-6">
     ${Object.entries(A1_PHRASES).map(([cat,phrases])=>`
       <div class="card">
-        <h3 class="text-lg font-bold mb-4" style="color:var(--foreground)">📌 ${cat}</h3>
+        <h3 class="text-2xl font-black mb-4" style="color:var(--foreground)">📌 ${cat}</h3>
         <div class="space-y-3">
           ${phrases.map(([kor,rom,esp])=>`
-            <div class="flex flex-wrap items-start gap-3 p-3 rounded-xl" style="background:var(--accent)">
+            <div class="flex flex-wrap items-start gap-4 p-4 rounded-xl" style="background:var(--accent)">
               <button class="tts-btn" onclick="speak('${kor.replace(/'/g,"\\'")}')">🔊</button>
               <div class="flex-1">
-                <div class="text-lg font-bold" style="color:var(--foreground)">${kor}</div>
-                <div class="text-xs" style="color:var(--muted-foreground)">${rom}</div>
-                <div class="text-sm font-medium mt-1" style="color:var(--primary)">${esp}</div>
+                <div class="text-2xl font-bold" style="color:var(--foreground)">${kor}</div>
+                <div class="text-sm font-semibold" style="color:var(--muted-foreground)">${rom}</div>
+                <div class="text-base font-bold mt-1" style="color:var(--primary)">${esp}</div>
               </div>
             </div>
           `).join('')}
@@ -1390,22 +1581,22 @@ function getGrammar(lvl){
 function renderGrammar(lvl){
   const grammar=getGrammar(lvl);
   return `
-  <div class="space-y-5">
+  <div class="space-y-6">
     ${grammar.map((g,i)=>`
       <div class="card">
-        <div class="flex items-start gap-3">
-          <div class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center font-black text-sm" style="background:var(--primary);color:var(--primary-foreground)">${i+1}</div>
+        <div class="flex items-start gap-4">
+          <div class="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center font-black text-lg" style="background:var(--primary);color:var(--primary-foreground);box-shadow:0 2px 8px rgba(37,99,235,0.3)">${i+1}</div>
           <div class="flex-1">
-            <div class="font-bold text-lg mb-2" style="color:var(--foreground)">${g.point}</div>
-            <div class="p-3 rounded-xl mb-2 flex flex-wrap items-center gap-3" style="background:var(--accent)">
+            <div class="font-black text-2xl mb-3" style="color:var(--foreground)">${g.point}</div>
+            <div class="p-4 rounded-2xl mb-3 flex flex-wrap items-center gap-4" style="background:var(--accent)">
               <button class="tts-btn" onclick="speak('${g.example.replace(/'/g,"\\'")}')">🔊</button>
               <div>
-                <div class="text-lg font-bold" style="color:var(--primary)">${g.example}</div>
-                <div class="text-xs" style="color:var(--muted-foreground)">${g.rom}</div>
-                <div class="text-sm" style="color:var(--foreground)">${g.trans}</div>
+                <div class="text-2xl font-bold" style="color:var(--primary)">${g.example}</div>
+                <div class="text-sm font-semibold" style="color:var(--muted-foreground)">${g.rom}</div>
+                <div class="text-base font-bold" style="color:var(--foreground)">${g.trans}</div>
               </div>
             </div>
-            <div class="text-sm p-3 rounded-xl" style="background:var(--card);border:1px solid var(--border);color:var(--muted-foreground)">💡 ${g.note}</div>
+            <div class="text-base p-4 rounded-xl font-medium" style="background:var(--card);border:1px solid var(--border);color:var(--foreground)">💡 ${g.note}</div>
           </div>
         </div>
       </div>
@@ -1475,23 +1666,23 @@ function renderDialogues(lvl){
   <div class="space-y-6">
     ${dialogs.map((d,di)=>`
       <div class="card">
-        <h3 class="text-lg font-bold mb-4" style="color:var(--foreground)">💬 ${d.title}</h3>
+        <h3 class="text-2xl font-black mb-4" style="color:var(--foreground)">💬 ${d.title}</h3>
         <div>
           ${d.lines.map(line=>`
             <div class="dialog-line">
-              <div class="font-bold text-xs px-2 py-1 rounded" style="background:var(--primary);color:var(--primary-foreground);white-space:nowrap">${line.speaker}</div>
+              <div class="font-bold text-sm px-3 py-1.5 rounded-lg" style="background:var(--primary);color:var(--primary-foreground);white-space:nowrap">${line.speaker}</div>
               <div class="pl-2">
-                <div class="flex flex-wrap items-center gap-2 mb-1">
+                <div class="flex flex-wrap items-center gap-3 mb-1">
                   <button class="tts-btn" onclick="speak('${line.kor.replace(/'/g,"\\'")}')">🔊</button>
-                  <span class="font-bold" style="color:var(--foreground)">${line.kor}</span>
+                  <span class="font-bold text-xl" style="color:var(--foreground)">${line.kor}</span>
                 </div>
-                <div class="text-xs" style="color:var(--muted-foreground)">${line.rom}</div>
-                <div class="text-sm mt-1" style="color:var(--primary)">${line.trans}</div>
+                <div class="text-sm font-semibold" style="color:var(--muted-foreground)">${line.rom}</div>
+                <div class="text-base font-bold mt-1" style="color:var(--primary)">${line.trans}</div>
               </div>
             </div>
           `).join('')}
         </div>
-        <button class="tts-btn mt-4" onclick="playDialog(${di},'${lvl}')">▶ Reproducir diálogo completo</button>
+        <button class="tts-btn mt-5 px-5 py-2.5 text-base" onclick="playDialog(${di},'${lvl}')">▶ Reproducir diálogo completo</button>
       </div>
     `).join('')}
   </div>`;
@@ -1521,31 +1712,31 @@ function initFlashcards(lvl){
 function renderFlashcards(lvl){
   const data=getFlashcardData(lvl);
   return `
-  <div class="card max-w-lg mx-auto text-center">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="font-bold text-lg" style="color:var(--foreground)">Flashcards ${lvl}</h3>
-      <div id="fc-counter-${lvl}" class="text-sm" style="color:var(--muted-foreground)">1 / ${data.length}</div>
+  <div class="card max-w-xl mx-auto text-center">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="font-black text-2xl" style="color:var(--foreground)">Flashcards ${lvl}</h3>
+      <div id="fc-counter-${lvl}" class="text-base font-bold" style="color:var(--primary)">1 / ${data.length}</div>
     </div>
-    <div id="fc-wrap-${lvl}" class="flashcard-wrap mb-6" onclick="flipCard('${lvl}')">
+    <div id="fc-wrap-${lvl}" class="flashcard-wrap mb-8" onclick="flipCard('${lvl}')">
       <div id="fc-${lvl}" class="flashcard">
         <div class="flashcard-face flashcard-front" id="fc-front-${lvl}">
-          <div class="text-5xl font-black mb-3" id="fc-kor-${lvl}" style="color:var(--primary)"></div>
-          <div class="text-sm" id="fc-rom-${lvl}" style="color:var(--muted-foreground)"></div>
-          <div class="text-xs mt-4" style="color:var(--muted-foreground)">Haz clic para ver la traducción</div>
+          <div class="text-6xl font-black mb-4" id="fc-kor-${lvl}" style="color:var(--primary)"></div>
+          <div class="text-lg font-semibold" id="fc-rom-${lvl}" style="color:var(--muted-foreground)"></div>
+          <div class="text-sm font-medium mt-6" style="color:var(--muted-foreground)">💡 Haz clic o pulsa Espacio para voltear</div>
         </div>
         <div class="flashcard-face flashcard-back" id="fc-back-${lvl}">
-          <div class="text-2xl font-bold" id="fc-trans-${lvl}" style="color:var(--foreground)"></div>
-          <div class="text-xs mt-4" style="color:var(--muted-foreground)">Haz clic para volver</div>
+          <div class="text-4xl font-black mb-2" id="fc-trans-${lvl}" style="color:var(--foreground)"></div>
+          <div class="text-sm font-medium mt-6" style="color:var(--muted-foreground)">💡 Haz clic para volver</div>
         </div>
       </div>
     </div>
-    <div class="flex gap-3 justify-center flex-wrap">
-      <button class="tts-btn px-4 py-2" onclick="prevCard('${lvl}')">← Anterior</button>
-      <button class="tts-btn px-4 py-2" onclick="speakCard('${lvl}')">🔊 Escuchar</button>
-      <button class="tts-btn px-4 py-2" onclick="nextCard('${lvl}')">Siguiente →</button>
+    <div class="flex gap-4 justify-center flex-wrap">
+      <button class="tts-btn px-6 py-3 text-base" onclick="prevCard('${lvl}')">← Anterior</button>
+      <button class="tts-btn px-6 py-3 text-base" onclick="speakCard('${lvl}')">🔊 Escuchar</button>
+      <button class="tts-btn px-6 py-3 text-base" onclick="nextCard('${lvl}')">Siguiente →</button>
     </div>
-    <div class="mt-4 text-xs" style="color:var(--muted-foreground)">⌨️ Espacio = voltear · ← → = navegar</div>
-    <div class="progress-bar mt-4"><div id="fc-progress-${lvl}" class="progress-fill" style="width:${100/getFlashcardData(lvl).length}%"></div></div>
+    <div class="mt-4 text-sm font-medium" style="color:var(--muted-foreground)">⌨️ Teclado: Espacio = voltear · ← → = navegar</div>
+    <div class="progress-bar mt-5"><div id="fc-progress-${lvl}" class="progress-fill" style="width:${100/getFlashcardData(lvl).length}%"></div></div>
   </div>`;
 }
 function renderCardView(lvl){
@@ -1661,19 +1852,19 @@ function renderExpressions(){
   return `
   <div class="space-y-4">
     <div class="card">
-      <h3 class="text-xl font-bold mb-4" style="color:var(--foreground)">20 Expresiones Idiomáticas Coreanas</h3>
-      <div class="grid sm:grid-cols-2 gap-4">
+      <h3 class="text-2xl font-black mb-6" style="color:var(--foreground)">20 Expresiones Idiomáticas Coreanas (관용어)</h3>
+      <div class="grid sm:grid-cols-2 gap-5">
         ${C1_EXPRESSIONS.map((e,i)=>`
-          <div class="p-4 rounded-xl border" style="border-color:var(--border);background:var(--card)">
+          <div class="p-5 rounded-2xl border" style="border-color:var(--border);background:var(--card)">
             <div class="flex flex-wrap gap-2 items-start mb-2">
-              <span class="font-black text-base" style="color:var(--primary)">${i+1}. ${e.expr}</span>
+              <span class="font-black text-xl" style="color:var(--primary)">${i+1}. ${e.expr}</span>
               <button class="tts-btn" onclick="speak('${e.expr.replace(/'/g,"\\'")}')">🔊</button>
             </div>
-            <div class="text-xs mb-1" style="color:var(--muted-foreground)">${e.rom}</div>
-            <div class="text-sm font-semibold mb-2" style="color:var(--foreground)">${e.meaning}</div>
-            <div class="text-sm p-2 rounded-lg" style="background:var(--accent);color:var(--muted-foreground)">
-              <button class="tts-btn" onclick="speak('${e.example.replace(/'/g,"\\'")}')">🔊</button>
-              ${e.example}
+            <div class="text-sm font-semibold mb-1" style="color:var(--muted-foreground)">${e.rom}</div>
+            <div class="text-base font-bold mb-3" style="color:var(--foreground)">${e.meaning}</div>
+            <div class="text-base p-3 rounded-xl" style="background:var(--accent);color:var(--foreground)">
+              <button class="tts-btn mb-1" onclick="speak('${e.example.replace(/'/g,"\\'")}')">🔊</button>
+              <div class="font-medium mt-1">${e.example}</div>
             </div>
           </div>
         `).join('')}
@@ -1856,8 +2047,8 @@ function buildQuizQuestion(lvl){
   }
   const q=qs[st.current];
   return `
-    <div class="mb-3 text-sm font-semibold" style="color:var(--muted-foreground)">Pregunta ${st.current+1} de 10 · Puntuación: ${st.score}</div>
-    <div class="text-lg font-bold mb-4" style="color:var(--foreground)">${q.q}</div>
+    <div class="mb-3 text-base font-bold" style="color:var(--primary)">Pregunta ${st.current+1} de 10 · Puntuación: ${st.score}</div>
+    <div class="text-2xl font-black mb-5" style="color:var(--foreground)">${q.q}</div>
     <div>
       ${q.opts.map((opt,i)=>`
         <button class="quiz-opt" id="qopt-${lvl}-${i}" onclick="answerQuiz('${lvl}',${i})">${opt}</button>
