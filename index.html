@@ -2190,11 +2190,11 @@ function renderNumbers(){
       <div class="flex flex-wrap items-center gap-2 mb-3">
         <span class="px-3 py-1 text-xs font-black uppercase tracking-wider rounded-full bg-amber-500 text-white">Lección Fundamental A1</span>
         <span class="px-3 py-1 text-xs font-bold rounded-full bg-orange-100 text-orange-800">한국어 숫자</span>
-        <span class="px-3 py-1 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">Dos Sistemas Numéricos</span>
+        <span class="px-3 py-1 text-xs font-bold rounded-full bg-yellow-100 text-yellow-800">Del 1 a Millones</span>
       </div>
-      <h2 class="text-3xl md:text-4xl font-black mb-3 text-slate-900">Los Números en Coreano: Dos Mundos en Armonía</h2>
+      <h2 class="text-3xl md:text-4xl font-black mb-3 text-slate-900">Guía Maestra de los Números en Coreano</h2>
       <p class="text-base md:text-lg leading-relaxed text-slate-700">
-        El coreano tiene uno de los sistemas numéricos más fascinantes del mundo: <strong>dos sistemas completos que conviven</strong>. Descubre cuándo usar el sistema Sino-coreano y cuándo el Nativo Coreano, cómo decir la hora y cómo contar objetos con clasificadores.
+        Aprende los números del 1 al 20, cómo funcionan los <strong>cientos (백), miles (천), decenas de miles (만) y millones (백만, 억)</strong>, por qué en Asia se cuenta en bloques de 4 ceros y cómo leer precios reales y la hora con pronunciación nativa.
       </p>
     </div>
 
@@ -2222,7 +2222,7 @@ function renderNumbers(){
 
       <!-- Quick summary columns -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- Sino-Korean Box (Fondo azul cielo claro con texto azul marino de alto contraste) -->
+        <!-- Sino-Korean Box -->
         <div class="p-6 rounded-2xl border-2 border-sky-300 bg-sky-50 shadow-sm">
           <div class="flex items-center justify-between mb-3">
             <span class="px-2.5 py-1 text-xs font-black rounded bg-sky-600 text-white">REINO SINO-COREANO</span>
@@ -2230,10 +2230,10 @@ function renderNumbers(){
           </div>
           <h4 class="text-xl font-black mb-2 text-sky-950">일, 이, 삼, 사, 오, 육...</h4>
           <p class="text-xs md:text-sm text-slate-700 mb-4">
-            Derivados de caracteres chinos. Es el sistema matemático infinito para calcular grandes cifras y medidas exactas.
+            Derivados de caracteres chinos. Es el sistema matemático infinito para calcular grandes cifras, precios, fechas y medidas exactas.
           </p>
           <div class="p-4 rounded-xl bg-white border border-sky-200 space-y-2 text-xs md:text-sm font-medium text-slate-800 shadow-sm">
-            <div class="flex items-center gap-2"><span>💰</span><span><strong>Dinero:</strong> 5,000원 = 오천 원</span></div>
+            <div class="flex items-center gap-2"><span>💰</span><span><strong>Dinero (Won):</strong> 5,000원 = 오천 원</span></div>
             <div class="flex items-center gap-2"><span>📅</span><span><strong>Fechas:</strong> 11월 16일 = 십일월 십육일</span></div>
             <div class="flex items-center gap-2"><span>⏱️</span><span><strong>Minutos/Segundos:</strong> 30분 = 삼십 분</span></div>
             <div class="flex items-center gap-2"><span>🏢</span><span><strong>Pisos de edificios:</strong> 3층 = 삼 층</span></div>
@@ -2241,7 +2241,7 @@ function renderNumbers(){
           </div>
         </div>
 
-        <!-- Native Korean Box (Fondo verde menta claro con texto nítido) -->
+        <!-- Native Korean Box -->
         <div class="p-6 rounded-2xl border-2 border-emerald-300 bg-emerald-50 shadow-sm">
           <div class="flex items-center justify-between mb-3">
             <span class="px-2.5 py-1 text-xs font-black rounded bg-emerald-600 text-white">REINO NATIVO COREANO</span>
@@ -2262,36 +2262,48 @@ function renderNumbers(){
       </div>
     </div>
 
-    <!-- Comparative Table of 1-10 + Decenas -->
+    <!-- Comparative Table of 1-20 -->
     <div class="card p-6 md:p-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <h3 class="text-2xl font-black mb-4 text-slate-900">2. Tabla Comparativa: Números del 1 al 10</h3>
-      <p class="text-sm text-slate-600 mb-6">
-        Haz clic en cada botón para escuchar la pronunciación auténtica de cada número.
-      </p>
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div>
+          <h3 class="text-2xl font-black text-slate-900">2. Tabla Comparativa Completa: Del 1 al 20</h3>
+          <p class="text-sm text-slate-600">Aprende cómo se forman los números del 1 al 20 en ambos sistemas con pronunciación nativa y reglas fonéticas</p>
+        </div>
+      </div>
 
       <div class="overflow-x-auto rounded-xl border border-slate-200">
         <table class="w-full text-left text-xs md:text-sm border-collapse">
           <thead>
             <tr class="bg-slate-100 border-b border-slate-200 font-bold text-slate-800">
-              <th class="p-3">Número</th>
+              <th class="p-3">Nº</th>
               <th class="p-3 text-sky-800 font-black">Sino-Coreano (한자)</th>
               <th class="p-3 text-emerald-800 font-black">Nativo Coreano (고유어)</th>
-              <th class="p-3 text-amber-800 font-black">Forma Modificada ante Contador</th>
-              <th class="p-3 text-slate-700">Uso Típico</th>
+              <th class="p-3 text-amber-800 font-black">Forma Modificada (Nativo)</th>
+              <th class="p-3 text-slate-700">Notas de Pronunciación / Uso</th>
             </tr>
           </thead>
           <tbody>
             ${[
-              {n:1, s:'일', sr:'il', nat:'하나', nr:'hana', mod:'한 (han)', ex:'한 개 (1 cosa) / 1월 (Enero)'},
-              {n:2, s:'이', sr:'i', nat:'둘', nr:'dul', mod:'두 (du)', ex:'두 명 (2 personas) / 2층 (Piso 2)'},
-              {n:3, s:'삼', sr:'sam', nat:'셋', nr:'set', mod:'세 (se)', ex:'세 잔 (3 tazas) / 3분 (3 minutos)'},
-              {n:4, s:'사', sr:'sa', nat:'넷', nr:'net', mod:'네 (ne)', ex:'네 마리 (4 animales) / 4월 (Abril)'},
-              {n:5, s:'오', sr:'o', nat:'다섯', nr:'daseot', mod:'다섯 (igual)', ex:'다섯 살 (5 años) / 500원 (500 wons)'},
-              {n:6, s:'육', sr:'yuk', nat:'여섯', nr:'yeoseot', mod:'여섯 (igual)', ex:'여섯 시 (Las 6:00) / 6kg'},
-              {n:7, s:'칠', sr:'chil', nat:'일곱', nr:'ilgop', mod:'일곱 (igual)', ex:'일곱 권 (7 libros) / 7월 (Julio)'},
-              {n:8, s:'팔', sr:'pal', nat:'여덟', nr:'yeodeol', mod:'여덟 (igual)', ex:'여덟 시 (Las 8:00) / 8번 (Número 8)'},
-              {n:9, s:'구', sr:'gu', nat:'아홉', nr:'ahop', mod:'아홉 (igual)', ex:'아홉 살 (9 años) / 9월 (Septiembre)'},
-              {n:10, s:'십', sr:'sip', nat:'열', nr:'yeol', mod:'열 (igual)', ex:'열 개 (10 unidades) / 10분 (10 minutos)'}
+              {n:1, s:'일', sr:'il', nat:'하나', nr:'hana', mod:'한 (han)', note:'한 개 (1 objeto) · 1월 (Enero)'},
+              {n:2, s:'이', sr:'i', nat:'둘', nr:'dul', mod:'두 (du)', note:'두 명 (2 personas) · 2층 (Piso 2)'},
+              {n:3, s:'삼', sr:'sam', nat:'셋', nr:'set', mod:'세 (se)', note:'세 잔 (3 tazas) · 3분 (3 minutos)'},
+              {n:4, s:'사', sr:'sa', nat:'넷', nr:'net', mod:'네 (ne)', note:'네 마리 (4 animales) · 4월 (Abril)'},
+              {n:5, s:'오', sr:'o', nat:'다섯', nr:'daseot', mod:'다섯 (igual)', note:'다섯 살 (5 años) · 500원 (500 wons)'},
+              {n:6, s:'육', sr:'yuk', nat:'여섯', nr:'yeoseot', mod:'여섯 (igual)', note:'여섯 시 (Las 6:00) · 6kg'},
+              {n:7, s:'칠', sr:'chil', nat:'일곱', nr:'ilgop', mod:'일곱 (igual)', note:'일곱 권 (7 libros) · 7월 (Julio)'},
+              {n:8, s:'팔', sr:'pal', nat:'여덟', nr:'yeodeol', mod:'여덟 (igual)', note:'여덟 시 (Las 8:00) · Fonética: [여덜]'},
+              {n:9, s:'구', sr:'gu', nat:'아홉', nr:'ahop', mod:'아홉 (igual)', note:'아홉 살 (9 años) · 9분 (9 minutos)'},
+              {n:10, s:'십', sr:'sip', nat:'열', nr:'yeol', mod:'열 (igual)', note:'열 개 (10 cosas) · 10분 (10 minutos)'},
+              {n:11, s:'십일', sr:'sip-il [시빌]', nat:'열하나', nr:'yeol-hana', mod:'열한 (yeol-han)', note:'Enlace fonético en Sino: [si-bil]'},
+              {n:12, s:'십이', sr:'sip-i [시비]', nat:'열둘', nr:'yeol-dul', mod:'열두 (yeol-du)', note:'Enlace fonético en Sino: [si-bi]'},
+              {n:13, s:'십삼', sr:'sip-sam', nat:'열셋', nr:'yeol-set', mod:'열세 (yeol-se)', note:'10 + 3'},
+              {n:14, s:'십사', sr:'sip-sa', nat:'열넷', nr:'yeol-net', mod:'열네 (yeol-ne)', note:'10 + 4'},
+              {n:15, s:'십오', sr:'sip-o [시보]', nat:'열다섯', nr:'yeol-daseot', mod:'열다섯 (igual)', note:'Enlace fonético en Sino: [si-bo]'},
+              {n:16, s:'십육', sr:'sip-yuk [심뉵]', nat:'열여섯', nr:'yeol-yeoseot', mod:'열여섯 (igual)', note:'¡Regla especial! Se pronuncia [sim-nyuk]'},
+              {n:17, s:'십칠', sr:'sip-chil', nat:'열일곱', nr:'yeol-ilgop', mod:'열일곱 (igual)', note:'10 + 7'},
+              {n:18, s:'십팔', sr:'sip-pal', nat:'열여덟', nr:'yeol-yeodeol', mod:'열여덟 (igual)', note:'10 + 8 (pronunciar suavemente)'},
+              {n:19, s:'십구', sr:'sip-gu', nat:'열아홉', nr:'yeol-ahop', mod:'열아홉 (igual)', note:'10 + 9'},
+              {n:20, s:'이십', sr:'i-sip', nat:'스물', nr:'seumul', mod:'스무 (seumu)', note:'Sino es 2×10 (이십) · Nativo cambia a 스무 살'}
             ].map(row => `
               <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                 <td class="p-3 font-black text-base text-slate-900">${row.n}</td>
@@ -2306,32 +2318,159 @@ function renderNumbers(){
                   </button>
                 </td>
                 <td class="p-3 font-bold text-amber-800">${row.mod}</td>
-                <td class="p-3 text-xs text-slate-600">${row.ex}</td>
+                <td class="p-3 text-xs text-slate-600">${row.note}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
       </div>
 
-      <!-- Regla de modificación de 1, 2, 3, 4 y 20 -->
-      <div class="mt-6 p-5 rounded-xl bg-amber-50 border border-amber-300 flex items-start gap-3 shadow-sm">
-        <span class="text-2xl">💡</span>
-        <div class="text-xs md:text-sm text-slate-800 leading-relaxed">
-          <strong class="text-amber-900 font-bold">¡Regla de Oro de los Números Nativos!</strong><br/>
-          Los números <strong>하나 (1), 둘 (2), 셋 (3), 넷 (4)</strong> y <strong>스물 (20)</strong> pierden su última letra cuando van delante de un contador o de la palabra de tiempo:
-          <span class="block mt-1 font-mono font-bold text-slate-900">
-            하나 ➔ 한 (한 개, 한 시) · 둘 ➔ 두 (두 명, 두 시) · 셋 ➔ 세 (세 잔, 세 시) · 넷 ➔ 네 (네 마리, 네 시) · 스물 ➔ 스무 (스무 살)
-          </span>
+      <!-- Regla de las decenas nativas -->
+      <div class="mt-6 p-5 rounded-xl bg-emerald-50 border border-emerald-300 shadow-sm">
+        <h4 class="font-black text-emerald-900 mb-2 flex items-center gap-2">
+          <span>🌿</span> Las Decenas Nativas (del 10 al 90):
+        </h4>
+        <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 text-center text-xs">
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>10:</strong> 열</div>
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>20:</strong> 스물</div>
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>30:</strong> 서른</div>
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>40:</strong> 마흔</div>
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>50:</strong> 쉰</div>
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>60:</strong> 예순</div>
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>70:</strong> 일흔</div>
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>80:</strong> 여든</div>
+          <div class="p-2 rounded-lg bg-white border border-emerald-200"><strong>90:</strong> 아흔</div>
+        </div>
+        <p class="text-xs text-slate-600 mt-2">
+          <em>Nota:</em> Para el número 100 en adelante, el coreano moderno siempre utiliza el sistema sino-coreano (<strong>백, 천, 만...</strong>).
+        </p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: CIENTOS, MILES, DECENAS DE MILES Y MILLONES -->
+    <div class="card p-6 md:p-8 rounded-2xl border-2 border-sky-300 bg-white shadow-md">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">💰</span>
+        <div>
+          <h3 class="text-2xl md:text-3xl font-black text-slate-900">3. Cientos, Miles y Millones: El Secreto de los 4 Ceros</h3>
+          <p class="text-sm text-slate-600">Cómo funciona la estructura numérica asiática de 백, 천, 만 y 억</p>
+        </div>
+      </div>
+
+      <!-- La diferencia de los 4 ceros -->
+      <div class="p-6 rounded-2xl bg-gradient-to-r from-sky-50 via-indigo-50 to-purple-50 border-2 border-indigo-200 mb-8 shadow-sm">
+        <h4 class="text-lg font-black text-slate-900 mb-2 flex items-center gap-2">
+          <span>🧠</span> La Gran Diferencia Cultural: Bloques de 3 Ceros vs Bloques de 4 Ceros
+        </h4>
+        <p class="text-xs md:text-sm text-slate-700 leading-relaxed mb-4">
+          En español e inglés agrupamos los números de tres en tres: <strong>1.000</strong> (mil) y <strong>1.000.000</strong> (un millón).<br/>
+          En coreano, la unidad mental fundamental cambia cada <strong>CUATRO CEROS (10.000 = 만)</strong>. Por eso, no existe una palabra directa para "un millón", sino que se dice <em>"cien veces diez mil"</em>: <strong>백만 (100 만)</strong>.
+        </p>
+
+        <!-- Diagrama visual comparativo -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-semibold">
+          <div class="p-4 rounded-xl bg-white border border-slate-300 shadow-sm">
+            <span class="text-slate-500 uppercase tracking-wider block mb-1">Occidente (Bloques de 3 ceros)</span>
+            <div class="text-lg font-mono font-bold text-slate-900">1,000,000</div>
+            <div class="text-slate-600 mt-1">1 millón = 1.000 × 1.000</div>
+          </div>
+          <div class="p-4 rounded-xl bg-white border-2 border-indigo-400 shadow-sm">
+            <span class="text-indigo-600 uppercase tracking-wider block mb-1">Corea (Bloques de 4 ceros con 만)</span>
+            <div class="text-lg font-mono font-bold text-indigo-700">100,0000 ➔ 100만 (백만)</div>
+            <div class="text-slate-600 mt-1">100 만 = 백만 (baek-man) = 1.000.000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de los Grandes Escalones -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200 mb-8">
+        <table class="w-full text-left text-xs md:text-sm border-collapse">
+          <thead>
+            <tr class="bg-slate-100 border-b border-slate-200 font-bold text-slate-800">
+              <th class="p-3">Cifra</th>
+              <th class="p-3">Coreano</th>
+              <th class="p-3">Romanización</th>
+              <th class="p-3">Equivalencia en Español</th>
+              <th class="p-3">Audio</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[
+              {num:'100', ko:'백', rom:'baek', es:'Cien (10²)', note:'Ojo: no se dice "일백", solo 백.'},
+              {num:'1,000', ko:'천', rom:'cheon', es:'Mil (10³)', note:'No se dice "일천", solo 천.'},
+              {num:'10,000', ko:'만', rom:'man', es:'Diez mil (10⁴) — ¡Unidad Reina!', note:'La base de todo el dinero y economía coreana.'},
+              {num:'100,000', ko:'십만', rom:'sip-man', es:'Cien mil (10 × 10.000)', note:'10 man = 100.000'},
+              {num:'1,000,000', ko:'백만', rom:'baek-man', es:'Un millón (100 × 10.000)', note:'100 man = 1.000.000'},
+              {num:'10,000,000', ko:'천만', rom:'cheon-man', es:'Diez millones (1.000 × 10.000)', note:'1.000 man = 10.000.000'},
+              {num:'100,000,000', ko:'억 (일억)', rom:'eok (il-eok)', es:'Cien millones (10⁸) — ¡Siguiente Gran Unidad!', note:'Aquí sí se dice "일억" para evitar confusiones.'},
+              {num:'1,000,000,000', ko:'십억', rom:'sip-eok', es:'Mil millones (1 millardo)', note:'10 veces 100 millones'},
+              {num:'1,000,000,000,000', ko:'조 (일조)', rom:'jo (il-jo)', es:'Un billón (10¹²)', note:'Unidad para presupuestos nacionales'}
+            ].map(r => `
+              <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="p-3 font-mono font-bold text-slate-900">${r.num}</td>
+                <td class="p-3 font-black text-lg text-indigo-700">${r.ko}</td>
+                <td class="p-3 text-slate-600 font-mono">${r.rom}</td>
+                <td class="p-3 font-medium text-slate-800">${r.es}</td>
+                <td class="p-3">
+                  <button class="tts-btn text-xs px-3 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold rounded-lg hover:bg-indigo-600 hover:text-white transition-colors" onclick="speak('${r.ko}')">🔊 Escuchar</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Guía Paso a Paso: Cómo formar y leer precios reales en Corea (₩ Won) -->
+      <div class="p-6 rounded-2xl bg-amber-50/70 border border-amber-300 shadow-sm space-y-4">
+        <h4 class="text-xl font-black text-slate-900 flex items-center gap-2">
+          <span>🏷️</span> Cómo Leer Precios Reales en Corea (원 - Won)
+        </h4>
+        <p class="text-xs md:text-sm text-slate-700 leading-relaxed">
+          En Corea del Sur, los precios suelen ser de 4 a 8 dígitos porque 1 dólar estadounidense equivale aproximadamente a 1.350 wons. Aprende a leer los billetes y precios más comunes:
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+          <div class="p-4 rounded-xl bg-white border border-slate-200 text-center shadow-sm">
+            <span class="text-xs text-slate-500 font-bold block mb-1">Café o metro</span>
+            <div class="text-2xl font-black text-slate-900">₩4,500</div>
+            <div class="text-base font-bold text-sky-700 my-1">사천오백 원</div>
+            <div class="text-xs text-slate-500 mb-2">sa-cheon-o-baek won</div>
+            <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-sky-600 text-white" onclick="speak('사천오백 원')">🔊 4,500원</button>
+          </div>
+
+          <div class="p-4 rounded-xl bg-white border border-emerald-300 text-center shadow-sm">
+            <span class="text-xs text-emerald-700 font-bold block mb-1">Billete verde (Rey Sejong)</span>
+            <div class="text-2xl font-black text-slate-900">₩10,000</div>
+            <div class="text-base font-bold text-emerald-700 my-1">만 원</div>
+            <div class="text-xs text-slate-500 mb-2">man won (no "일만")</div>
+            <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-emerald-600 text-white" onclick="speak('만 원')">🔊 10,000원</button>
+          </div>
+
+          <div class="p-4 rounded-xl bg-white border border-amber-300 text-center shadow-sm">
+            <span class="text-xs text-amber-700 font-bold block mb-1">Billete amarillo (Shin Saimdang)</span>
+            <div class="text-2xl font-black text-slate-900">₩50,000</div>
+            <div class="text-base font-bold text-amber-700 my-1">오만 원</div>
+            <div class="text-xs text-slate-500 mb-2">o-man won (5 veces 10.000)</div>
+            <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-amber-600 text-white" onclick="speak('오만 원')">🔊 50,000원</button>
+          </div>
+
+          <div class="p-4 rounded-xl bg-white border border-indigo-300 text-center shadow-sm">
+            <span class="text-xs text-indigo-700 font-bold block mb-1">Celular / Smartphone</span>
+            <div class="text-2xl font-black text-slate-900">₩1,200,000</div>
+            <div class="text-base font-bold text-indigo-700 my-1">백이십만 원</div>
+            <div class="text-xs text-slate-500 mb-2">baek-i-sip-man won</div>
+            <button class="tts-btn w-full py-1 text-xs font-bold rounded bg-indigo-600 text-white" onclick="speak('백이십만 원')">🔊 1,200,000원</button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- SECCIÓN: CÓMO DECIR LA HORA -->
+    <!-- SECCIÓN 4: CÓMO DECIR LA HORA -->
     <div class="card p-6 md:p-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div class="flex items-center gap-3 mb-6">
         <span class="text-3xl">⏰</span>
         <div>
-          <h3 class="text-2xl md:text-3xl font-black text-slate-900">3. Cómo Decir la Hora: El Puente entre Ambos Sistemas</h3>
+          <h3 class="text-2xl md:text-3xl font-black text-slate-900">4. Cómo Decir la Hora: El Puente entre Ambos Sistemas</h3>
           <p class="text-sm text-slate-600">¡El ejemplo perfecto donde se usan los dos reinos al mismo tiempo!</p>
         </div>
       </div>
@@ -2369,12 +2508,12 @@ function renderNumbers(){
       </div>
     </div>
 
-    <!-- SECCIÓN: LOS 8 CLASIFICADORES INDISPENSABLES -->
+    <!-- SECCIÓN 5: LOS 8 CLASIFICADORES INDISPENSABLES -->
     <div class="card p-6 md:p-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div class="flex items-center gap-3 mb-6">
         <span class="text-3xl">📦</span>
         <div>
-          <h3 class="text-2xl md:text-3xl font-black text-slate-900">4. Los 8 Clasificadores Indispensables (단위명사)</h3>
+          <h3 class="text-2xl md:text-3xl font-black text-slate-900">5. Los 8 Clasificadores Indispensables (단위명사)</h3>
           <p class="text-sm text-slate-600">En coreano nunca dices "dos cafés", dices "café dos tazas"</p>
         </div>
       </div>
@@ -2394,27 +2533,27 @@ function renderNumbers(){
       </div>
     </div>
 
-    <!-- SECCIÓN: ENTRENADOR INTERACTIVO DE NÚMEROS -->
+    <!-- SECCIÓN 6: ENTRENADOR INTERACTIVO EXPANDIDO (DEL 1 A MILLONES) -->
     <div class="card p-6 md:p-8 rounded-2xl border-2 border-amber-300 shadow-md bg-gradient-to-b from-white to-amber-50/40">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="text-2xl">🎮</span>
-            <h3 class="text-2xl md:text-3xl font-black text-slate-900">5. Convertidor & Entrenador de Números</h3>
+            <h3 class="text-2xl md:text-3xl font-black text-slate-900">6. Convertidor & Entrenador de Números (1 a Millones)</h3>
           </div>
-          <p class="text-sm text-slate-600">Escribe o selecciona cualquier número del 1 al 99 para ver y escuchar cómo se dice en ambos sistemas</p>
+          <p class="text-sm text-slate-600">Escribe o selecciona cualquier número (del 1 al 100.000.000) para ver cómo se descompone y escuchar su pronunciación nativa</p>
         </div>
         <div class="flex items-center gap-2">
-          <input type="number" id="num-input-trainer" min="1" max="99" value="7" oninput="updateNumberTrainer(this.value)" class="w-24 p-2.5 text-center text-lg font-black rounded-xl border-2 border-amber-400 bg-white text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"/>
+          <input type="number" id="num-input-trainer" min="1" max="100000000" value="16" oninput="updateNumberTrainer(this.value)" class="w-36 p-2.5 text-center text-lg font-black rounded-xl border-2 border-amber-400 bg-white text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"/>
         </div>
       </div>
 
       <!-- Quick Number Chips -->
       <div class="flex flex-wrap gap-2 mb-6">
         <span class="text-xs font-bold text-slate-600 self-center mr-2">Prueba rápida:</span>
-        ${[1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 48, 77, 99].map(n => `
+        ${[11, 16, 20, 100, 500, 1000, 5000, 10000, 50000, 100000, 1000000, 10000000].map(n => `
           <button onclick="updateNumberTrainer(${n})" class="px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-300 hover:bg-[var(--primary)] hover:text-white transition-colors bg-white text-slate-800 shadow-sm">
-            ${n}
+            ${n.toLocaleString()}
           </button>
         `).join('')}
       </div>
@@ -2427,9 +2566,69 @@ function renderNumbers(){
   </div>`;
 }
 
-// Trainer logic
+// ════════════════════════════════════════════════════════════
+//  TRAINER LOGIC EXPANDED (HANDLES 1 TO 100,000,000)
+// ════════════════════════════════════════════════════════════
 function initNumbersTrainer(){
-  updateNumberTrainer(7);
+  updateNumberTrainer(16);
+}
+
+function convertNumberToSino(n){
+  if(n === 0) return '영';
+  const units = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
+  const bigUnits = [
+    {val: 100000000, name: '억'},
+    {val: 10000, name: '만'},
+    {val: 1000, name: '천'},
+    {val: 100, name: '백'},
+    {val: 10, name: '십'},
+    {val: 1, name: ''}
+  ];
+
+  // Helper for numbers under 10,000
+  function chunkUnder10k(num){
+    if(num === 0) return '';
+    let res = '';
+    const thousands = Math.floor(num / 1000);
+    const hundreds = Math.floor((num % 1000) / 100);
+    const tens = Math.floor((num % 100) / 10);
+    const ones = num % 10;
+
+    if(thousands > 0) res += (thousands === 1 ? '' : units[thousands]) + '천';
+    if(hundreds > 0) res += (hundreds === 1 ? '' : units[hundreds]) + '백';
+    if(tens > 0) res += (tens === 1 ? '' : units[tens]) + '십';
+    if(ones > 0) res += units[ones];
+    return res;
+  }
+
+  if(n < 10000) return chunkUnder10k(n);
+
+  let result = '';
+  const eok = Math.floor(n / 100000000);
+  const remainderAfterEok = n % 100000000;
+  const man = Math.floor(remainderAfterEok / 10000);
+  const remainderAfterMan = remainderAfterEok % 10000;
+
+  if(eok > 0){
+    result += (eok === 1 ? '일' : chunkUnder10k(eok)) + '억 ';
+  }
+  if(man > 0){
+    result += (man === 1 ? '만' : chunkUnder10k(man) + '만') + ' ';
+  }
+  if(remainderAfterMan > 0){
+    result += chunkUnder10k(remainderAfterMan);
+  }
+
+  return result.trim();
+}
+
+function convertNumberToNative(n){
+  if(n < 1 || n > 99) return null; // Native only used up to 99 in practice
+  const natUnits = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉'];
+  const natTens = ['', '열', '스물', '서른', '마흔', '쉰', '예순', '일흔', '여든', '아흔'];
+  const tens = Math.floor(n / 10);
+  const units = n % 10;
+  return (natTens[tens] || '') + (natUnits[units] || '');
 }
 
 function updateNumberTrainer(numVal){
@@ -2437,50 +2636,53 @@ function updateNumberTrainer(numVal){
   const container = document.getElementById('number-trainer-result');
   const inputElem = document.getElementById('num-input-trainer');
   if(inputElem && inputElem.value != n) inputElem.value = n;
-  if(!container || isNaN(n) || n < 1 || n > 99){
-    if(container) container.innerHTML = `<p class="text-sm text-red-500 font-bold">Por favor ingresa un número válido entre 1 y 99.</p>`;
+  if(!container || isNaN(n) || n < 1 || n > 1000000000){
+    if(container) container.innerHTML = `<p class="text-sm text-red-500 font-bold">Por favor ingresa un número válido entre 1 y 1.000.000.000.</p>`;
     return;
   }
 
-  // Sino calculation
-  const sinoUnits = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
-  const sinoTens = ['', '십', '이십', '삼십', '사십', '오십', '육십', '칠십', '팔십', '구십'];
-  let sinoText = '';
-  if(n === 10) sinoText = '십';
-  else {
-    const tens = Math.floor(n / 10);
-    const units = n % 10;
-    sinoText = (sinoTens[tens] || '') + (sinoUnits[units] || '');
-  }
+  const sinoText = convertNumberToSino(n);
+  const natText = convertNumberToNative(n);
 
-  // Native calculation
-  const natUnits = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉'];
-  const natTens = ['', '열', '스물', '서른', '마흔', '쉰', '예순', '일흔', '여든', '아흔'];
-  let natText = '';
-  const tens = Math.floor(n / 10);
-  const units = n % 10;
-  natText = (natTens[tens] || '') + (natUnits[units] || '');
-
-  container.innerHTML = `
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Sino card (Claro y nítido) -->
-      <div class="p-5 rounded-xl border-2 border-sky-200 bg-sky-50 shadow-sm">
-        <span class="text-xs font-bold uppercase tracking-wider text-sky-800 block mb-1">Sino-Coreano (Dinero, Minutos, Fechas)</span>
-        <div class="text-3xl font-black text-slate-900 mb-2">${sinoText}</div>
-        <div class="text-xs text-slate-600 mb-4">Ejemplo: ${sinoText}분 (minutos) · ${sinoText}00원 (wons)</div>
-        <button class="tts-btn px-4 py-2 text-xs font-bold rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition-colors shadow-sm" onclick="speak('${sinoText}')">🔊 Escuchar Sino-Coreano</button>
-      </div>
-
-      <!-- Native card (Claro y nítido) -->
+  let nativeHtml = '';
+  if(natText){
+    nativeHtml = `
       <div class="p-5 rounded-xl border-2 border-emerald-200 bg-emerald-50 shadow-sm">
         <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 block mb-1">Nativo Coreano (Contar cosas, Horas, Edad)</span>
         <div class="text-3xl font-black text-slate-900 mb-2">${natText}</div>
-        <div class="text-xs text-slate-600 mb-4">Ejemplo: ${natText}살 (años de edad)</div>
+        <div class="text-xs text-slate-600 mb-4">Ejemplo: ${natText}살 (edad) · ${n <= 12 ? natText + ' 시 (la hora)' : ''}</div>
         <button class="tts-btn px-4 py-2 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm" onclick="speak('${natText}')">🔊 Escuchar Nativo Coreano</button>
       </div>
+    `;
+  } else {
+    nativeHtml = `
+      <div class="p-5 rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-600 shadow-sm flex flex-col justify-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">Nativo Coreano (Del 1 al 99)</span>
+        <div class="text-sm font-semibold text-slate-700 mb-2">Para números de 100 en adelante no se usan números nativos.</div>
+        <div class="text-xs text-slate-500">El idioma coreano utiliza exclusivamente el sistema Sino-coreano (백, 천, 만, 억) para todas las cifras de 100 a millones.</div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = `
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Sino card -->
+      <div class="p-5 rounded-xl border-2 border-sky-200 bg-sky-50 shadow-sm">
+        <span class="text-xs font-bold uppercase tracking-wider text-sky-800 block mb-1">Sino-Coreano (Dinero, Minutos, Fechas, Grandes Cifras)</span>
+        <div class="text-3xl font-black text-slate-900 mb-2">${sinoText}</div>
+        <div class="text-xs text-slate-600 mb-4">Precio en Corea: <strong>${sinoText} 원 (₩${n.toLocaleString()})</strong></div>
+        <div class="flex flex-wrap gap-2">
+          <button class="tts-btn px-4 py-2 text-xs font-bold rounded-lg bg-sky-600 text-white hover:bg-sky-700 transition-colors shadow-sm" onclick="speak('${sinoText}')">🔊 Escuchar Cifra</button>
+          <button class="tts-btn px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-sm" onclick="speak('${sinoText} 원')">🔊 En Wons (${sinoText} 원)</button>
+        </div>
+      </div>
+
+      <!-- Native card -->
+      ${nativeHtml}
     </div>
   `;
 }
+
 
 function renderFamily(){
   return `
